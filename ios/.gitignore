@@ -7,7 +7,6 @@
 **/*sync/
 .sconsign.dblite
 .tags*
-Podfile.lock
 **/.vagrant/
 **/DerivedData/
 Icon?
