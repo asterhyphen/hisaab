@@ -450,7 +450,7 @@ class _FriendListPageState extends State<FriendListPage>
 
   Future<void> _launchGitHub() async {
     final Uri url = Uri.parse(
-      'https://github.com/ahmedsiddiqua/hisaab',
+      'https://github.com/asterhyphen/hisaab',
     ); // replace
     if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
       ScaffoldMessenger.of(
