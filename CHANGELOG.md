@@ -1,3 +1,6 @@
+1.0.2 (Not released yet)
+- Add Share button
+
 1.0.1
 - Add option to delete users
 - Add CSV import/export to keep everything local and to avoid cloud at the moment. 
