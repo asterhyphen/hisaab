@@ -1,4 +1,6 @@
 import 'dart:io';
+import 'package:share_plus/share_plus.dart';
+
 
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
@@ -292,13 +294,49 @@ class _FriendDetailPageState extends State<FriendDetailPage>
             ),
             actions: [
               TextButton(
-                onPressed: () => Navigator.pop(context, false),
-                child: Text('Close'),
-              ),
-              ElevatedButton(
-                onPressed: () => Navigator.pop(context, true),
-                child: Text('Save QR'),
-              ),
+    onPressed: () => Navigator.pop(context, false),
+    child: Text('Close'),
+  ),
+  TextButton(
+    onPressed: () async {
+      try {
+        final qrCode = QrCode(20, QrErrorCorrectLevel.M);
+        qrCode.addData(qrData);
+        final painter = QrPainter.withQr(
+          qr: qrCode,
+          gapless: true,
+          color: Colors.white,
+          emptyColor: Colors.black,
+        );
+
+        final pic = await painter.toImageData(
+          1024,
+          format: ui.ImageByteFormat.png,
+        );
+        if (pic == null) return;
+
+        final bytes = pic.buffer.asUint8List();
+        final dir = await getTemporaryDirectory();
+        final file = File('${dir.path}/upi_request.png');
+        await file.writeAsBytes(bytes);
+
+        await Share.shareXFiles(
+          [XFile(file.path)],
+          text:
+              '₹${amount.toStringAsFixed(2)} pending\nScan to pay via UPI',
+        );
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Share failed')),
+        );
+      }
+    },
+    child: Text('Share'),
+  ),
+  ElevatedButton(
+    onPressed: () => Navigator.pop(context, true),
+    child: Text('Save QR'),
+  ),
             ],
           ),
     );
