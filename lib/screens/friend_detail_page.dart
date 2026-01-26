@@ -212,12 +212,20 @@ class _FriendDetailPageState extends State<FriendDetailPage>
     }
   }
 
-  String _buildUpiUri(String pa, double amount, {String? pn, String? tn}) {
-    final encodedTn = tn == null ? '' : Uri.encodeComponent(tn);
-    final namePart = pn == null ? '' : '&pn=${Uri.encodeComponent(pn)}';
-    final tnPart = tn == null ? '' : '&tn=$encodedTn';
-    return 'upi://pay?pa=${Uri.encodeComponent(pa)}$namePart&am=${amount.toStringAsFixed(2)}&cu=INR$tnPart';
-  }
+  String _buildUpiUri(String pa, double amount,
+    {required String pn, String tn = 'Payment'}) {
+  final tr = DateTime.now().millisecondsSinceEpoch.toString();
+
+  return 'upi://pay'
+      '?pa=${Uri.encodeComponent(pa)}'
+      '&pn=${Uri.encodeComponent(pn)}'
+      '&am=${amount.toStringAsFixed(2)}'
+      '&cu=INR'
+      '&tn=${Uri.encodeComponent(tn)}'
+      '&tr=$tr'
+      '&mode=02';
+}
+
 
   Future<void> _showRequestPayment(double amount) async {
     final appBox = Hive.box('appMetaBox');
