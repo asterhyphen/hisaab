@@ -587,6 +587,7 @@ class _FriendListPageState extends State<FriendListPage>
                         final transactions = box.get(key) as List;
                         final total = calculateTotal(transactions);
                         bool _pressed = false;
+                        double _dragX = 0;
 
                         return StatefulBuilder(
                           builder: (context, setInnerState) {
@@ -601,110 +602,112 @@ class _FriendListPageState extends State<FriendListPage>
                                   ),
                                 );
                               },
-                              child: InkWell(
-                                borderRadius: BorderRadius.circular(8),
-                                onTapDown:
-                                    (_) => setInnerState(() => _pressed = true),
-                                onTapUp:
-                                    (_) =>
-                                        setInnerState(() => _pressed = false),
-                                onTapCancel:
-                                    () => setInnerState(() => _pressed = false),
-                                onLongPress: () => deleteFriend(key),
-                                onTap:
-                                    () => Navigator.of(context)
-                                        .push(
-                                          PageRouteBuilder(
-                                            pageBuilder:
-                                                (
-                                                  context,
-                                                  animation,
-                                                  secondaryAnimation,
-                                                ) =>
-                                                    FriendDetailPage(name: key),
-                                            transitionsBuilder: (
-                                              context,
-                                              animation,
-                                              secondaryAnimation,
-                                              child,
-                                            ) {
-                                              const begin = Offset(1.0, 0.0);
-                                              const end = Offset.zero;
-                                              const curve =
-                                                  Curves.easeInOutCubic;
-                                              final tween = Tween(
-                                                begin: begin,
-                                                end: end,
-                                              ).chain(CurveTween(curve: curve));
-                                              final offsetAnimation = animation
-                                                  .drive(tween);
-                                              return SlideTransition(
-                                                position: offsetAnimation,
-                                                child: child,
-                                              );
-                                            },
-                                            transitionDuration: Duration(
-                                              milliseconds: 500,
-                                            ),
-                                          ),
-                                        )
-                                        .then(
-                                          (_) => setState(() {
-                                            displayedKeys =
-                                                box.keys
-                                                    .cast<String>()
-                                                    .toList();
-                                          }),
-                                        ),
-                                child: AnimatedScale(
-                                  scale: _pressed ? 0.97 : 1.0,
-                                  duration: Duration(milliseconds: 150),
-                                  curve: Curves.easeInOutCubic,
-                                  child: Container(
-                                    constraints: BoxConstraints(minHeight: 70),
-                                    margin: EdgeInsets.symmetric(
-                                      horizontal: 12,
-                                      vertical: 6,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      color: Color(0xFF161B22),
-                                      borderRadius: BorderRadius.circular(8),
-                                      border: Border.all(
-                                        color:
-                                            _pressed
-                                                ? Color(0xFF00D084)
-                                                : Color(0xFF30363D),
-                                        width: _pressed ? 2 : 1,
-                                      ),
-                                      boxShadow:
-                                          _pressed
-                                              ? [
-                                                BoxShadow(
-                                                  color: Color(
-                                                    0xFF00D084,
-                                                  ).withOpacity(0.3),
-                                                  blurRadius: 8,
-                                                  spreadRadius: 0,
-                                                ),
-                                              ]
-                                              : [],
-                                    ),
-                                    padding: EdgeInsets.symmetric(
-                                      horizontal: 16,
-                                      vertical: 12,
-                                    ),
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Row(
-                                          children: [
-                                            CircleAvatar(
-                                              radius: 20,
-                                              backgroundColor: Color(
-                                                0xFF0D1117,
-                                              ),
-                                              child: Builder(
+                              
+                             
+child: Stack(
+  children: [
+    // 🔴 Delete background
+    Container(
+      constraints: const BoxConstraints(minHeight: 70),
+      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      decoration: BoxDecoration(
+        color: Colors.red,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      alignment: Alignment.centerRight,
+      padding: const EdgeInsets.only(right: 24),
+      child: const Icon(Icons.delete, color: Colors.white),
+    ),
+
+    // 🟦 Foreground card
+    GestureDetector(
+      behavior: HitTestBehavior.translucent,
+      onHorizontalDragUpdate: (details) {
+        setInnerState(() {
+          _dragX = (_dragX + details.delta.dx).clamp(-160.0, 0.0);
+        });
+      },
+      onHorizontalDragEnd: (_) {
+        if (_dragX < -110) {
+          deleteFriend(key);
+        } else {
+          setInnerState(() => _dragX = 0);
+        }
+      },
+      child: Transform.translate(
+        offset: Offset(_dragX, 0),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(8),
+          onTapDown: (_) => setInnerState(() => _pressed = true),
+          onTapUp: (_) => setInnerState(() => _pressed = false),
+          onTapCancel: () => setInnerState(() => _pressed = false),
+          onTap: () => Navigator.of(context)
+              .push(
+                PageRouteBuilder(
+                  pageBuilder: (_, animation, __) =>
+                      FriendDetailPage(name: key),
+                  transitionsBuilder: (_, animation, __, child) {
+                    final tween = Tween(
+                      begin: const Offset(1, 0),
+                      end: Offset.zero,
+                    ).chain(
+                      CurveTween(curve: Curves.easeInOutCubic),
+                    );
+                    return SlideTransition(
+                      position: animation.drive(tween),
+                      child: child,
+                    );
+                  },
+                  transitionDuration:
+                      const Duration(milliseconds: 500),
+                ),
+              )
+              .then((_) => setState(() {
+                    displayedKeys =
+                        box.keys.cast<String>().toList();
+                  })),
+          child: AnimatedScale(
+            scale: _pressed ? 0.97 : 1.0,
+            duration: const Duration(milliseconds: 150),
+            curve: Curves.easeInOutCubic,
+            child: Container(
+              constraints: const BoxConstraints(minHeight: 70),
+              margin:
+                  const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              decoration: BoxDecoration(
+                color: const Color(0xFF161B22),
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(
+                  color: _pressed
+                      ? const Color(0xFF00D084)
+                      : const Color(0xFF30363D),
+                  width: _pressed ? 2 : 1,
+                ),
+                boxShadow: _pressed
+                    ? [
+                        BoxShadow(
+                          color: const Color(0xFF00D084)
+                              .withOpacity(0.3),
+                          blurRadius: 8,
+                        )
+                      ]
+                    : [],
+              ),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 12,
+              ),
+              child: Row(
+                mainAxisAlignment:
+                    MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    children: [
+                      CircleAvatar(
+                        radius: 20,
+                        backgroundColor:
+                            const Color(0xFF0D1117),
+                        child: Builder(
                                                 builder: (c) {
                                                   final iconKey =
                                                       metaBox.get(key)
@@ -779,9 +782,12 @@ class _FriendListPageState extends State<FriendListPage>
                                                   }
                                                 },
                                               ),
-                                            ),
-                                            SizedBox(width: 12),
-                                            Column(
+
+                      ),
+                      const SizedBox(width: 12),
+                      
+
+Column(
                                               crossAxisAlignment:
                                                   CrossAxisAlignment.start,
                                               children: [
@@ -809,17 +815,22 @@ class _FriendListPageState extends State<FriendListPage>
                                                 ),
                                               ],
                                             ),
-                                          ],
-                                        ),
-                                        Icon(
-                                          Icons.chevron_right,
-                                          color: Color(0xFF6E7681),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ),
+                    ],
+                  ),
+                  const Icon(
+                    Icons.chevron_right,
+                    color: Color(0xFF6E7681),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    ),
+  ],
+)
+
                             );
                           },
                         );

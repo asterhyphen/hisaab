@@ -3,6 +3,7 @@
 - Remove Share CSV
 - Add Paid all option
 - Switched away from com.example.... so now android thinks this is a different app
+- Change delete users shortcut from longpress to swipe
 
 1.0.1
 - Add option to delete users
