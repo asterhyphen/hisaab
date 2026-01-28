@@ -29,6 +29,44 @@ class _FriendDetailPageState extends State<FriendDetailPage>
   late AnimationController _slideController;
   late Animation<Offset> _slideAnimation;
 
+  Future<void> _markPaidAll(double total) async {
+    if (total == 0) return;
+
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: Text('Clear balance?'),
+        content: Text(
+          'This will mark the full amount as settled and bring the balance to ₹0.00.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: Text('Paid all'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm != true) return;
+
+    final txns = List.from(box.get(widget.name) as List);
+
+    txns.add({
+      'type': total > 0 ? 'subtract' : 'add',
+      'amount': total.abs(),
+      'note': 'Paid all / Settled',
+      'date': DateFormat('dd-MM-yyyy hh:mm a').format(DateTime.now()),
+    });
+
+    box.put(widget.name, txns);
+    setState(() {});
+  }
+
   @override
   void initState() {
     super.initState();
@@ -932,44 +970,62 @@ class _FriendDetailPageState extends State<FriendDetailPage>
                     ),
                   ),
                   SizedBox(height: 12),
-                  Row(
-                    children: [
-                      if (total >= 0)
-                        ElevatedButton.icon(
-                          onPressed: () => _showRequestPayment(total),
-                          icon: Icon(Icons.qr_code),
-                          label: Text('Request ₹${total.toStringAsFixed(2)}'),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Color(0xFF3FB950),
-                            foregroundColor: Color(0xFF0D1117),
-                          ),
-                        )
-                      else
-                        ElevatedButton.icon(
-                          onPressed: () => _payNow(total.abs()),
-                          icon: Icon(Icons.payment),
-                          label: Text('Pay ₹${total.abs().toStringAsFixed(2)}'),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Color(0xFFF85149),
-                            foregroundColor: Color(0xFF0D1117),
-                          ),
-                        ),
-                      SizedBox(width: 8),
-                      TextButton(
-                        onPressed: () async {
-                          // allow setting app or user upi
-                          if (total >= 0) {
-                            await _setAppUpi();
-                          } else {
-                            await _setUserUpi();
-                          }
-                        },
-                        child: Text(
-                          total >= 0 ? 'Set my UPI' : 'Set ${widget.name} UPI',
-                        ),
-                      ),
-                    ],
-                  ),
+                  Column(
+  crossAxisAlignment: CrossAxisAlignment.start,
+  children: [
+    Row(
+      children: [
+        if (total >= 0)
+          ElevatedButton.icon(
+            onPressed: () => _showRequestPayment(total),
+            icon: Icon(Icons.qr_code),
+            label: Text('Request ₹${total.toStringAsFixed(2)}'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Color(0xFF3FB950),
+              foregroundColor: Color(0xFF0D1117),
+            ),
+          )
+        else
+          ElevatedButton.icon(
+            onPressed: () => _payNow(total.abs()),
+            icon: Icon(Icons.payment),
+            label: Text('Pay ₹${total.abs().toStringAsFixed(2)}'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Color(0xFFF85149),
+              foregroundColor: Color(0xFF0D1117),
+            ),
+          ),
+        SizedBox(width: 8),
+        TextButton(
+          onPressed: () async {
+            if (total >= 0) {
+              await _setAppUpi();
+            } else {
+              await _setUserUpi();
+            }
+          },
+          child: Text(
+            total >= 0 ? 'Set my UPI' : 'Set ${widget.name} UPI',
+          ),
+        ),
+      ],
+    ),
+    if (total != 0) ...[
+      SizedBox(height: 8),
+      OutlinedButton(
+        onPressed: () => _markPaidAll(total),
+        child: Text('Paid all'),
+        style: OutlinedButton.styleFrom(
+          foregroundColor: Color(0xFF8B949E),
+          side: BorderSide(color: Color(0xFF30363D)),
+        ),
+      ),
+    ],
+  ],
+),
+
+    
+
                 ],
               ),
             ),
