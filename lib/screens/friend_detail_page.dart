@@ -1,7 +1,5 @@
 import 'dart:io';
 import 'package:share_plus/share_plus.dart';
-
-
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
@@ -841,11 +839,6 @@ class _FriendDetailPageState extends State<FriendDetailPage>
           ),
         ),
         actions: [
-          IconButton(
-            tooltip: 'Share CSV',
-            icon: Icon(Icons.share),
-            onPressed: _shareCsv,
-          ),
           IconButton(
             tooltip: 'Export CSV',
             icon: Icon(Icons.download_rounded),
