@@ -1,5 +1,8 @@
 1.0.2 (Not released yet)
-- Add Share button
+- Add Share QR button
+- Remove Share CSV
+- Add Paid all option
+- Switched away from com.example.... so now android thinks this is a different app
 
 1.0.1
 - Add option to delete users
