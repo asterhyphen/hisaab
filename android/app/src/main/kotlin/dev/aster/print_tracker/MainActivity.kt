@@ -1,4 +1,4 @@
-package com.example.hisaab
+package dev.aster.hisaab
 
 import io.flutter.embedding.android.FlutterActivity
 
