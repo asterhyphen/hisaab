@@ -96,56 +96,56 @@ class _FriendListPageState extends State<FriendListPage>
   }
 
   Future<bool?> deleteFriend(String name) async {
-  final result = await showDialog<bool>(
-    context: context,
-    builder: (ctx) => AlertDialog(
-      backgroundColor: const Color(0xFF3D4C3A),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
-      title: const Text(
-        'Confirm Deletion',
-        style: TextStyle(color: Colors.white),
-      ),
-      content: Text(
-        'Are you sure you want to delete "$name" and all their transactions? This action is non-reversible.',
-        style: const TextStyle(color: Colors.white70),
-      ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(ctx, false),
-          child: const Text(
-            'Cancel',
-            style: TextStyle(color: Colors.white70),
+    final result = await showDialog<bool>(
+      context: context,
+      builder:
+          (ctx) => AlertDialog(
+            backgroundColor: const Color(0xFF3D4C3A),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+            title: const Text(
+              'Confirm Deletion',
+              style: TextStyle(color: Colors.white),
+            ),
+            content: Text(
+              'Are you sure you want to delete "$name" and all their transactions? This action is non-reversible.',
+              style: const TextStyle(color: Colors.white70),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(ctx, false),
+                child: const Text(
+                  'Cancel',
+                  style: TextStyle(color: Colors.white70),
+                ),
+              ),
+              TextButton(
+                onPressed: () => Navigator.pop(ctx, true),
+                child: const Text(
+                  'Delete',
+                  style: TextStyle(color: Colors.redAccent),
+                ),
+              ),
+            ],
           ),
-        ),
-        TextButton(
-          onPressed: () => Navigator.pop(ctx, true),
-          child: const Text(
-            'Delete',
-            style: TextStyle(color: Colors.redAccent),
-          ),
-        ),
-      ],
-    ),
-  );
+    );
 
-  if (result == true) {
-    box.delete(name);
-    try {
-      metaBox.delete(name);
-    } catch (_) {}
+    if (result == true) {
+      box.delete(name);
+      try {
+        metaBox.delete(name);
+      } catch (_) {}
 
-    setState(() {
-      displayedKeys =
-          box.keys.cast<String>().toList()
-            ..sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
-    });
+      setState(() {
+        displayedKeys =
+            box.keys.cast<String>().toList()
+              ..sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
+      });
+    }
+
+    return result;
   }
-
-  return result;
-}
-
 
   double calculateTotal(List transactions) {
     return transactions.fold(0.0, (sum, item) {
@@ -593,7 +593,6 @@ class _FriendListPageState extends State<FriendListPage>
                         final transactions = box.get(key) as List;
                         final total = calculateTotal(transactions);
                         bool _pressed = false;
-                        double _dragX = 0;
 
                         return StatefulBuilder(
                           builder: (context, setInnerState) {
@@ -608,235 +607,209 @@ class _FriendListPageState extends State<FriendListPage>
                                   ),
                                 );
                               },
-                              
-                             
-child: Stack(
-  children: [
-    // 🔴 Delete background
-    Container(
-      constraints: const BoxConstraints(minHeight: 70),
-      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      decoration: BoxDecoration(
-        color: Colors.red,
-        borderRadius: BorderRadius.circular(8),
-      ),
-      alignment: Alignment.centerRight,
-      padding: const EdgeInsets.only(right: 24),
-      child: const Icon(Icons.delete, color: Colors.white),
+
+                              child: Stack(
+                                children: [
+                                  // 🔴 Delete background
+                                  Container(
+                                    constraints: const BoxConstraints(
+                                      minHeight: 70,
+                                    ),
+                                    margin: const EdgeInsets.symmetric(
+                                      horizontal: 12,
+                                      vertical: 6,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: Colors.red,
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    alignment: Alignment.centerRight,
+                                    padding: const EdgeInsets.only(right: 24),
+                                    child: const Icon(
+                                      Icons.delete,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+
+                                  // 🟦 Foreground card
+                                  Dismissible(
+  key: ValueKey(key),
+  direction: DismissDirection.endToStart,
+  confirmDismiss: (_) => deleteFriend(key),
+
+  background: Container(
+    constraints: const BoxConstraints(minHeight: 70),
+    margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+    alignment: Alignment.centerRight,
+    padding: const EdgeInsets.only(right: 24),
+    decoration: BoxDecoration(
+      color: Colors.red,
+      borderRadius: BorderRadius.circular(8),
     ),
+    child: const Icon(Icons.delete, color: Colors.white),
+  ),
 
-    // 🟦 Foreground card
-    GestureDetector(
-      behavior: HitTestBehavior.translucent,
-      onHorizontalDragUpdate: (details) {
-        setInnerState(() {
-          _dragX = (_dragX + details.delta.dx).clamp(-160.0, 0.0);
-        });
-      },
-      onHorizontalDragEnd: (_) {
-        if (_dragX < -110) {
-          deleteFriend(key);
-        } else {
-          setInnerState(() => _dragX = 0);
-        }
-      },
-      child: Transform.translate(
-        offset: Offset(_dragX, 0),
-        child: InkWell(
-          borderRadius: BorderRadius.circular(8),
-          onTapDown: (_) => setInnerState(() => _pressed = true),
-          onTapUp: (_) => setInnerState(() => _pressed = false),
-          onTapCancel: () => setInnerState(() => _pressed = false),
-          onTap: () => Navigator.of(context)
-              .push(
-                PageRouteBuilder(
-                  pageBuilder: (_, animation, __) =>
-                      FriendDetailPage(name: key),
-                  transitionsBuilder: (_, animation, __, child) {
-                    final tween = Tween(
-                      begin: const Offset(1, 0),
-                      end: Offset.zero,
-                    ).chain(
-                      CurveTween(curve: Curves.easeInOutCubic),
-                    );
-                    return SlideTransition(
-                      position: animation.drive(tween),
-                      child: child,
-                    );
-                  },
-                  transitionDuration:
-                      const Duration(milliseconds: 500),
-                ),
-              )
-              .then((_) => setState(() {
-                    displayedKeys =
-                        box.keys.cast<String>().toList();
-                  })),
-          child: AnimatedScale(
-            scale: _pressed ? 0.97 : 1.0,
-            duration: const Duration(milliseconds: 150),
-            curve: Curves.easeInOutCubic,
-            child: Container(
-              constraints: const BoxConstraints(minHeight: 70),
-              margin:
-                  const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-              decoration: BoxDecoration(
-                color: const Color(0xFF161B22),
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(
-                  color: _pressed
-                      ? const Color(0xFF00D084)
-                      : const Color(0xFF30363D),
-                  width: _pressed ? 2 : 1,
-                ),
-                boxShadow: _pressed
-                    ? [
-                        BoxShadow(
-                          color: const Color(0xFF00D084)
-                              .withOpacity(0.3),
-                          blurRadius: 8,
-                        )
-                      ]
-                    : [],
-              ),
-              padding: const EdgeInsets.symmetric(
-                horizontal: 16,
-                vertical: 12,
-              ),
-              child: Row(
-                mainAxisAlignment:
-                    MainAxisAlignment.spaceBetween,
-                children: [
-                  Row(
-                    children: [
-                      CircleAvatar(
-                        radius: 20,
-                        backgroundColor:
-                            const Color(0xFF0D1117),
-                        child: Builder(
-                                                builder: (c) {
-                                                  final iconKey =
-                                                      metaBox.get(key)
-                                                          as String? ??
-                                                      'terminal';
-                                                  // If the stored value looks like a file path, show image.
-                                                  try {
-                                                    if (iconKey.startsWith(
-                                                          '/',
-                                                        ) ||
-                                                        iconKey.startsWith(
-                                                          'file://',
-                                                        )) {
-                                                      final path = iconKey
-                                                          .replaceFirst(
-                                                            'file://',
-                                                            '',
-                                                          );
-                                                      final f = File(path);
-                                                      if (f.existsSync()) {
-                                                        return ClipRRect(
-                                                          borderRadius:
-                                                              BorderRadius.circular(
-                                                                20,
-                                                              ),
-                                                          child: Image.file(
-                                                            f,
-                                                            width: 36,
-                                                            height: 36,
-                                                            fit: BoxFit.cover,
-                                                          ),
-                                                        );
-                                                      }
-                                                    }
-                                                  } catch (_) {}
-                                                  switch (iconKey) {
-                                                    case 'code':
-                                                      return Icon(
-                                                        Icons.code,
-                                                        color: Color(
-                                                          0xFF58A6FF,
-                                                        ),
-                                                      );
-                                                    case 'robot':
-                                                      return Icon(
-                                                        Icons.smart_toy,
-                                                        color: Color(
-                                                          0xFF58A6FF,
-                                                        ),
-                                                      );
-                                                    case 'user':
-                                                      return Icon(
-                                                        Icons.person,
-                                                        color: Color(
-                                                          0xFF58A6FF,
-                                                        ),
-                                                      );
-                                                    case 'smile':
-                                                      return Icon(
-                                                        Icons.emoji_emotions,
-                                                        color: Color(
-                                                          0xFF58A6FF,
-                                                        ),
-                                                      );
-                                                    default:
-                                                      return Icon(
-                                                        Icons.terminal,
-                                                        color: Color(
-                                                          0xFF58A6FF,
-                                                        ),
-                                                      );
-                                                  }
-                                                },
-                                              ),
+  child: InkWell(
+    borderRadius: BorderRadius.circular(8),
 
-                      ),
-                      const SizedBox(width: 12),
-                      
+    onTapDown: (_) => setInnerState(() => _pressed = true),
+    onTapUp: (_) => setInnerState(() => _pressed = false),
+    onTapCancel: () => setInnerState(() => _pressed = false),
 
-Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                Text(
-                                                  key,
-                                                  style: TextStyle(
-                                                    fontSize: 16,
-                                                    fontWeight: FontWeight.w600,
-                                                    color: Color(0xFFE6EDF3),
-                                                    fontFamily: 'Courier New',
-                                                  ),
-                                                ),
-                                                SizedBox(height: 6),
-                                                Text(
-                                                  'balance: ₹${total.toStringAsFixed(2)}',
-                                                  style: TextStyle(
-                                                    fontSize: 13,
-                                                    fontFamily: 'Courier New',
-                                                    color:
-                                                        total >= 0
-                                                            ? Color(0xFF3FB950)
-                                                            : Color(0xFFF85149),
-                                                    fontWeight: FontWeight.w500,
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                    ],
-                  ),
-                  const Icon(
-                    Icons.chevron_right,
-                    color: Color(0xFF6E7681),
-                  ),
-                ],
-              ),
-            ),
+    onTap: () => Navigator.of(context)
+        .push(
+          PageRouteBuilder(
+            pageBuilder: (_, animation, __) =>
+                FriendDetailPage(name: key),
+            transitionsBuilder: (_, animation, __, child) {
+              final tween = Tween(
+                begin: const Offset(1, 0),
+                end: Offset.zero,
+              ).chain(
+                CurveTween(curve: Curves.easeInOutCubic),
+              );
+              return SlideTransition(
+                position: animation.drive(tween),
+                child: child,
+              );
+            },
+            transitionDuration: const Duration(milliseconds: 500),
           ),
+        )
+        .then(
+          (_) => setState(() {
+            displayedKeys = box.keys.cast<String>().toList();
+          }),
+        ),
+
+    child: AnimatedScale(
+      scale: _pressed ? 0.97 : 1.0,
+      duration: const Duration(milliseconds: 150),
+      curve: Curves.easeInOutCubic,
+
+      child: Container(
+        constraints: const BoxConstraints(minHeight: 70),
+        margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        decoration: BoxDecoration(
+          color: const Color(0xFF161B22),
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(
+            color: _pressed
+                ? const Color(0xFF00D084)
+                : const Color(0xFF30363D),
+            width: _pressed ? 2 : 1,
+          ),
+          boxShadow: _pressed
+              ? [
+                  BoxShadow(
+                    color: const Color(0xFF00D084).withOpacity(0.3),
+                    blurRadius: 8,
+                  ),
+                ]
+              : [],
+        ),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Row(
+              children: [
+                CircleAvatar(
+                  radius: 20,
+                  backgroundColor: const Color(0xFF0D1117),
+                  child: Builder(
+                    builder: (c) {
+                      final iconKey =
+                          metaBox.get(key) as String? ?? 'terminal';
+
+                      try {
+                        if (iconKey.startsWith('/') ||
+                            iconKey.startsWith('file://')) {
+                          final path =
+                              iconKey.replaceFirst('file://', '');
+                          final f = File(path);
+                          if (f.existsSync()) {
+                            return ClipRRect(
+                              borderRadius: BorderRadius.circular(20),
+                              child: Image.file(
+                                f,
+                                width: 36,
+                                height: 36,
+                                fit: BoxFit.cover,
+                              ),
+                            );
+                          }
+                        }
+                      } catch (_) {}
+
+                      switch (iconKey) {
+                        case 'code':
+                          return const Icon(Icons.code,
+                              color: Color(0xFF58A6FF));
+                        case 'robot':
+                          return const Icon(Icons.smart_toy,
+                              color: Color(0xFF58A6FF));
+                        case 'user':
+                          return const Icon(Icons.person,
+                              color: Color(0xFF58A6FF));
+                        case 'smile':
+                          return const Icon(Icons.emoji_emotions,
+                              color: Color(0xFF58A6FF));
+                        default:
+                          return const Icon(Icons.terminal,
+                              color: Color(0xFF58A6FF));
+                      }
+                    },
+                  ),
+                ),
+
+                const SizedBox(width: 12),
+
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      key,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: Color(0xFFE6EDF3),
+                        fontFamily: 'Courier New',
+                      ),
+                    ),
+
+                    const SizedBox(height: 6),
+
+                    Text(
+                      'balance: ₹${total.toStringAsFixed(2)}',
+                      style: TextStyle(
+                        fontSize: 13,
+                        fontFamily: 'Courier New',
+                        color: total >= 0
+                            ? const Color(0xFF3FB950)
+                            : const Color(0xFFF85149),
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+
+            const Icon(
+              Icons.chevron_right,
+              color: Color(0xFF6E7681),
+            ),
+          ],
         ),
       ),
     ),
-  ],
-)
+  ),
+),
 
+                                ],
+                              ),
                             );
                           },
                         );
