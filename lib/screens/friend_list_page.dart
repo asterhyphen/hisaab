@@ -95,51 +95,57 @@ class _FriendListPageState extends State<FriendListPage>
     });
   }
 
-  void deleteFriend(String name) {
-    showDialog(
-      context: context,
-      builder:
-          (_) => AlertDialog(
-            backgroundColor: Color(0xFF3D4C3A),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
-            ),
-            title: Text(
-              'Confirm Deletion',
-              style: TextStyle(color: Colors.white),
-            ),
-            content: Text(
-              'Are you sure you want to delete "$name" and all their transactions? This action is non-reversible.',
-              style: TextStyle(color: Colors.white70),
-            ),
-            actions: [
-              TextButton(
-                child: Text('Cancel', style: TextStyle(color: Colors.white70)),
-                onPressed: () => Navigator.pop(context),
-              ),
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.redAccent,
-                ),
-                child: Text('Delete', style: TextStyle(color: Colors.white)),
-                onPressed: () {
-                  box.delete(name);
-                  try {
-                    metaBox.delete(name);
-                  } catch (_) {}
-                  setState(() {
-                    displayedKeys =
-                        box.keys.cast<String>().toList()..sort(
-                          (a, b) => a.toLowerCase().compareTo(b.toLowerCase()),
-                        );
-                  });
-                  Navigator.pop(context);
-                },
-              ),
-            ],
+  Future<bool?> deleteFriend(String name) async {
+  final result = await showDialog<bool>(
+    context: context,
+    builder: (ctx) => AlertDialog(
+      backgroundColor: const Color(0xFF3D4C3A),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+      ),
+      title: const Text(
+        'Confirm Deletion',
+        style: TextStyle(color: Colors.white),
+      ),
+      content: Text(
+        'Are you sure you want to delete "$name" and all their transactions? This action is non-reversible.',
+        style: const TextStyle(color: Colors.white70),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(ctx, false),
+          child: const Text(
+            'Cancel',
+            style: TextStyle(color: Colors.white70),
           ),
-    );
+        ),
+        TextButton(
+          onPressed: () => Navigator.pop(ctx, true),
+          child: const Text(
+            'Delete',
+            style: TextStyle(color: Colors.redAccent),
+          ),
+        ),
+      ],
+    ),
+  );
+
+  if (result == true) {
+    box.delete(name);
+    try {
+      metaBox.delete(name);
+    } catch (_) {}
+
+    setState(() {
+      displayedKeys =
+          box.keys.cast<String>().toList()
+            ..sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
+    });
   }
+
+  return result;
+}
+
 
   double calculateTotal(List transactions) {
     return transactions.fold(0.0, (sum, item) {
