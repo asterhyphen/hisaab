@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'screens/friend_list_page.dart';
+import 'widget_action_bridge.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -8,6 +9,7 @@ void main() async {
   await Hive.openBox('friendsBox');
   await Hive.openBox('userMetaBox');
   await Hive.openBox('appMetaBox');
+  await WidgetActionBridge.initialize();
   runApp(MyApp());
 }
 
