@@ -1778,17 +1778,17 @@ class _FriendListPageState extends State<FriendListPage>
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Color(0xFF161B22),
-        foregroundColor: Color(0xFF00D084),
+        backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
+        foregroundColor: Theme.of(context).appBarTheme.foregroundColor,
         elevation: 0,
         title: Text(
           title,
           style: TextStyle(
-            fontFamily: 'Courier New',
+            fontFamily: Theme.of(context).textTheme.titleLarge?.fontFamily,
             fontSize: 24,
             fontWeight: FontWeight.bold,
             letterSpacing: 1.2,
-            color: Color(0xFF00D084),
+            color: Theme.of(context).appBarTheme.foregroundColor,
           ),
         ),
         centerTitle: false,
@@ -1802,9 +1802,9 @@ class _FriendListPageState extends State<FriendListPage>
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentTab,
         onTap: (index) => setState(() => _currentTab = index),
-        backgroundColor: const Color(0xFF161B22),
-        selectedItemColor: const Color(0xFF00D084),
-        unselectedItemColor: const Color(0xFF8B949E),
+        backgroundColor: Theme.of(context).colorScheme.surface,
+        selectedItemColor: Theme.of(context).colorScheme.primary,
+        unselectedItemColor: Theme.of(context).textTheme.bodySmall?.color,
         items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.home_rounded),

@@ -44,6 +44,10 @@ flutter:
       fonts:
         - asset: assets/fonts/PlayfairDisplay.ttf
 
+    - family: Merriweather
+      fonts:
+        - asset: assets/fonts/Merriweather-VariableFont_opsz,wdth,wght.ttf
+
 flutter_launcher_icons:
   android: true
   ios: true
