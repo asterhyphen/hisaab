@@ -30,6 +30,7 @@ class _FriendListPageState extends State<FriendListPage>
   late Animation<double> _fadeAnimation;
   String _selectedIcon = 'terminal';
   StreamSubscription<String>? _widgetActionSubscription;
+  int _currentTab = 0;
 
   @override
   void initState() {
@@ -639,15 +640,774 @@ class _FriendListPageState extends State<FriendListPage>
     }
   }
 
+  Widget _buildHomeBody() {
+    return Column(
+      children: [
+        // Search Bar with terminal style
+        Padding(
+          padding: const EdgeInsets.all(12),
+          child: TextField(
+            controller: searchController,
+            style: TextStyle(
+              color: Color(0xFFE6EDF3),
+              fontFamily: 'Courier New',
+            ),
+            decoration: InputDecoration(
+              filled: true,
+              fillColor: Color(0xFF0D1117),
+              labelText: 'Search user',
+              labelStyle: TextStyle(
+                color: Color(0xFF8B949E),
+                fontFamily: 'Courier New',
+              ),
+              prefixIcon: Icon(Icons.search, color: Color(0xFF58A6FF)),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: BorderSide(color: Color(0xFF30363D), width: 1),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: BorderSide(color: Color(0xFF30363D), width: 1),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: BorderSide(color: Color(0xFF00D084), width: 2),
+              ),
+            ),
+          ),
+        ),
+        // Total pending with animation
+        FadeTransition(
+          opacity: _fadeAnimation,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 12),
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              decoration: BoxDecoration(
+                border: Border.all(color: Color(0xFF30363D), width: 1),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Text(
+                'total_pending: ₹${getOverallTotal().toStringAsFixed(2)}',
+                style: TextStyle(
+                  fontSize: 14,
+                  fontFamily: 'Courier New',
+                  fontWeight: FontWeight.w500,
+                  color: Color(0xFF58A6FF),
+                  letterSpacing: 0.5,
+                ),
+              ),
+            ),
+          ),
+        ),
+        // Friend List
+        Expanded(
+          child:
+              displayedKeys.isEmpty
+                  ? Center(
+                    child: Text(
+                      r'$ user_not_found()' '\n\ntype "+ icon" to create_user()',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: Color(0xFF6E7681),
+                        fontSize: 14,
+                        fontFamily: 'Courier New',
+                        height: 1.6,
+                      ),
+                    ),
+                  )
+                  : ListView.builder(
+                    padding: EdgeInsets.only(bottom: 100),
+                    physics: BouncingScrollPhysics(
+                      parent: AlwaysScrollableScrollPhysics(),
+                    ),
+                    itemCount: displayedKeys.length,
+                    itemBuilder: (_, index) {
+                      final key = displayedKeys.elementAt(index);
+                      final transactions = box.get(key) as List;
+                      final total = calculateTotal(transactions);
+                      bool pressed = false;
+
+                      return StatefulBuilder(
+                        builder: (context, setInnerState) {
+                          return AnimatedBuilder(
+                            animation: _fadeAnimation,
+                            builder: (context, child) {
+                              return Transform.translate(
+                                offset: Offset(_fadeAnimation.value * 10, 0),
+                                child: Opacity(
+                                  opacity: _fadeAnimation.value,
+                                  child: child,
+                                ),
+                              );
+                            },
+                            child: Stack(
+                              children: [
+                                Container(
+                                  constraints: const BoxConstraints(
+                                    minHeight: 70,
+                                  ),
+                                  margin: const EdgeInsets.symmetric(
+                                    horizontal: 12,
+                                    vertical: 6,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: Colors.red,
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  alignment: Alignment.centerRight,
+                                  padding: const EdgeInsets.only(right: 24),
+                                  child: const Icon(
+                                    Icons.delete,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                                Dismissible(
+                                  key: ValueKey(key),
+                                  direction: DismissDirection.endToStart,
+                                  confirmDismiss: (_) => deleteFriend(key),
+                                  background: Container(
+                                    constraints: const BoxConstraints(
+                                      minHeight: 70,
+                                    ),
+                                    margin: const EdgeInsets.symmetric(
+                                      horizontal: 12,
+                                      vertical: 6,
+                                    ),
+                                    alignment: Alignment.centerRight,
+                                    padding: const EdgeInsets.only(right: 24),
+                                    decoration: BoxDecoration(
+                                      color: Colors.red,
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    child: const Icon(
+                                      Icons.delete,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                  child: InkWell(
+                                    borderRadius: BorderRadius.circular(8),
+                                    onTapDown:
+                                        (_) => setInnerState(
+                                          () => pressed = true,
+                                        ),
+                                    onTapUp:
+                                        (_) => setInnerState(
+                                          () => pressed = false,
+                                        ),
+                                    onTapCancel:
+                                        () => setInnerState(
+                                          () => pressed = false,
+                                        ),
+                                    onTap:
+                                        () => Navigator.of(context)
+                                            .push(
+                                              PageRouteBuilder(
+                                                pageBuilder:
+                                                    (_, animation, __) =>
+                                                        FriendDetailPage(
+                                                          name: key,
+                                                        ),
+                                                transitionsBuilder: (
+                                                  _,
+                                                  animation,
+                                                  __,
+                                                  child,
+                                                ) {
+                                                  final tween = Tween(
+                                                    begin: const Offset(1, 0),
+                                                    end: Offset.zero,
+                                                  ).chain(
+                                                    CurveTween(
+                                                      curve:
+                                                          Curves.easeInOutCubic,
+                                                    ),
+                                                  );
+                                                  return SlideTransition(
+                                                    position: animation.drive(
+                                                      tween,
+                                                    ),
+                                                    child: child,
+                                                  );
+                                                },
+                                                transitionDuration:
+                                                    const Duration(
+                                                      milliseconds: 500,
+                                                    ),
+                                              ),
+                                            )
+                                            .then(
+                                              (_) => setState(() {
+                                                displayedKeys =
+                                                    box.keys.cast<String>()
+                                                        .toList();
+                                              }),
+                                            ),
+                                    child: AnimatedScale(
+                                      scale: pressed ? 0.97 : 1.0,
+                                      duration: const Duration(
+                                        milliseconds: 150,
+                                      ),
+                                      curve: Curves.easeInOutCubic,
+                                      child: Container(
+                                        constraints: const BoxConstraints(
+                                          minHeight: 70,
+                                        ),
+                                        margin: const EdgeInsets.symmetric(
+                                          horizontal: 12,
+                                          vertical: 6,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          color: const Color(0xFF161B22),
+                                          borderRadius: BorderRadius.circular(
+                                            8,
+                                          ),
+                                          border: Border.all(
+                                            color:
+                                                pressed
+                                                    ? const Color(0xFF00D084)
+                                                    : const Color(0xFF30363D),
+                                            width: pressed ? 2 : 1,
+                                          ),
+                                          boxShadow:
+                                              pressed
+                                                  ? [
+                                                    BoxShadow(
+                                                      color: const Color(
+                                                        0xFF00D084,
+                                                      ).withOpacity(0.3),
+                                                      blurRadius: 8,
+                                                    ),
+                                                  ]
+                                                  : [],
+                                        ),
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 16,
+                                          vertical: 12,
+                                        ),
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Row(
+                                              children: [
+                                                CircleAvatar(
+                                                  radius: 20,
+                                                  backgroundColor: const Color(
+                                                    0xFF0D1117,
+                                                  ),
+                                                  child: Builder(
+                                                    builder: (c) {
+                                                      final iconKey =
+                                                          metaBox.get(key)
+                                                              as String? ??
+                                                          'terminal';
+
+                                                      try {
+                                                        if (iconKey.startsWith(
+                                                              '/',
+                                                            ) ||
+                                                            iconKey.startsWith(
+                                                              'file://',
+                                                            )) {
+                                                          final path = iconKey
+                                                              .replaceFirst(
+                                                                'file://',
+                                                                '',
+                                                              );
+                                                          final f = File(path);
+                                                          if (f.existsSync()) {
+                                                            return ClipRRect(
+                                                              borderRadius:
+                                                                  BorderRadius.circular(
+                                                                    20,
+                                                                  ),
+                                                              child: Image.file(
+                                                                f,
+                                                                width: 36,
+                                                                height: 36,
+                                                                fit: BoxFit
+                                                                    .cover,
+                                                              ),
+                                                            );
+                                                          }
+                                                        }
+                                                      } catch (_) {}
+
+                                                      switch (iconKey) {
+                                                        case 'code':
+                                                          return const Icon(
+                                                            Icons.code,
+                                                            color: Color(
+                                                              0xFF58A6FF,
+                                                            ),
+                                                          );
+                                                        case 'robot':
+                                                          return const Icon(
+                                                            Icons.smart_toy,
+                                                            color: Color(
+                                                              0xFF58A6FF,
+                                                            ),
+                                                          );
+                                                        case 'user':
+                                                          return const Icon(
+                                                            Icons.person,
+                                                            color: Color(
+                                                              0xFF58A6FF,
+                                                            ),
+                                                          );
+                                                        case 'smile':
+                                                          return const Icon(
+                                                            Icons
+                                                                .emoji_emotions,
+                                                            color: Color(
+                                                              0xFF58A6FF,
+                                                            ),
+                                                          );
+                                                        default:
+                                                          return const Icon(
+                                                            Icons.terminal,
+                                                            color: Color(
+                                                              0xFF58A6FF,
+                                                            ),
+                                                          );
+                                                      }
+                                                    },
+                                                  ),
+                                                ),
+                                                const SizedBox(width: 12),
+                                                Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: [
+                                                    Text(
+                                                      key,
+                                                      style: const TextStyle(
+                                                        fontSize: 16,
+                                                        fontWeight:
+                                                            FontWeight.w600,
+                                                        color: Color(
+                                                          0xFFE6EDF3,
+                                                        ),
+                                                        fontFamily:
+                                                            'Courier New',
+                                                      ),
+                                                    ),
+                                                    const SizedBox(height: 6),
+                                                    Text(
+                                                      'balance: ₹${total.toStringAsFixed(2)}',
+                                                      style: TextStyle(
+                                                        fontSize: 13,
+                                                        fontFamily:
+                                                            'Courier New',
+                                                        color:
+                                                            total >= 0
+                                                                ? const Color(
+                                                                  0xFF3FB950,
+                                                                )
+                                                                : const Color(
+                                                                  0xFFF85149,
+                                                                ),
+                                                        fontWeight:
+                                                            FontWeight.w500,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ],
+                                            ),
+                                            const Icon(
+                                              Icons.chevron_right,
+                                              color: Color(0xFF6E7681),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                      );
+                    },
+                  ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildStatCard(String label, String value, Color color) {
+    return Container(
+      width: double.infinity,
+      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: const Color(0xFF161B22),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: const Color(0xFF30363D)),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            label,
+            style: const TextStyle(
+              color: Color(0xFF8B949E),
+              fontFamily: 'Courier New',
+            ),
+          ),
+          Text(
+            value,
+            style: TextStyle(
+              color: color,
+              fontWeight: FontWeight.bold,
+              fontFamily: 'Courier New',
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildStatisticsBody() {
+    double added = 0;
+    double removed = 0;
+    int totalTransactions = 0;
+
+    for (final key in box.keys) {
+      final txns = box.get(key) as List;
+      totalTransactions += txns.length;
+      for (final tx in txns) {
+        final amount = (tx['amount'] as num?)?.toDouble() ?? 0;
+        if (tx['type'] == 'add') {
+          added += amount;
+        } else {
+          removed += amount;
+        }
+      }
+    }
+
+    final net = added - removed;
+    final totalUsers = box.keys.length;
+
+    return ListView(
+      padding: const EdgeInsets.symmetric(vertical: 10),
+      children: [
+        _buildStatCard(
+          'users_count',
+          totalUsers.toString(),
+          const Color(0xFF58A6FF),
+        ),
+        _buildStatCard(
+          'transactions_count',
+          totalTransactions.toString(),
+          const Color(0xFF58A6FF),
+        ),
+        _buildStatCard(
+          'total_added',
+          '₹${added.toStringAsFixed(2)}',
+          const Color(0xFF3FB950),
+        ),
+        _buildStatCard(
+          'total_removed',
+          '₹${removed.toStringAsFixed(2)}',
+          const Color(0xFFF85149),
+        ),
+        _buildStatCard(
+          'net_balance',
+          '₹${net.toStringAsFixed(2)}',
+          net >= 0 ? const Color(0xFF3FB950) : const Color(0xFFF85149),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSettingsBody() {
+    return ListView(
+      padding: const EdgeInsets.all(12),
+      children: [
+        Container(
+          padding: const EdgeInsets.all(14),
+          decoration: BoxDecoration(
+            color: const Color(0xFF161B22),
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(color: const Color(0xFF30363D)),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              const Text(
+                'data_management',
+                style: TextStyle(
+                  color: Color(0xFF00D084),
+                  fontWeight: FontWeight.w700,
+                  fontFamily: 'Courier New',
+                ),
+              ),
+              const SizedBox(height: 12),
+              ElevatedButton.icon(
+                onPressed: _importAllCsv,
+                icon: const Icon(Icons.upload_file),
+                label: const Text('Import all CSV'),
+              ),
+              const SizedBox(height: 10),
+              ElevatedButton.icon(
+                onPressed: _exportAllCsv,
+                icon: const Icon(Icons.download_rounded),
+                label: const Text('Export all CSV'),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 12),
+        Container(
+          padding: const EdgeInsets.all(14),
+          decoration: BoxDecoration(
+            color: const Color(0xFF161B22),
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(color: const Color(0xFF30363D)),
+          ),
+          child: ListTile(
+            contentPadding: EdgeInsets.zero,
+            leading: const FaIcon(
+              FontAwesomeIcons.github,
+              color: Color(0xFF58A6FF),
+              size: 20,
+            ),
+            title: const Text(
+              'Open GitHub',
+              style: TextStyle(
+                color: Color(0xFFE6EDF3),
+                fontFamily: 'Courier New',
+              ),
+            ),
+            trailing: const Icon(Icons.open_in_new, color: Color(0xFF8B949E)),
+            onTap: _launchGitHub,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildAddUserFab() {
+    return FloatingActionButton(
+      backgroundColor: Color(0xFF00D084),
+      foregroundColor: Color(0xFF0D1117),
+      child: Icon(Icons.add, size: 28),
+      elevation: 2,
+      onPressed:
+          () => showDialog(
+            context: context,
+            builder:
+                (_) => StatefulBuilder(
+                  builder:
+                      (context, setDialogState) => Dialog(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        backgroundColor: Color(0xFF161B22),
+                        child: Container(
+                          padding: EdgeInsets.all(24),
+                          decoration: BoxDecoration(
+                            color: Color(0xFF161B22),
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(
+                              color: Color(0xFF30363D),
+                              width: 1,
+                            ),
+                          ),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                r'$ add_user()',
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  color: Color(0xFF00D084),
+                                  fontFamily: 'Courier New',
+                                  letterSpacing: 0.5,
+                                ),
+                              ),
+                              SizedBox(height: 12),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  _iconChoice(
+                                    'terminal',
+                                    Icons.terminal,
+                                    setDialogState,
+                                  ),
+                                  SizedBox(width: 8),
+                                  _iconChoice('code', Icons.code, setDialogState),
+                                  SizedBox(width: 8),
+                                  _iconChoice(
+                                    'robot',
+                                    Icons.smart_toy,
+                                    setDialogState,
+                                  ),
+                                  SizedBox(width: 8),
+                                  _iconChoice('user', Icons.person, setDialogState),
+                                  SizedBox(width: 8),
+                                  _iconChoice(
+                                    'smile',
+                                    Icons.emoji_emotions,
+                                    setDialogState,
+                                  ),
+                                  SizedBox(width: 8),
+                                  Material(
+                                    color: Colors.transparent,
+                                    child: InkWell(
+                                      borderRadius: BorderRadius.circular(8),
+                                      onTap: () async {
+                                        final saved =
+                                            await _pickCropAndSaveImage();
+                                        if (saved != null) {
+                                          setState(() => _selectedIcon = saved);
+                                          setDialogState(() {});
+                                        }
+                                      },
+                                      child: Container(
+                                        padding: EdgeInsets.all(6),
+                                        decoration: BoxDecoration(
+                                          color:
+                                              (_selectedIcon.startsWith('/') ||
+                                                      _selectedIcon.startsWith(
+                                                        'file://',
+                                                      ))
+                                                  ? Color(0xFF0D1117)
+                                                  : Color(0xFF161B22),
+                                          border: Border.all(
+                                            color:
+                                                (_selectedIcon.startsWith('/') ||
+                                                        _selectedIcon
+                                                            .startsWith(
+                                                              'file://',
+                                                            ))
+                                                    ? Color(0xFF00D084)
+                                                    : Color(0xFF30363D),
+                                            width:
+                                                (_selectedIcon.startsWith('/') ||
+                                                        _selectedIcon
+                                                            .startsWith(
+                                                              'file://',
+                                                            ))
+                                                    ? 2
+                                                    : 1,
+                                          ),
+                                          borderRadius: BorderRadius.circular(8),
+                                        ),
+                                        child: Icon(
+                                          Icons.image,
+                                          color: Color(0xFF58A6FF),
+                                          size: 20,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              SizedBox(height: 12),
+                              TextField(
+                                controller: nameController,
+                                style: TextStyle(
+                                  color: Color(0xFFE6EDF3),
+                                  fontFamily: 'Courier New',
+                                ),
+                                decoration: InputDecoration(
+                                  hintText: 'name_',
+                                  hintStyle: TextStyle(
+                                    color: Color(0xFF6E7681),
+                                    fontFamily: 'Courier New',
+                                  ),
+                                  filled: true,
+                                  fillColor: Color(0xFF0D1117),
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                    borderSide: BorderSide(
+                                      color: Color(0xFF30363D),
+                                      width: 1,
+                                    ),
+                                  ),
+                                  enabledBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                    borderSide: BorderSide(
+                                      color: Color(0xFF30363D),
+                                      width: 1,
+                                    ),
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                    borderSide: BorderSide(
+                                      color: Color(0xFF00D084),
+                                      width: 2,
+                                    ),
+                                  ),
+                                ),
+                                autofocus: true,
+                              ),
+                              SizedBox(height: 24),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: [
+                                  TextButton(
+                                    child: Text(
+                                      'cancel',
+                                      style: TextStyle(
+                                        color: Color(0xFF8B949E),
+                                        fontFamily: 'Courier New',
+                                      ),
+                                    ),
+                                    onPressed: () => Navigator.pop(context),
+                                  ),
+                                  SizedBox(width: 12),
+                                  ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: Color(0xFF00D084),
+                                      foregroundColor: Color(0xFF0D1117),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                    ),
+                                    child: Text(
+                                      'create',
+                                      style: TextStyle(
+                                        fontFamily: 'Courier New',
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                    onPressed:
+                                        () =>
+                                            addFriend(nameController.text.trim()),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                ),
+          ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    final title = switch (_currentTab) {
+      1 => '> statistics',
+      2 => '> settings',
+      _ => '> hisaab',
+    };
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Color(0xFF161B22),
         foregroundColor: Color(0xFF00D084),
         elevation: 0,
         title: Text(
-          '> hisaab',
+          title,
           style: TextStyle(
             fontFamily: 'Courier New',
             fontSize: 24,
@@ -657,564 +1417,33 @@ class _FriendListPageState extends State<FriendListPage>
           ),
         ),
         centerTitle: false,
-        actions: [
-          IconButton(
-            tooltip: 'Import all CSV',
-            icon: Icon(Icons.upload_file, color: Color(0xFF58A6FF)),
-            onPressed: _importAllCsv,
-          ),
-          IconButton(
-            tooltip: 'Export all CSV',
-            icon: Icon(Icons.download_rounded, color: Color(0xFF58A6FF)),
-            onPressed: _exportAllCsv,
-          ),
-          IconButton(
-            icon: FaIcon(
-              FontAwesomeIcons.github,
-              color: Color(0xFF58A6FF),
-              size: 20,
-            ),
-            tooltip: 'GitHub',
-            onPressed: _launchGitHub,
-          ),
-          SizedBox(width: 8),
-        ],
       ),
-      body: Column(
-        children: [
-          // Search Bar with terminal style
-          Padding(
-            padding: const EdgeInsets.all(12),
-            child: TextField(
-              controller: searchController,
-              style: TextStyle(
-                color: Color(0xFFE6EDF3),
-                fontFamily: 'Courier New',
-              ),
-              decoration: InputDecoration(
-                filled: true,
-                fillColor: Color(0xFF0D1117),
-                labelText: 'Search user',
-                labelStyle: TextStyle(
-                  color: Color(0xFF8B949E),
-                  fontFamily: 'Courier New',
-                ),
-                prefixIcon: Icon(Icons.search, color: Color(0xFF58A6FF)),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                  borderSide: BorderSide(color: Color(0xFF30363D), width: 1),
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                  borderSide: BorderSide(color: Color(0xFF30363D), width: 1),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                  borderSide: BorderSide(color: Color(0xFF00D084), width: 2),
-                ),
-              ),
-            ),
+      body: switch (_currentTab) {
+        1 => _buildStatisticsBody(),
+        2 => _buildSettingsBody(),
+        _ => _buildHomeBody(),
+      },
+      floatingActionButton: _currentTab == 0 ? _buildAddUserFab() : null,
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _currentTab,
+        onTap: (index) => setState(() => _currentTab = index),
+        backgroundColor: const Color(0xFF161B22),
+        selectedItemColor: const Color(0xFF00D084),
+        unselectedItemColor: const Color(0xFF8B949E),
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home_rounded),
+            label: 'Home',
           ),
-          // Total pending with animation
-          FadeTransition(
-            opacity: _fadeAnimation,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 12),
-              child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                decoration: BoxDecoration(
-                  border: Border.all(color: Color(0xFF30363D), width: 1),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Text(
-                  'total_pending: ₹${getOverallTotal().toStringAsFixed(2)}',
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontFamily: 'Courier New',
-                    fontWeight: FontWeight.w500,
-                    color: Color(0xFF58A6FF),
-                    letterSpacing: 0.5,
-                  ),
-                ),
-              ),
-            ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.bar_chart_rounded),
+            label: 'Stats',
           ),
-          // Friend List
-          Expanded(
-            child:
-                displayedKeys.isEmpty
-                    ? Center(
-                      child: Text(
-                        r'$ user_not_found()' +
-                            '\n\ntype "+ icon" to create_user()',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: Color(0xFF6E7681),
-                          fontSize: 14,
-                          fontFamily: 'Courier New',
-                          height: 1.6,
-                        ),
-                      ),
-                    )
-                    : ListView.builder(
-                      padding: EdgeInsets.only(bottom: 100),
-                      physics: BouncingScrollPhysics(
-                        parent: AlwaysScrollableScrollPhysics(),
-                      ),
-                      itemCount: displayedKeys.length,
-                      itemBuilder: (_, index) {
-                        final key = displayedKeys.elementAt(index);
-                        final transactions = box.get(key) as List;
-                        final total = calculateTotal(transactions);
-                        bool _pressed = false;
-
-                        return StatefulBuilder(
-                          builder: (context, setInnerState) {
-                            return AnimatedBuilder(
-                              animation: _fadeAnimation,
-                              builder: (context, child) {
-                                return Transform.translate(
-                                  offset: Offset(_fadeAnimation.value * 10, 0),
-                                  child: Opacity(
-                                    opacity: _fadeAnimation.value,
-                                    child: child,
-                                  ),
-                                );
-                              },
-
-                              child: Stack(
-                                children: [
-                                  // 🔴 Delete background
-                                  Container(
-                                    constraints: const BoxConstraints(
-                                      minHeight: 70,
-                                    ),
-                                    margin: const EdgeInsets.symmetric(
-                                      horizontal: 12,
-                                      vertical: 6,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      color: Colors.red,
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                    alignment: Alignment.centerRight,
-                                    padding: const EdgeInsets.only(right: 24),
-                                    child: const Icon(
-                                      Icons.delete,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-
-                                  // 🟦 Foreground card
-                                  Dismissible(
-  key: ValueKey(key),
-  direction: DismissDirection.endToStart,
-  confirmDismiss: (_) => deleteFriend(key),
-
-  background: Container(
-    constraints: const BoxConstraints(minHeight: 70),
-    margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-    alignment: Alignment.centerRight,
-    padding: const EdgeInsets.only(right: 24),
-    decoration: BoxDecoration(
-      color: Colors.red,
-      borderRadius: BorderRadius.circular(8),
-    ),
-    child: const Icon(Icons.delete, color: Colors.white),
-  ),
-
-  child: InkWell(
-    borderRadius: BorderRadius.circular(8),
-
-    onTapDown: (_) => setInnerState(() => _pressed = true),
-    onTapUp: (_) => setInnerState(() => _pressed = false),
-    onTapCancel: () => setInnerState(() => _pressed = false),
-
-    onTap: () => Navigator.of(context)
-        .push(
-          PageRouteBuilder(
-            pageBuilder: (_, animation, __) =>
-                FriendDetailPage(name: key),
-            transitionsBuilder: (_, animation, __, child) {
-              final tween = Tween(
-                begin: const Offset(1, 0),
-                end: Offset.zero,
-              ).chain(
-                CurveTween(curve: Curves.easeInOutCubic),
-              );
-              return SlideTransition(
-                position: animation.drive(tween),
-                child: child,
-              );
-            },
-            transitionDuration: const Duration(milliseconds: 500),
-          ),
-        )
-        .then(
-          (_) => setState(() {
-            displayedKeys = box.keys.cast<String>().toList();
-          }),
-        ),
-
-    child: AnimatedScale(
-      scale: _pressed ? 0.97 : 1.0,
-      duration: const Duration(milliseconds: 150),
-      curve: Curves.easeInOutCubic,
-
-      child: Container(
-        constraints: const BoxConstraints(minHeight: 70),
-        margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-        decoration: BoxDecoration(
-          color: const Color(0xFF161B22),
-          borderRadius: BorderRadius.circular(8),
-          border: Border.all(
-            color: _pressed
-                ? const Color(0xFF00D084)
-                : const Color(0xFF30363D),
-            width: _pressed ? 2 : 1,
-          ),
-          boxShadow: _pressed
-              ? [
-                  BoxShadow(
-                    color: const Color(0xFF00D084).withOpacity(0.3),
-                    blurRadius: 8,
-                  ),
-                ]
-              : [],
-        ),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Row(
-              children: [
-                CircleAvatar(
-                  radius: 20,
-                  backgroundColor: const Color(0xFF0D1117),
-                  child: Builder(
-                    builder: (c) {
-                      final iconKey =
-                          metaBox.get(key) as String? ?? 'terminal';
-
-                      try {
-                        if (iconKey.startsWith('/') ||
-                            iconKey.startsWith('file://')) {
-                          final path =
-                              iconKey.replaceFirst('file://', '');
-                          final f = File(path);
-                          if (f.existsSync()) {
-                            return ClipRRect(
-                              borderRadius: BorderRadius.circular(20),
-                              child: Image.file(
-                                f,
-                                width: 36,
-                                height: 36,
-                                fit: BoxFit.cover,
-                              ),
-                            );
-                          }
-                        }
-                      } catch (_) {}
-
-                      switch (iconKey) {
-                        case 'code':
-                          return const Icon(Icons.code,
-                              color: Color(0xFF58A6FF));
-                        case 'robot':
-                          return const Icon(Icons.smart_toy,
-                              color: Color(0xFF58A6FF));
-                        case 'user':
-                          return const Icon(Icons.person,
-                              color: Color(0xFF58A6FF));
-                        case 'smile':
-                          return const Icon(Icons.emoji_emotions,
-                              color: Color(0xFF58A6FF));
-                        default:
-                          return const Icon(Icons.terminal,
-                              color: Color(0xFF58A6FF));
-                      }
-                    },
-                  ),
-                ),
-
-                const SizedBox(width: 12),
-
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      key,
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: Color(0xFFE6EDF3),
-                        fontFamily: 'Courier New',
-                      ),
-                    ),
-
-                    const SizedBox(height: 6),
-
-                    Text(
-                      'balance: ₹${total.toStringAsFixed(2)}',
-                      style: TextStyle(
-                        fontSize: 13,
-                        fontFamily: 'Courier New',
-                        color: total >= 0
-                            ? const Color(0xFF3FB950)
-                            : const Color(0xFFF85149),
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-
-            const Icon(
-              Icons.chevron_right,
-              color: Color(0xFF6E7681),
-            ),
-          ],
-        ),
-      ),
-    ),
-  ),
-),
-
-                                ],
-                              ),
-                            );
-                          },
-                        );
-                      },
-                    ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.settings_rounded),
+            label: 'Settings',
           ),
         ],
-      ),
-      // FAB + Add User Dialog
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: Color(0xFF00D084),
-        foregroundColor: Color(0xFF0D1117),
-        child: Icon(Icons.add, size: 28),
-        elevation: 2,
-        onPressed:
-            () => showDialog(
-              context: context,
-              builder:
-                  (_) => StatefulBuilder(
-                    builder:
-                        (context, setDialogState) => Dialog(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          backgroundColor: Color(0xFF161B22),
-                          child: Container(
-                            padding: EdgeInsets.all(24),
-                            decoration: BoxDecoration(
-                              color: Color(0xFF161B22),
-                              borderRadius: BorderRadius.circular(12),
-                              border: Border.all(
-                                color: Color(0xFF30363D),
-                                width: 1,
-                              ),
-                            ),
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Text(
-                                  r'$ add_user()',
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
-                                    color: Color(0xFF00D084),
-                                    fontFamily: 'Courier New',
-                                    letterSpacing: 0.5,
-                                  ),
-                                ),
-                                SizedBox(height: 12),
-                                // icon selector
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    _iconChoice(
-                                      'terminal',
-                                      Icons.terminal,
-                                      setDialogState,
-                                    ),
-                                    SizedBox(width: 8),
-                                    _iconChoice(
-                                      'code',
-                                      Icons.code,
-                                      setDialogState,
-                                    ),
-                                    SizedBox(width: 8),
-                                    _iconChoice(
-                                      'robot',
-                                      Icons.smart_toy,
-                                      setDialogState,
-                                    ),
-                                    SizedBox(width: 8),
-                                    _iconChoice(
-                                      'user',
-                                      Icons.person,
-                                      setDialogState,
-                                    ),
-                                    SizedBox(width: 8),
-                                    _iconChoice(
-                                      'smile',
-                                      Icons.emoji_emotions,
-                                      setDialogState,
-                                    ),
-                                    SizedBox(width: 8),
-                                    // Custom image picker
-                                    Material(
-                                      color: Colors.transparent,
-                                      child: InkWell(
-                                        borderRadius: BorderRadius.circular(8),
-                                        onTap: () async {
-                                          final saved =
-                                              await _pickCropAndSaveImage();
-                                          if (saved != null) {
-                                            setState(
-                                              () => _selectedIcon = saved,
-                                            );
-                                            setDialogState(() {});
-                                          }
-                                        },
-                                        child: Container(
-                                          padding: EdgeInsets.all(6),
-                                          decoration: BoxDecoration(
-                                            color:
-                                                (_selectedIcon.startsWith(
-                                                          '/',
-                                                        ) ||
-                                                        _selectedIcon
-                                                            .startsWith(
-                                                              'file://',
-                                                            ))
-                                                    ? Color(0xFF0D1117)
-                                                    : Color(0xFF161B22),
-                                            border: Border.all(
-                                              color:
-                                                  (_selectedIcon.startsWith(
-                                                            '/',
-                                                          ) ||
-                                                          _selectedIcon
-                                                              .startsWith(
-                                                                'file://',
-                                                              ))
-                                                      ? Color(0xFF00D084)
-                                                      : Color(0xFF30363D),
-                                              width:
-                                                  (_selectedIcon.startsWith(
-                                                            '/',
-                                                          ) ||
-                                                          _selectedIcon
-                                                              .startsWith(
-                                                                'file://',
-                                                              ))
-                                                      ? 2
-                                                      : 1,
-                                            ),
-                                            borderRadius: BorderRadius.circular(
-                                              8,
-                                            ),
-                                          ),
-                                          child: Icon(
-                                            Icons.image,
-                                            color: Color(0xFF58A6FF),
-                                            size: 20,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                SizedBox(height: 12),
-                                TextField(
-                                  controller: nameController,
-                                  style: TextStyle(
-                                    color: Color(0xFFE6EDF3),
-                                    fontFamily: 'Courier New',
-                                  ),
-                                  decoration: InputDecoration(
-                                    hintText: 'name_',
-                                    hintStyle: TextStyle(
-                                      color: Color(0xFF6E7681),
-                                      fontFamily: 'Courier New',
-                                    ),
-                                    filled: true,
-                                    fillColor: Color(0xFF0D1117),
-                                    border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(8),
-                                      borderSide: BorderSide(
-                                        color: Color(0xFF30363D),
-                                        width: 1,
-                                      ),
-                                    ),
-                                    enabledBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(8),
-                                      borderSide: BorderSide(
-                                        color: Color(0xFF30363D),
-                                        width: 1,
-                                      ),
-                                    ),
-                                    focusedBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(8),
-                                      borderSide: BorderSide(
-                                        color: Color(0xFF00D084),
-                                        width: 2,
-                                      ),
-                                    ),
-                                  ),
-                                  autofocus: true,
-                                ),
-                                SizedBox(height: 24),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.end,
-                                  children: [
-                                    TextButton(
-                                      child: Text(
-                                        'cancel',
-                                        style: TextStyle(
-                                          color: Color(0xFF8B949E),
-                                          fontFamily: 'Courier New',
-                                        ),
-                                      ),
-                                      onPressed: () => Navigator.pop(context),
-                                    ),
-                                    SizedBox(width: 12),
-                                    ElevatedButton(
-                                      style: ElevatedButton.styleFrom(
-                                        backgroundColor: Color(0xFF00D084),
-                                        foregroundColor: Color(0xFF0D1117),
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(
-                                            8,
-                                          ),
-                                        ),
-                                      ),
-                                      child: Text(
-                                        'create',
-                                        style: TextStyle(
-                                          fontFamily: 'Courier New',
-                                          fontWeight: FontWeight.w600,
-                                        ),
-                                      ),
-                                      onPressed:
-                                          () => addFriend(
-                                            nameController.text.trim(),
-                                          ),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                  ),
-            ),
       ),
     );
   }
