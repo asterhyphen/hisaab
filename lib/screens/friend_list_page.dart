@@ -23,6 +23,7 @@ class _FriendListPageState extends State<FriendListPage>
     with TickerProviderStateMixin {
   final box = Hive.box('friendsBox');
   final metaBox = Hive.box('userMetaBox');
+  final appMetaBox = Hive.box('appMetaBox');
   final nameController = TextEditingController();
   final searchController = TextEditingController();
   List<String> displayedKeys = [];
@@ -31,6 +32,7 @@ class _FriendListPageState extends State<FriendListPage>
   String _selectedIcon = 'terminal';
   StreamSubscription<String>? _widgetActionSubscription;
   int _currentTab = 0;
+  static const List<String> _themeKeys = ['terminal', 'dark', 'light'];
 
   @override
   void initState() {
@@ -49,6 +51,7 @@ class _FriendListPageState extends State<FriendListPage>
     );
     _fadeController.forward();
     _setupWidgetActionFlow();
+    _maybeRunFirstInstallSetup();
   }
 
   @override
@@ -73,6 +76,134 @@ class _FriendListPageState extends State<FriendListPage>
       if (!mounted) return;
       if (action != 'add' && action != 'subtract') return;
       _showPersonSelector(action);
+    });
+  }
+
+  String _themeLabel(String key) {
+    switch (key) {
+      case 'dark':
+        return 'Dark';
+      case 'light':
+        return 'Light';
+      default:
+        return 'Terminal (Default)';
+    }
+  }
+
+  String _currentThemeKey() {
+    final key = appMetaBox.get('theme') as String?;
+    return _themeKeys.contains(key) ? key! : 'terminal';
+  }
+
+  String _profileName() {
+    final value = appMetaBox.get('profileName') as String?;
+    if (value != null && value.trim().isNotEmpty) return value.trim();
+    return 'Set your name';
+  }
+
+  String _profileAvatarPath() {
+    return (appMetaBox.get('profileAvatar') as String?) ?? '';
+  }
+
+  Future<void> _setTheme(String key) async {
+    await appMetaBox.put('theme', key);
+    if (mounted) setState(() {});
+  }
+
+  Future<void> _setProfileName(String name) async {
+    await appMetaBox.put('profileName', name.trim());
+    if (mounted) setState(() {});
+  }
+
+  Future<void> _maybeRunFirstInstallSetup() async {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (!mounted) return;
+      if (appMetaBox.get('firstSetupDone') == true) return;
+
+      final nameController = TextEditingController(
+        text: (appMetaBox.get('profileName') as String?) ?? '',
+      );
+      String selectedTheme = _currentThemeKey();
+      String? errorText;
+
+      await showDialog<void>(
+        context: context,
+        barrierDismissible: false,
+        builder:
+            (_) => StatefulBuilder(
+              builder:
+                  (dialogContext, setDialogState) => AlertDialog(
+                    backgroundColor: const Color(0xFF161B22),
+                    title: const Text(
+                      'Welcome to Hisaab',
+                      style: TextStyle(color: Color(0xFFE6EDF3)),
+                    ),
+                    content: SingleChildScrollView(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            'Set your name and preferred theme.',
+                            style: TextStyle(color: Color(0xFF8B949E)),
+                          ),
+                          const SizedBox(height: 12),
+                          TextField(
+                            controller: nameController,
+                            decoration: InputDecoration(
+                              labelText: 'Your name',
+                              errorText: errorText,
+                            ),
+                            autofocus: true,
+                          ),
+                          const SizedBox(height: 16),
+                          const Text(
+                            'Theme',
+                            style: TextStyle(color: Color(0xFF8B949E)),
+                          ),
+                          const SizedBox(height: 8),
+                          Wrap(
+                            spacing: 8,
+                            children:
+                                _themeKeys
+                                    .map(
+                                      (key) => ChoiceChip(
+                                        label: Text(_themeLabel(key)),
+                                        selected: selectedTheme == key,
+                                        onSelected:
+                                            (_) => setDialogState(
+                                              () => selectedTheme = key,
+                                            ),
+                                      ),
+                                    )
+                                    .toList(),
+                          ),
+                        ],
+                      ),
+                    ),
+                    actions: [
+                      ElevatedButton(
+                        onPressed: () async {
+                          final name = nameController.text.trim();
+                          if (name.isEmpty) {
+                            setDialogState(
+                              () => errorText = 'Name is required',
+                            );
+                            return;
+                          }
+                          await _setProfileName(name);
+                          await _setTheme(selectedTheme);
+                          await appMetaBox.put('firstSetupDone', true);
+                          if (mounted) Navigator.of(context).pop();
+                        },
+                        child: const Text('Save & Continue'),
+                      ),
+                    ],
+                  ),
+            ),
+      );
+
+      nameController.dispose();
     });
   }
 
@@ -116,6 +247,139 @@ class _FriendListPageState extends State<FriendListPage>
 
     if (person == null) return;
     _showQuickTransactionDialog(type: type, person: person);
+  }
+
+  Future<void> _editProfileName() async {
+    final controller = TextEditingController(
+      text: (appMetaBox.get('profileName') as String?) ?? '',
+    );
+    String? errorText;
+    final saved = await showDialog<bool>(
+      context: context,
+      builder:
+          (_) => StatefulBuilder(
+            builder:
+                (dialogContext, setDialogState) => AlertDialog(
+                  backgroundColor: const Color(0xFF161B22),
+                  title: const Text(
+                    'Update name',
+                    style: TextStyle(color: Color(0xFFE6EDF3)),
+                  ),
+                  content: TextField(
+                    controller: controller,
+                    autofocus: true,
+                    decoration: InputDecoration(
+                      labelText: 'Your name',
+                      errorText: errorText,
+                    ),
+                  ),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(dialogContext, false),
+                      child: const Text('Cancel'),
+                    ),
+                    ElevatedButton(
+                      onPressed: () {
+                        if (controller.text.trim().isEmpty) {
+                          setDialogState(
+                            () => errorText = 'Name cannot be empty',
+                          );
+                          return;
+                        }
+                        Navigator.pop(dialogContext, true);
+                      },
+                      child: const Text('Save'),
+                    ),
+                  ],
+                ),
+          ),
+    );
+
+    if (saved == true) {
+      await _setProfileName(controller.text.trim());
+    }
+    controller.dispose();
+  }
+
+  Future<void> _editThemePreference() async {
+    String selectedTheme = _currentThemeKey();
+    final saved = await showDialog<bool>(
+      context: context,
+      builder:
+          (_) => StatefulBuilder(
+            builder:
+                (dialogContext, setDialogState) => AlertDialog(
+                  backgroundColor: const Color(0xFF161B22),
+                  title: const Text(
+                    'Select theme',
+                    style: TextStyle(color: Color(0xFFE6EDF3)),
+                  ),
+                  content: Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children:
+                        _themeKeys
+                            .map(
+                              (key) => ChoiceChip(
+                                label: Text(_themeLabel(key)),
+                                selected: selectedTheme == key,
+                                onSelected:
+                                    (_) => setDialogState(
+                                      () => selectedTheme = key,
+                                    ),
+                              ),
+                            )
+                            .toList(),
+                  ),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(dialogContext, false),
+                      child: const Text('Cancel'),
+                    ),
+                    ElevatedButton(
+                      onPressed: () => Navigator.pop(dialogContext, true),
+                      child: const Text('Save'),
+                    ),
+                  ],
+                ),
+          ),
+    );
+    if (saved == true) {
+      await _setTheme(selectedTheme);
+    }
+  }
+
+  Future<void> _changeAppProfilePicture() async {
+    final path = await _pickCropAndSaveImage();
+    if (path == null || path.isEmpty) return;
+    await appMetaBox.put('profileAvatar', path);
+    if (mounted) setState(() {});
+  }
+
+  Widget _appProfileAvatar({double radius = 28}) {
+    final path = _profileAvatarPath();
+    try {
+      if (path.isNotEmpty) {
+        final filePath = path.replaceFirst('file://', '');
+        final file = File(filePath);
+        if (file.existsSync()) {
+          return CircleAvatar(
+            radius: radius,
+            backgroundImage: FileImage(file),
+            backgroundColor: const Color(0xFF0D1117),
+          );
+        }
+      }
+    } catch (_) {}
+    return CircleAvatar(
+      radius: radius,
+      backgroundColor: const Color(0xFF0D1117),
+      child: Icon(
+        Icons.person,
+        size: radius,
+        color: const Color(0xFF58A6FF),
+      ),
+    );
   }
 
   Future<void> _showQuickTransactionDialog({
@@ -1125,9 +1389,120 @@ class _FriendListPageState extends State<FriendListPage>
   }
 
   Widget _buildSettingsBody() {
+    final name = _profileName();
+    final themeKey = _currentThemeKey();
     return ListView(
       padding: const EdgeInsets.all(12),
       children: [
+        Container(
+          padding: const EdgeInsets.all(14),
+          decoration: BoxDecoration(
+            color: const Color(0xFF161B22),
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(color: const Color(0xFF30363D)),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              const Text(
+                'profile',
+                style: TextStyle(
+                  color: Color(0xFF00D084),
+                  fontWeight: FontWeight.w700,
+                  fontFamily: 'Courier New',
+                ),
+              ),
+              const SizedBox(height: 12),
+              Row(
+                children: [
+                  _appProfileAvatar(radius: 30),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          name,
+                          style: const TextStyle(
+                            color: Color(0xFFE6EDF3),
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        const Text(
+                          'This name is used across your app profile.',
+                          style: TextStyle(color: Color(0xFF8B949E)),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 10),
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: [
+                  OutlinedButton.icon(
+                    onPressed: _editProfileName,
+                    icon: const Icon(Icons.badge_outlined),
+                    label: const Text('Change name'),
+                  ),
+                  OutlinedButton.icon(
+                    onPressed: _changeAppProfilePicture,
+                    icon: const Icon(Icons.image_outlined),
+                    label: const Text('Change photo'),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 12),
+        Container(
+          padding: const EdgeInsets.all(14),
+          decoration: BoxDecoration(
+            color: const Color(0xFF161B22),
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(color: const Color(0xFF30363D)),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              const Text(
+                'appearance',
+                style: TextStyle(
+                  color: Color(0xFF00D084),
+                  fontWeight: FontWeight.w700,
+                  fontFamily: 'Courier New',
+                ),
+              ),
+              const SizedBox(height: 12),
+              ListTile(
+                contentPadding: EdgeInsets.zero,
+                leading: const Icon(
+                  Icons.palette_outlined,
+                  color: Color(0xFF58A6FF),
+                ),
+                title: const Text(
+                  'Theme',
+                  style: TextStyle(color: Color(0xFFE6EDF3)),
+                ),
+                subtitle: Text(
+                  _themeLabel(themeKey),
+                  style: const TextStyle(color: Color(0xFF8B949E)),
+                ),
+                trailing: const Icon(
+                  Icons.chevron_right,
+                  color: Color(0xFF8B949E),
+                ),
+                onTap: _editThemePreference,
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 12),
         Container(
           padding: const EdgeInsets.all(14),
           decoration: BoxDecoration(
