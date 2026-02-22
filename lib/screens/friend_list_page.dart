@@ -904,6 +904,138 @@ class _FriendListPageState extends State<FriendListPage>
     }
   }
 
+  Future<bool> _confirmDangerAction({
+    required String title,
+    required String message,
+    String confirmLabel = 'Confirm',
+  }) async {
+    final res = await showDialog<bool>(
+      context: context,
+      builder:
+          (_) => AlertDialog(
+            backgroundColor: const Color(0xFF161B22),
+            title: Text(title, style: const TextStyle(color: Color(0xFFE6EDF3))),
+            content: Text(
+              message,
+              style: const TextStyle(color: Color(0xFF8B949E)),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, false),
+                child: const Text('Cancel'),
+              ),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                onPressed: () => Navigator.pop(context, true),
+                child: Text(confirmLabel),
+              ),
+            ],
+          ),
+    );
+    return res == true;
+  }
+
+  Future<void> _resetSingleUserHistory() async {
+    final users =
+        box.keys.cast<String>().toList()
+          ..sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
+    if (users.isEmpty) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('No users found')));
+      return;
+    }
+
+    final selectedUser = await showDialog<String>(
+      context: context,
+      builder:
+          (_) => AlertDialog(
+            backgroundColor: const Color(0xFF161B22),
+            title: const Text(
+              'Reset history of user',
+              style: TextStyle(color: Color(0xFFE6EDF3)),
+            ),
+            content: SizedBox(
+              width: 320,
+              child: ListView.builder(
+                shrinkWrap: true,
+                itemCount: users.length,
+                itemBuilder:
+                    (_, i) => ListTile(
+                      title: Text(
+                        users[i],
+                        style: const TextStyle(color: Color(0xFFE6EDF3)),
+                      ),
+                      onTap: () => Navigator.pop(context, users[i]),
+                    ),
+              ),
+            ),
+          ),
+    );
+    if (selectedUser == null) return;
+
+    final confirmed = await _confirmDangerAction(
+      title: 'Reset ${selectedUser} history?',
+      message: 'This will delete all transactions for $selectedUser.',
+      confirmLabel: 'Reset',
+    );
+    if (!confirmed) return;
+
+    await box.put(selectedUser, []);
+    if (!mounted) return;
+    setState(() {});
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('$selectedUser history reset')),
+    );
+  }
+
+  Future<void> _resetAllUsersHistory() async {
+    if (box.keys.isEmpty) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('No users found')));
+      return;
+    }
+    final confirmed = await _confirmDangerAction(
+      title: 'Reset history of all users?',
+      message:
+          'This will delete all transactions for every user. Users and profile icons stay intact.',
+      confirmLabel: 'Reset all',
+    );
+    if (!confirmed) return;
+
+    for (final key in box.keys.cast<String>()) {
+      await box.put(key, []);
+    }
+    if (!mounted) return;
+    setState(() {});
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('All user histories reset')),
+    );
+  }
+
+  Future<void> _deleteAllData() async {
+    final confirmed = await _confirmDangerAction(
+      title: 'Delete all data?',
+      message:
+          'This will clear all users, transactions, profile settings, and app settings from this device.',
+      confirmLabel: 'Delete everything',
+    );
+    if (!confirmed) return;
+
+    await box.clear();
+    await metaBox.clear();
+    await appMetaBox.clear();
+    if (!mounted) return;
+    setState(() {
+      displayedKeys = [];
+    });
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('All local data deleted')),
+    );
+    _maybeRunFirstInstallSetup();
+  }
+
   Widget _buildHomeBody() {
     return Column(
       children: [
@@ -1560,6 +1692,66 @@ class _FriendListPageState extends State<FriendListPage>
             ),
             trailing: const Icon(Icons.open_in_new, color: Color(0xFF8B949E)),
             onTap: _launchGitHub,
+          ),
+        ),
+        const SizedBox(height: 12),
+        Container(
+          padding: const EdgeInsets.all(14),
+          decoration: BoxDecoration(
+            color: const Color(0xFF161B22),
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(color: const Color(0xFF8E2A2A)),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              const Text(
+                'danger_zone',
+                style: TextStyle(
+                  color: Color(0xFFF85149),
+                  fontWeight: FontWeight.w700,
+                  fontFamily: 'Courier New',
+                ),
+              ),
+              const SizedBox(height: 10),
+              OutlinedButton.icon(
+                onPressed: _resetSingleUserHistory,
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: const Color(0xFFF85149),
+                  side: const BorderSide(color: Color(0xFFF85149)),
+                ),
+                icon: const Icon(Icons.person_remove_alt_1_outlined),
+                label: const Text('Reset history of user'),
+              ),
+              const SizedBox(height: 8),
+              OutlinedButton.icon(
+                onPressed: _resetAllUsersHistory,
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: const Color(0xFFF85149),
+                  side: const BorderSide(color: Color(0xFFF85149)),
+                ),
+                icon: const Icon(Icons.groups_2_outlined),
+                label: const Text('Reset history of all users'),
+              ),
+              const SizedBox(height: 8),
+              ElevatedButton.icon(
+                onPressed: _deleteAllData,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFFF85149),
+                  foregroundColor: Colors.white,
+                ),
+                icon: const Icon(Icons.delete_forever_outlined),
+                label: const Text('Delete all data'),
+              ),
+              const SizedBox(height: 10),
+              const Text(
+                'Note: All data is local, nothing is shared or stored on the cloud.',
+                style: TextStyle(
+                  color: Color(0xFF8B949E),
+                  fontSize: 12,
+                ),
+              ),
+            ],
           ),
         ),
       ],
