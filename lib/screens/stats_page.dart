@@ -59,6 +59,8 @@ extension _StatsPageTab on _FriendListPageState {
       currentRange.start,
       currentRange.end,
     );
+    DateTime? lastHapticDay;
+    int lastSelectionUpdateMs = 0;
 
     final picked = await showDialog<DateTimeRange>(
       context: context,
@@ -84,6 +86,23 @@ extension _StatsPageTab on _FriendListPageState {
               onSelectionChanged: (args) {
                 final value = args.value;
                 if (value is PickerDateRange) {
+                  final currentDay = value.endDate ?? value.startDate;
+                  if (currentDay != null) {
+                    final normalized = DateTime(
+                      currentDay.year,
+                      currentDay.month,
+                      currentDay.day,
+                    );
+                    if (lastHapticDay == null || lastHapticDay != normalized) {
+                      HapticFeedback.selectionClick();
+                      lastHapticDay = normalized;
+                    }
+                  }
+
+                  // Tiny throttle for a slightly slower day-by-day drag feel.
+                  final nowMs = DateTime.now().millisecondsSinceEpoch;
+                  if (nowMs - lastSelectionUpdateMs < 30) return;
+                  lastSelectionUpdateMs = nowMs;
                   tempRange = value;
                 }
               },
