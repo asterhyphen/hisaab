@@ -21,9 +21,119 @@ extension _StatsPageTab on _FriendListPageState {
     return null;
   }
 
+  String _statsFilterLabel() {
+    switch (_statsFilter) {
+      case 'yearly':
+        return 'Yearly';
+      case 'custom':
+        return 'Custom';
+      default:
+        return 'Monthly';
+    }
+  }
+
+  bool _isTxnInSelectedRange(DateTime dt) {
+    final now = DateTime.now();
+    if (_statsFilter == 'yearly') {
+      return dt.year == now.year;
+    }
+    if (_statsFilter == 'custom') {
+      final range = _customStatsRange;
+      if (range == null) return false;
+      final start = DateTime(range.start.year, range.start.month, range.start.day);
+      final end = DateTime(range.end.year, range.end.month, range.end.day, 23, 59, 59);
+      return !dt.isBefore(start) && !dt.isAfter(end);
+    }
+    return dt.year == now.year && dt.month == now.month;
+  }
+
+  Future<void> _pickCustomStatsRange() async {
+    final now = DateTime.now();
+    final initialRange =
+        _customStatsRange ??
+        DateTimeRange(
+          start: DateTime(now.year, now.month, 1),
+          end: now,
+        );
+
+    final picked = await showDateRangePicker(
+      context: context,
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2100),
+      initialDateRange: initialRange,
+    );
+
+    if (picked == null) return;
+    _customStatsRange = picked;
+    _statsFilter = 'custom';
+    _refreshView();
+  }
+
+  Widget _buildStatsFilterBar() {
+    final customLabel = _customStatsRange == null
+        ? 'Select range'
+        : '${DateFormat('dd MMM').format(_customStatsRange!.start)} - ${DateFormat('dd MMM').format(_customStatsRange!.end)}';
+
+    return Container(
+      margin: const EdgeInsets.fromLTRB(12, 4, 12, 8),
+      padding: const EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        color: const Color(0xFF161B22),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: const Color(0xFF30363D)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'time_filter',
+            style: TextStyle(
+              color: Color(0xFF8B949E),
+              fontFamily: 'Courier New',
+              fontSize: 12,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              ChoiceChip(
+                label: const Text('Monthly'),
+                selected: _statsFilter == 'monthly',
+                onSelected: (_) {
+                  _statsFilter = 'monthly';
+                  _refreshView();
+                },
+              ),
+              ChoiceChip(
+                label: const Text('Yearly'),
+                selected: _statsFilter == 'yearly',
+                onSelected: (_) {
+                  _statsFilter = 'yearly';
+                  _refreshView();
+                },
+              ),
+              ChoiceChip(
+                label: const Text('Custom'),
+                selected: _statsFilter == 'custom',
+                onSelected: (_) => _pickCustomStatsRange(),
+              ),
+              if (_statsFilter == 'custom')
+                OutlinedButton.icon(
+                  onPressed: _pickCustomStatsRange,
+                  icon: const Icon(Icons.date_range_outlined, size: 18),
+                  label: Text(customLabel),
+                ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildStatCard(String label, String value, Color color) {
     return Container(
-      width: double.infinity,
       margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
@@ -32,21 +142,30 @@ extension _StatsPageTab on _FriendListPageState {
         border: Border.all(color: const Color(0xFF30363D)),
       ),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(
-            label,
-            style: const TextStyle(
-              color: Color(0xFF8B949E),
-              fontFamily: 'Courier New',
+          Expanded(
+            child: Text(
+              label,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(
+                color: Color(0xFF8B949E),
+                fontFamily: 'Courier New',
+              ),
             ),
           ),
-          Text(
-            value,
-            style: TextStyle(
-              color: color,
-              fontWeight: FontWeight.bold,
-              fontFamily: 'Courier New',
+          const SizedBox(width: 12),
+          Flexible(
+            child: Text(
+              value,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              textAlign: TextAlign.right,
+              style: TextStyle(
+                color: color,
+                fontWeight: FontWeight.bold,
+                fontFamily: 'Courier New',
+              ),
             ),
           ),
         ],
@@ -88,11 +207,12 @@ extension _StatsPageTab on _FriendListPageState {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Expanded(
                 child: Text(
                   name,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
                     color: Color(0xFFE6EDF3),
                     fontWeight: FontWeight.w600,
@@ -100,11 +220,17 @@ extension _StatsPageTab on _FriendListPageState {
                   ),
                 ),
               ),
-              Text(
-                subtitle,
-                style: const TextStyle(
-                  color: Color(0xFF8B949E),
-                  fontFamily: 'Courier New',
+              const SizedBox(width: 8),
+              Flexible(
+                child: Text(
+                  subtitle,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  textAlign: TextAlign.right,
+                  style: const TextStyle(
+                    color: Color(0xFF8B949E),
+                    fontFamily: 'Courier New',
+                  ),
                 ),
               ),
             ],
@@ -140,46 +266,49 @@ extension _StatsPageTab on _FriendListPageState {
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.end,
-        children:
-            keys.map((month) {
-              final count = monthCounts[month] ?? 0;
-              final ratio = maxCount == 0 ? 0.0 : (count / maxCount);
-              return Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 4),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        '$count',
-                        style: const TextStyle(
-                          fontSize: 11,
-                          color: Color(0xFF8B949E),
-                          fontFamily: 'Courier New',
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Container(
-                        height: 70 * ratio + 6,
-                        decoration: BoxDecoration(
-                          color: const Color(0xFF58A6FF),
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                      ),
-                      const SizedBox(height: 6),
-                      Text(
-                        month,
-                        style: const TextStyle(
-                          fontSize: 10,
-                          color: Color(0xFF8B949E),
-                          fontFamily: 'Courier New',
-                        ),
-                      ),
-                    ],
+        children: keys.map((month) {
+          final count = monthCounts[month] ?? 0;
+          final ratio = maxCount == 0 ? 0.0 : (count / maxCount);
+          return Expanded(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 3),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    '$count',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      fontSize: 10,
+                      color: Color(0xFF8B949E),
+                      fontFamily: 'Courier New',
+                    ),
                   ),
-                ),
-              );
-            }).toList(),
+                  const SizedBox(height: 4),
+                  Container(
+                    height: 70 * ratio + 6,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF58A6FF),
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    month,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      fontSize: 10,
+                      color: Color(0xFF8B949E),
+                      fontFamily: 'Courier New',
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        }).toList(),
       ),
     );
   }
@@ -187,6 +316,7 @@ extension _StatsPageTab on _FriendListPageState {
   Widget _buildStatisticsBody() {
     double added = 0;
     double removed = 0;
+    double biggestTxn = 0;
     int totalTransactions = 0;
     int activeUsers = 0;
     final userCountMap = <String, int>{};
@@ -201,23 +331,25 @@ extension _StatsPageTab on _FriendListPageState {
     }
 
     for (final key in box.keys) {
-      final txns = box.get(key) as List;
-      totalTransactions += txns.length;
-      if (txns.isNotEmpty) activeUsers++;
-      userCountMap[key.toString()] = txns.length;
-      userVolumeMap[key.toString()] = 0.0;
+      final txns = (box.get(key) as List).cast<Map>();
+      int userTxnsInRange = 0;
+      double userVolumeInRange = 0;
 
       for (final tx in txns) {
         final amount = (tx['amount'] as num?)?.toDouble() ?? 0;
-        userVolumeMap[key.toString()] =
-            (userVolumeMap[key.toString()] ?? 0) + amount.abs();
+        final txnDate = _tryParseTxnDate(tx['date']);
+        if (txnDate == null || !_isTxnInSelectedRange(txnDate)) {
+          continue;
+        }
 
-        final date = _tryParseTxnDate(tx['date']);
-        if (date != null) {
-          final month = DateFormat('MMM').format(date);
-          if (monthCounts.containsKey(month)) {
-            monthCounts[month] = (monthCounts[month] ?? 0) + 1;
-          }
+        userTxnsInRange++;
+        totalTransactions++;
+        userVolumeInRange += amount.abs();
+        if (amount.abs() > biggestTxn) biggestTxn = amount.abs();
+
+        final month = DateFormat('MMM').format(txnDate);
+        if (monthCounts.containsKey(month)) {
+          monthCounts[month] = (monthCounts[month] ?? 0) + 1;
         }
 
         if (tx['type'] == 'add') {
@@ -226,46 +358,56 @@ extension _StatsPageTab on _FriendListPageState {
           removed += amount;
         }
       }
+
+      if (userTxnsInRange > 0) {
+        activeUsers++;
+        userCountMap[key.toString()] = userTxnsInRange;
+        userVolumeMap[key.toString()] = userVolumeInRange;
+      }
     }
 
     final net = added - removed;
     final totalUsers = box.keys.length;
-    final avgTxnPerUser = totalUsers == 0 ? 0.0 : totalTransactions / totalUsers;
+    final avgTxnPerUser = activeUsers == 0 ? 0.0 : totalTransactions / activeUsers;
+    final avgTxnAmount = totalTransactions == 0
+        ? 0.0
+        : (added + removed) / totalTransactions;
 
     final rankedByCount =
         userCountMap.entries.toList()..sort((a, b) => b.value.compareTo(a.value));
     final rankedByVolume =
-        userVolumeMap.entries.toList()
-          ..sort((a, b) => b.value.compareTo(a.value));
+        userVolumeMap.entries.toList()..sort((a, b) => b.value.compareTo(a.value));
 
     final topCount = rankedByCount.isEmpty ? null : rankedByCount.first;
     final topVolume = rankedByVolume.isEmpty ? null : rankedByVolume.first;
     final maxCount = rankedByCount.isEmpty ? 1 : rankedByCount.first.value;
-    final maxVolume =
-        rankedByVolume.isEmpty ? 1.0 : rankedByVolume.first.value;
+    final maxVolume = rankedByVolume.isEmpty ? 1.0 : rankedByVolume.first.value;
 
     return ListView(
       padding: const EdgeInsets.symmetric(vertical: 10),
       children: [
-        _buildSectionTitle('overview'),
-        _buildStatCard(
-          'total_users',
-          totalUsers.toString(),
-          const Color(0xFF58A6FF),
-        ),
-        _buildStatCard(
-          'active_users',
-          activeUsers.toString(),
-          const Color(0xFF58A6FF),
-        ),
+        _buildStatsFilterBar(),
+        _buildSectionTitle('overview (${_statsFilterLabel()})'),
+        _buildStatCard('total_users', totalUsers.toString(), const Color(0xFF58A6FF)),
+        _buildStatCard('active_users', activeUsers.toString(), const Color(0xFF58A6FF)),
         _buildStatCard(
           'total_transactions',
           totalTransactions.toString(),
           const Color(0xFF58A6FF),
         ),
         _buildStatCard(
-          'avg_txn_per_user',
+          'avg_txn_per_active_user',
           avgTxnPerUser.toStringAsFixed(2),
+          const Color(0xFF58A6FF),
+        ),
+        _buildStatCard(
+          'avg_txn_amount',
+          '₹${avgTxnAmount.toStringAsFixed(2)}',
+          const Color(0xFF58A6FF),
+        ),
+        _buildStatCard(
+          'largest_single_transaction',
+          '₹${biggestTxn.toStringAsFixed(2)}',
           const Color(0xFF58A6FF),
         ),
         _buildStatCard(
@@ -298,7 +440,7 @@ extension _StatsPageTab on _FriendListPageState {
         ),
         _buildSectionTitle('top_users_by_transactions'),
         if (rankedByCount.isEmpty)
-          _buildStatCard('top_users', 'No data yet', const Color(0xFF8B949E)),
+          _buildStatCard('top_users', 'No data in selected range', const Color(0xFF8B949E)),
         ...rankedByCount.take(5).map(
           (entry) => _buildRankBar(
             name: entry.key,
@@ -309,7 +451,7 @@ extension _StatsPageTab on _FriendListPageState {
         ),
         _buildSectionTitle('top_users_by_volume'),
         if (rankedByVolume.isEmpty)
-          _buildStatCard('top_volume', 'No data yet', const Color(0xFF8B949E)),
+          _buildStatCard('top_volume', 'No data in selected range', const Color(0xFF8B949E)),
         ...rankedByVolume.take(5).map(
           (entry) => _buildRankBar(
             name: entry.key,

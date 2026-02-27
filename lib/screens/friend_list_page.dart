@@ -37,6 +37,8 @@ class _FriendListPageState extends State<FriendListPage>
   String _selectedIcon = 'terminal';
   StreamSubscription<String>? _widgetActionSubscription;
   int _currentTab = 0;
+  String _statsFilter = 'monthly';
+  DateTimeRange? _customStatsRange;
   final List<String> _themeKeys = const ['terminal', 'dark', 'light'];
 
   @override
