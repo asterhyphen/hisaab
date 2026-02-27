@@ -11,6 +11,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:crop_your_image/crop_your_image.dart';
 import 'dart:typed_data';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 import 'friend_detail_page.dart';
 import '../widget_action_bridge.dart';
 part 'profile_settings.dart';

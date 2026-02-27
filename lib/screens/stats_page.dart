@@ -49,18 +49,70 @@ extension _StatsPageTab on _FriendListPageState {
 
   Future<void> _pickCustomStatsRange() async {
     final now = DateTime.now();
-    final initialRange =
-        _customStatsRange ??
+    final currentRange = _customStatsRange ??
         DateTimeRange(
           start: DateTime(now.year, now.month, 1),
           end: now,
         );
 
-    final picked = await showDateRangePicker(
+    PickerDateRange tempRange = PickerDateRange(
+      currentRange.start,
+      currentRange.end,
+    );
+
+    final picked = await showDialog<DateTimeRange>(
       context: context,
-      firstDate: DateTime(2000),
-      lastDate: DateTime(2100),
-      initialDateRange: initialRange,
+      builder: (_) {
+        return AlertDialog(
+          backgroundColor: const Color(0xFF161B22),
+          title: const Text(
+            'Drag to select date range',
+            style: TextStyle(color: Color(0xFFE6EDF3)),
+          ),
+          content: SizedBox(
+            width: 360,
+            height: 380,
+            child: SfDateRangePicker(
+              selectionMode: DateRangePickerSelectionMode.extendableRange,
+              initialSelectedRange: tempRange,
+              minDate: DateTime(2000),
+              maxDate: DateTime(2100),
+              showNavigationArrow: true,
+              monthViewSettings: const DateRangePickerMonthViewSettings(
+                firstDayOfWeek: 1,
+              ),
+              onSelectionChanged: (args) {
+                final value = args.value;
+                if (value is PickerDateRange) {
+                  tempRange = value;
+                }
+              },
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                final start = tempRange.startDate;
+                final end = tempRange.endDate ?? tempRange.startDate;
+                if (start == null || end == null) {
+                  Navigator.pop(context);
+                  return;
+                }
+                final normalized = DateTimeRange(
+                  start: DateTime(start.year, start.month, start.day),
+                  end: DateTime(end.year, end.month, end.day),
+                );
+                Navigator.pop(context, normalized);
+              },
+              child: const Text('Apply'),
+            ),
+          ],
+        );
+      },
     );
 
     if (picked == null) return;
