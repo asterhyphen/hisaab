@@ -1,4 +1,5 @@
 1.0.2 (Not released yet)
+- Add Settings and statistics page with lots of features
 - Add Share QR button
 - Remove Share CSV
 - Add Paid all option
