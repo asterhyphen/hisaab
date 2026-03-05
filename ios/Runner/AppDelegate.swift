@@ -1,5 +1,6 @@
 import Flutter
 import UIKit
+import WidgetKit
 
 @main
 @objc class AppDelegate: FlutterAppDelegate {
@@ -22,6 +23,15 @@ import UIKit
         if call.method == "getInitialAction" {
           result(self.pendingAction)
           self.pendingAction = nil
+          return
+        }
+        if call.method == "updateWidgetBalance" {
+          if let args = call.arguments as? [String: Any], let balance = args["balance"] as? Double {
+            self.updateWidgetBalance(balance)
+            result(nil)
+          } else {
+            result(FlutterError(code: "INVALID_ARGUMENTS", message: "Balance must be a double", details: nil))
+          }
           return
         }
         result(FlutterMethodNotImplemented)
@@ -50,18 +60,18 @@ import UIKit
     return super.application(app, open: url, options: options)
   }
 
-  private func parseAction(from url: URL) -> String? {
-    if url.scheme?.lowercased() != "hisaab" {
-      return nil
-    }
-    let lastComponent = url.pathComponents.last?.lowercased()
-    switch lastComponent {
-    case "add", "plus":
-      return "add"
-    case "subtract", "minus", "remove":
-      return "subtract"
-    default:
-      return nil
-    }
+  private func updateWidgetBalance(_ balance: Double) {
+    let sharedDefaults = UserDefaults(suiteName: "group.dev.aster.hisaab")
+    sharedDefaults?.set(balance, forKey: "totalBalance")
+    WidgetCenter.shared.reloadAllTimelines()
+  }
+
+  private func updateWidgetBalance(_ balance: Double) {
+    let sharedDefaults = UserDefaults(suiteName: "group.dev.aster.hisaab")
+    sharedDefaults?.set(balance, forKey: "totalBalance")
+    sharedDefaults?.synchronize()
+    
+    // Reload widget timelines
+    WidgetCenter.shared.reloadAllTimelines()
   }
 }

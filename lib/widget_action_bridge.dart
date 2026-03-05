@@ -30,4 +30,8 @@ class WidgetActionBridge {
     if (value == null || value.isEmpty) return null;
     return value;
   }
+
+  static Future<void> updateWidgetBalance(double balance) async {
+    await _channel.invokeMethod('updateWidgetBalance', {'balance': balance});
+  }
 }

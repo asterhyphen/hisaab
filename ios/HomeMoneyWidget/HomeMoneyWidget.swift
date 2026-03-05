@@ -3,21 +3,29 @@ import SwiftUI
 
 struct MoneyEntry: TimelineEntry {
   let date: Date
+  let balance: Double
 }
 
 struct MoneyProvider: TimelineProvider {
   func placeholder(in context: Context) -> MoneyEntry {
-    MoneyEntry(date: Date())
+    MoneyEntry(date: Date(), balance: 0.0)
   }
 
   func getSnapshot(in context: Context, completion: @escaping (MoneyEntry) -> Void) {
-    completion(MoneyEntry(date: Date()))
+    let balance = getSharedBalance()
+    completion(MoneyEntry(date: Date(), balance: balance))
   }
 
   func getTimeline(in context: Context, completion: @escaping (Timeline<MoneyEntry>) -> Void) {
-    let entry = MoneyEntry(date: Date())
+    let balance = getSharedBalance()
+    let entry = MoneyEntry(date: Date(), balance: balance)
     let timeline = Timeline(entries: [entry], policy: .never)
     completion(timeline)
+  }
+  
+  private func getSharedBalance() -> Double {
+    let sharedDefaults = UserDefaults(suiteName: "group.dev.aster.hisaab")
+    return sharedDefaults?.double(forKey: "totalBalance") ?? 0.0
   }
 }
 
@@ -28,6 +36,9 @@ struct HomeMoneyWidgetView: View {
     VStack(spacing: 10) {
       Text("Hisaab")
         .font(.headline)
+      Text("₹\(entry.balance, specifier: "%.2f")")
+        .font(.title2)
+        .foregroundColor(entry.balance >= 0 ? .green : .red)
       HStack(spacing: 8) {
         Link(destination: URL(string: "hisaab://txn/add")!) {
           Text("+")

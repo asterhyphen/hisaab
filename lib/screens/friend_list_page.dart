@@ -69,6 +69,11 @@ class _FriendListPageState extends State<FriendListPage>
     super.dispose();
   }
 
+  Future<void> _updateWidgetBalance() async {
+    final total = getOverallTotal();
+    await WidgetActionBridge.updateWidgetBalance(total);
+  }
+
   Future<void> _setupWidgetActionFlow() async {
     _widgetActionSubscription = WidgetActionBridge.actions.listen((action) {
       _consumeWidgetAction(action);
@@ -104,7 +109,9 @@ class _FriendListPageState extends State<FriendListPage>
           (_) => AlertDialog(
             backgroundColor: const Color(0xFF161B22),
             title: Text(
-              type == 'add' ? 'Select person for + entry' : 'Select person for - entry',
+              type == 'add'
+                  ? 'Select person for + entry'
+                  : 'Select person for - entry',
               style: const TextStyle(color: Color(0xFFE6EDF3)),
             ),
             content: SizedBox(
@@ -129,7 +136,6 @@ class _FriendListPageState extends State<FriendListPage>
     _showQuickTransactionDialog(type: type, person: person);
   }
 
-
   Future<void> _showQuickTransactionDialog({
     required String type,
     required String person,
@@ -141,7 +147,9 @@ class _FriendListPageState extends State<FriendListPage>
       context: context,
       builder:
           (_) => Dialog(
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
             backgroundColor: const Color(0xFF161B22),
             child: Container(
               padding: const EdgeInsets.all(20),
@@ -165,7 +173,9 @@ class _FriendListPageState extends State<FriendListPage>
                   const SizedBox(height: 16),
                   TextField(
                     controller: amountController,
-                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                    keyboardType: const TextInputType.numberWithOptions(
+                      decimal: true,
+                    ),
                     autofocus: true,
                     style: const TextStyle(
                       color: Color(0xFFE6EDF3),
@@ -180,7 +190,9 @@ class _FriendListPageState extends State<FriendListPage>
                       color: Color(0xFFE6EDF3),
                       fontFamily: 'Courier New',
                     ),
-                    decoration: const InputDecoration(labelText: 'note (optional)'),
+                    decoration: const InputDecoration(
+                      labelText: 'note (optional)',
+                    ),
                   ),
                   const SizedBox(height: 20),
                   Row(
@@ -194,28 +206,37 @@ class _FriendListPageState extends State<FriendListPage>
                       ElevatedButton(
                         style: ElevatedButton.styleFrom(
                           backgroundColor:
-                              type == 'add' ? const Color(0xFF3FB950) : const Color(0xFFF85149),
+                              type == 'add'
+                                  ? const Color(0xFF3FB950)
+                                  : const Color(0xFFF85149),
                           foregroundColor: const Color(0xFF0D1117),
                         ),
                         onPressed: () {
                           final amount =
-                              double.tryParse(amountController.text.trim()) ?? 0;
+                              double.tryParse(amountController.text.trim()) ??
+                              0;
                           if (amount <= 0) return;
-                          final list = List.from(box.get(person) as List? ?? []);
+                          final list = List.from(
+                            box.get(person) as List? ?? [],
+                          );
                           list.add({
                             'type': type,
                             'amount': amount,
                             'note': noteController.text.trim(),
-                            'date': DateFormat('dd-MM-yyyy hh:mm a').format(DateTime.now()),
+                            'date': DateFormat(
+                              'dd-MM-yyyy hh:mm a',
+                            ).format(DateTime.now()),
                           });
                           box.put(person, list);
+                          _updateWidgetBalance();
                           Navigator.pop(context);
                           setState(() {
                             displayedKeys =
-                                box.keys.cast<String>().toList()
-                                  ..sort(
-                                    (a, b) => a.toLowerCase().compareTo(b.toLowerCase()),
-                                  );
+                                box.keys.cast<String>().toList()..sort(
+                                  (a, b) => a.toLowerCase().compareTo(
+                                    b.toLowerCase(),
+                                  ),
+                                );
                           });
                           ScaffoldMessenger.of(this.context).showSnackBar(
                             SnackBar(
@@ -625,6 +646,7 @@ class _FriendListPageState extends State<FriendListPage>
         final list = List.from(box.get(user) as List? ?? []);
         list.add(txn);
         box.put(user, list);
+        _updateWidgetBalance();
         // ensure metadata exists
         try {
           if (metaBox.get(user) == null) metaBox.put(user, 'terminal');
@@ -656,7 +678,6 @@ class _FriendListPageState extends State<FriendListPage>
       ).showSnackBar(SnackBar(content: Text('Could not launch GitHub')));
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
