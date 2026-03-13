@@ -73,12 +73,10 @@ class _FriendDetailPageState extends State<FriendDetailPage>
       duration: Duration(milliseconds: 700),
       vsync: this,
     );
-    _slideAnimation = Tween<Offset>(
-      begin: Offset(0, 0.3),
-      end: Offset.zero,
-    ).animate(
-      CurvedAnimation(parent: _slideController, curve: Curves.easeOutCubic),
-    );
+    _slideAnimation = Tween<Offset>(begin: Offset(0, 0.3), end: Offset.zero)
+        .animate(
+          CurvedAnimation(parent: _slideController, curve: Curves.easeOutCubic),
+        );
     _slideController.forward();
   }
 
@@ -164,10 +162,9 @@ class _FriendDetailPageState extends State<FriendDetailPage>
     // If numeric (seconds or milliseconds)
     try {
       final n = int.parse(s);
-      final dt =
-          n.toString().length <= 10
-              ? DateTime.fromMillisecondsSinceEpoch(n * 1000)
-              : DateTime.fromMillisecondsSinceEpoch(n);
+      final dt = n.toString().length <= 10
+          ? DateTime.fromMillisecondsSinceEpoch(n * 1000)
+          : DateTime.fromMillisecondsSinceEpoch(n);
       return DateFormat('dd-MM-yyyy hh:mm a').format(dt);
     } catch (_) {}
     // Try to remove long epoch-like numbers and common seconds
@@ -187,24 +184,23 @@ class _FriendDetailPageState extends State<FriendDetailPage>
     );
     final ok = await showDialog<bool?>(
       context: context,
-      builder:
-          (_) => AlertDialog(
-            title: Text('Set your UPI id'),
-            content: TextField(
-              controller: controller,
-              decoration: InputDecoration(hintText: 'example@upi'),
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context, false),
-                child: Text('Cancel'),
-              ),
-              ElevatedButton(
-                onPressed: () => Navigator.pop(context, true),
-                child: Text('Save'),
-              ),
-            ],
+      builder: (_) => AlertDialog(
+        title: Text('Set your UPI id'),
+        content: TextField(
+          controller: controller,
+          decoration: InputDecoration(hintText: 'example@upi'),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: Text('Cancel'),
           ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: Text('Save'),
+          ),
+        ],
+      ),
     );
     if (ok == true) {
       appBox.put('upi', controller.text.trim());
@@ -220,24 +216,23 @@ class _FriendDetailPageState extends State<FriendDetailPage>
     );
     final ok = await showDialog<bool?>(
       context: context,
-      builder:
-          (_) => AlertDialog(
-            title: Text('Set ${widget.name} UPI id'),
-            content: TextField(
-              controller: controller,
-              decoration: InputDecoration(hintText: 'friend@upi'),
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context, false),
-                child: Text('Cancel'),
-              ),
-              ElevatedButton(
-                onPressed: () => Navigator.pop(context, true),
-                child: Text('Save'),
-              ),
-            ],
+      builder: (_) => AlertDialog(
+        title: Text('Set ${widget.name} UPI id'),
+        content: TextField(
+          controller: controller,
+          decoration: InputDecoration(hintText: 'friend@upi'),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: Text('Cancel'),
           ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: Text('Save'),
+          ),
+        ],
+      ),
     );
     if (ok == true) {
       metaBox.put('${widget.name}_upi', controller.text.trim());
@@ -247,20 +242,23 @@ class _FriendDetailPageState extends State<FriendDetailPage>
     }
   }
 
-  String _buildUpiUri(String pa, double amount,
-    {required String pn, String tn = 'Payment'}) {
-  final tr = DateTime.now().millisecondsSinceEpoch.toString();
+  String _buildUpiUri(
+    String pa,
+    double amount, {
+    required String pn,
+    String tn = 'Payment',
+  }) {
+    final tr = DateTime.now().millisecondsSinceEpoch.toString();
 
-  return 'upi://pay'
-      '?pa=${Uri.encodeComponent(pa)}'
-      '&pn=${Uri.encodeComponent(pn)}'
-      '&am=${amount.toStringAsFixed(2)}'
-      '&cu=INR'
-      '&tn=${Uri.encodeComponent(tn)}'
-      '&tr=$tr'
-      '&mode=02';
-}
-
+    return 'upi://pay'
+        '?pa=${Uri.encodeComponent(pa)}'
+        '&pn=${Uri.encodeComponent(pn)}'
+        '&am=${amount.toStringAsFixed(2)}'
+        '&cu=INR'
+        '&tn=${Uri.encodeComponent(tn)}'
+        '&tr=$tr'
+        '&mode=02';
+  }
 
   Future<void> _showRequestPayment(double amount) async {
     final appBox = Hive.box('appMetaBox');
@@ -268,23 +266,20 @@ class _FriendDetailPageState extends State<FriendDetailPage>
     if (upi == null || upi.isEmpty) {
       final setNow = await showDialog<bool?>(
         context: context,
-        builder:
-            (_) => AlertDialog(
-              title: Text('Set your UPI id'),
-              content: Text(
-                'You need to set your UPI id to share QR for payment.',
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.pop(context, false),
-                  child: Text('Cancel'),
-                ),
-                ElevatedButton(
-                  onPressed: () => Navigator.pop(context, true),
-                  child: Text('Set now'),
-                ),
-              ],
+        builder: (_) => AlertDialog(
+          title: Text('Set your UPI id'),
+          content: Text('You need to set your UPI id to share QR for payment.'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: Text('Cancel'),
             ),
+            ElevatedButton(
+              onPressed: () => Navigator.pop(context, true),
+              child: Text('Set now'),
+            ),
+          ],
+        ),
       );
       if (setNow == true) await _setAppUpi();
       return;
@@ -293,95 +288,94 @@ class _FriendDetailPageState extends State<FriendDetailPage>
     final qrData = uri;
     final save = await showDialog<bool?>(
       context: context,
-      builder:
-          (_) => AlertDialog(
-            title: Text('Share UPI QR'),
-            content: SingleChildScrollView(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  SizedBox(height: 8),
-                  Builder(
-                    builder: (context) {
-                      try {
-                        final qrCode = QrCode(
-                          20, // higher version for longer UPI strings
-                          QrErrorCorrectLevel.M,
-                        );
-                        qrCode.addData(qrData);
-                        return CustomPaint(
-                          size: const Size.square(200),
-                          painter: QrPainter.withQr(
-                            qr: qrCode,
-                            gapless: true,
-                            color: Colors.white,
-                            emptyColor: Colors.black,
-                          ),
-                        );
-                      } catch (e) {
-                        return Padding(
-                          padding: const EdgeInsets.all(16.0),
-                          child: Text(
-                            'QR data too long to encode. Please shorten the UPI details.',
-                            style: TextStyle(color: Colors.red),
-                            textAlign: TextAlign.center,
-                          ),
-                        );
-                      }
-                    },
-                  ),
-                  SizedBox(height: 8),
-                  SelectableText(qrData, style: TextStyle(fontSize: 12)),
-                ],
+      builder: (_) => AlertDialog(
+        title: Text('Share UPI QR'),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              SizedBox(height: 8),
+              Builder(
+                builder: (context) {
+                  try {
+                    final qrCode = QrCode(
+                      20, // higher version for longer UPI strings
+                      QrErrorCorrectLevel.M,
+                    );
+                    qrCode.addData(qrData);
+                    return CustomPaint(
+                      size: const Size.square(200),
+                      painter: QrPainter.withQr(
+                        qr: qrCode,
+                        gapless: true,
+                        color: Colors.white,
+                        emptyColor: Colors.black,
+                      ),
+                    );
+                  } catch (e) {
+                    return Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Text(
+                        'QR data too long to encode. Please shorten the UPI details.',
+                        style: TextStyle(color: Colors.red),
+                        textAlign: TextAlign.center,
+                      ),
+                    );
+                  }
+                },
               ),
-            ),
-            actions: [
-              TextButton(
-    onPressed: () => Navigator.pop(context, false),
-    child: Text('Close'),
-  ),
-  TextButton(
-    onPressed: () async {
-      try {
-        final qrCode = QrCode(20, QrErrorCorrectLevel.M);
-        qrCode.addData(qrData);
-        final painter = QrPainter.withQr(
-          qr: qrCode,
-          gapless: true,
-          color: Colors.white,
-          emptyColor: Colors.black,
-        );
-
-        final pic = await painter.toImageData(
-          1024,
-          format: ui.ImageByteFormat.png,
-        );
-        if (pic == null) return;
-
-        final bytes = pic.buffer.asUint8List();
-        final dir = await getTemporaryDirectory();
-        final file = File('${dir.path}/upi_request.png');
-        await file.writeAsBytes(bytes);
-
-        await Share.shareXFiles(
-          [XFile(file.path)],
-          text:
-              '₹${amount.toStringAsFixed(2)} pending\nScan to pay via UPI',
-        );
-      } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Share failed')),
-        );
-      }
-    },
-    child: Text('Share'),
-  ),
-  ElevatedButton(
-    onPressed: () => Navigator.pop(context, true),
-    child: Text('Save QR'),
-  ),
+              SizedBox(height: 8),
+              SelectableText(qrData, style: TextStyle(fontSize: 12)),
             ],
           ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: Text('Close'),
+          ),
+          TextButton(
+            onPressed: () async {
+              try {
+                final qrCode = QrCode(20, QrErrorCorrectLevel.M);
+                qrCode.addData(qrData);
+                final painter = QrPainter.withQr(
+                  qr: qrCode,
+                  gapless: true,
+                  color: Colors.white,
+                  emptyColor: Colors.black,
+                );
+
+                final pic = await painter.toImageData(
+                  1024,
+                  format: ui.ImageByteFormat.png,
+                );
+                if (pic == null) return;
+
+                final bytes = pic.buffer.asUint8List();
+                final dir = await getTemporaryDirectory();
+                final file = File('${dir.path}/upi_request.png');
+                await file.writeAsBytes(bytes);
+
+                await Share.shareXFiles(
+                  [XFile(file.path)],
+                  text:
+                      '₹${amount.toStringAsFixed(2)} pending\nScan to pay via UPI',
+                );
+              } catch (e) {
+                ScaffoldMessenger.of(
+                  context,
+                ).showSnackBar(SnackBar(content: Text('Share failed')));
+              }
+            },
+            child: Text('Share'),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: Text('Save QR'),
+          ),
+        ],
+      ),
     );
     if (save == true) {
       try {
@@ -441,21 +435,20 @@ class _FriendDetailPageState extends State<FriendDetailPage>
     if (friendUpi == null || friendUpi.isEmpty) {
       final setNow = await showDialog<bool?>(
         context: context,
-        builder:
-            (_) => AlertDialog(
-              title: Text('Set ${widget.name} UPI id'),
-              content: Text('You need ${widget.name} UPI id to pay them.'),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.pop(context, false),
-                  child: Text('Cancel'),
-                ),
-                ElevatedButton(
-                  onPressed: () => Navigator.pop(context, true),
-                  child: Text('Set now'),
-                ),
-              ],
+        builder: (_) => AlertDialog(
+          title: Text('Set ${widget.name} UPI id'),
+          content: Text('You need ${widget.name} UPI id to pay them.'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: Text('Cancel'),
             ),
+            ElevatedButton(
+              onPressed: () => Navigator.pop(context, true),
+              child: Text('Set now'),
+            ),
+          ],
+        ),
       );
       if (setNow == true) await _setUserUpi();
       return;
@@ -608,11 +601,10 @@ class _FriendDetailPageState extends State<FriendDetailPage>
       if (path == null) return;
       final file = File(path);
       final content = await file.readAsString();
-      final lines =
-          content
-              .split(RegExp(r'\r?\n'))
-              .where((l) => l.trim().isNotEmpty)
-              .toList();
+      final lines = content
+          .split(RegExp(r'\r?\n'))
+          .where((l) => l.trim().isNotEmpty)
+          .toList();
       if (lines.isEmpty) {
         ScaffoldMessenger.of(
           context,
@@ -680,126 +672,120 @@ class _FriendDetailPageState extends State<FriendDetailPage>
     String current = metaBox.get(widget.name) as String? ?? 'terminal';
     await showDialog(
       context: context,
-      builder:
-          (_) => StatefulBuilder(
-            builder:
-                (context, setDialogState) => Dialog(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  backgroundColor: Color(0xFF161B22),
-                  child: Container(
-                    padding: EdgeInsets.all(16),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          'choose_icon()',
-                          style: TextStyle(
-                            color: Color(0xFF00D084),
-                            fontFamily: 'Courier New',
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        SizedBox(height: 12),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            _iconTile('terminal', Icons.terminal, current, (
-                              id,
-                            ) {
-                              current = id;
-                              setDialogState(() {});
-                            }),
-                            SizedBox(width: 8),
-                            _iconTile('code', Icons.code, current, (id) {
-                              current = id;
-                              setDialogState(() {});
-                            }),
-                            SizedBox(width: 8),
-                            _iconTile('robot', Icons.smart_toy, current, (id) {
-                              current = id;
-                              setDialogState(() {});
-                            }),
-                            SizedBox(width: 8),
-                            _iconTile('user', Icons.person, current, (id) {
-                              current = id;
-                              setDialogState(() {});
-                            }),
-                            SizedBox(width: 8),
-                            _iconTile('smile', Icons.emoji_emotions, current, (
-                              id,
-                            ) {
-                              current = id;
-                              setDialogState(() {});
-                            }),
-                            SizedBox(width: 8),
-                            // custom image picker
-                            GestureDetector(
-                              onTap: () async {
-                                final saved = await _pickCropAndSaveImage();
-                                if (saved != null) {
-                                  current = saved;
-                                  setDialogState(() {});
-                                }
-                              },
-                              child: Container(
-                                padding: EdgeInsets.all(6),
-                                decoration: BoxDecoration(
-                                  color:
-                                      current.startsWith('/') ||
-                                              current.startsWith('file://')
-                                          ? Color(0xFF0D1117)
-                                          : Color(0xFF161B22),
-                                  border: Border.all(
-                                    color:
-                                        current.startsWith('/') ||
-                                                current.startsWith('file://')
-                                            ? Color(0xFF00D084)
-                                            : Color(0xFF30363D),
-                                    width:
-                                        current.startsWith('/') ||
-                                                current.startsWith('file://')
-                                            ? 2
-                                            : 1,
-                                  ),
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                child: Icon(
-                                  Icons.image,
-                                  color: Color(0xFF58A6FF),
-                                  size: 20,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        SizedBox(height: 12),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            TextButton(
-                              onPressed: () => Navigator.pop(context),
-                              child: Text('cancel'),
-                            ),
-                            SizedBox(width: 8),
-                            ElevatedButton(
-                              onPressed: () {
-                                try {
-                                  metaBox.put(widget.name, current);
-                                } catch (_) {}
-                                setState(() {});
-                                Navigator.pop(context);
-                              },
-                              child: Text('save'),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
+      builder: (_) => StatefulBuilder(
+        builder: (context, setDialogState) => Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          backgroundColor: Color(0xFF161B22),
+          child: Container(
+            padding: EdgeInsets.all(16),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  'choose_icon()',
+                  style: TextStyle(
+                    color: Color(0xFF00D084),
+                    fontFamily: 'Courier New',
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
+                SizedBox(height: 12),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    _iconTile('terminal', Icons.terminal, current, (id) {
+                      current = id;
+                      setDialogState(() {});
+                    }),
+                    SizedBox(width: 8),
+                    _iconTile('code', Icons.code, current, (id) {
+                      current = id;
+                      setDialogState(() {});
+                    }),
+                    SizedBox(width: 8),
+                    _iconTile('robot', Icons.smart_toy, current, (id) {
+                      current = id;
+                      setDialogState(() {});
+                    }),
+                    SizedBox(width: 8),
+                    _iconTile('user', Icons.person, current, (id) {
+                      current = id;
+                      setDialogState(() {});
+                    }),
+                    SizedBox(width: 8),
+                    _iconTile('smile', Icons.emoji_emotions, current, (id) {
+                      current = id;
+                      setDialogState(() {});
+                    }),
+                    SizedBox(width: 8),
+                    // custom image picker
+                    GestureDetector(
+                      onTap: () async {
+                        final saved = await _pickCropAndSaveImage();
+                        if (saved != null) {
+                          current = saved;
+                          setDialogState(() {});
+                        }
+                      },
+                      child: Container(
+                        padding: EdgeInsets.all(6),
+                        decoration: BoxDecoration(
+                          color:
+                              current.startsWith('/') ||
+                                  current.startsWith('file://')
+                              ? Color(0xFF0D1117)
+                              : Color(0xFF161B22),
+                          border: Border.all(
+                            color:
+                                current.startsWith('/') ||
+                                    current.startsWith('file://')
+                                ? Color(0xFF00D084)
+                                : Color(0xFF30363D),
+                            width:
+                                current.startsWith('/') ||
+                                    current.startsWith('file://')
+                                ? 2
+                                : 1,
+                          ),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Icon(
+                          Icons.image,
+                          color: Color(0xFF58A6FF),
+                          size: 20,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 12),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: Text('cancel'),
+                    ),
+                    SizedBox(width: 8),
+                    ElevatedButton(
+                      onPressed: () {
+                        try {
+                          metaBox.put(widget.name, current);
+                        } catch (_) {}
+                        setState(() {});
+                        Navigator.pop(context);
+                      },
+                      child: Text('save'),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
+        ),
+      ),
     );
   }
 
@@ -897,28 +883,27 @@ class _FriendDetailPageState extends State<FriendDetailPage>
             onPressed: () async {
               final confirm = await showDialog<bool>(
                 context: context,
-                builder:
-                    (_) => AlertDialog(
-                      backgroundColor: Color(0xFF161B22),
-                      title: Text(
-                        'Delete user?',
-                        style: TextStyle(color: Color(0xFFE6EDF3)),
-                      ),
-                      content: Text(
-                        'Delete ${widget.name} and all transactions?',
-                        style: TextStyle(color: Color(0xFF8B949E)),
-                      ),
-                      actions: [
-                        TextButton(
-                          onPressed: () => Navigator.pop(context, false),
-                          child: Text('Cancel'),
-                        ),
-                        ElevatedButton(
-                          onPressed: () => Navigator.pop(context, true),
-                          child: Text('Delete'),
-                        ),
-                      ],
+                builder: (_) => AlertDialog(
+                  backgroundColor: Color(0xFF161B22),
+                  title: Text(
+                    'Delete user?',
+                    style: TextStyle(color: Color(0xFFE6EDF3)),
+                  ),
+                  content: Text(
+                    'Delete ${widget.name} and all transactions?',
+                    style: TextStyle(color: Color(0xFF8B949E)),
+                  ),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(context, false),
+                      child: Text('Cancel'),
                     ),
+                    ElevatedButton(
+                      onPressed: () => Navigator.pop(context, true),
+                      child: Text('Delete'),
+                    ),
+                  ],
+                ),
               );
               if (confirm == true) {
                 box.delete(widget.name);
@@ -970,61 +955,64 @@ class _FriendDetailPageState extends State<FriendDetailPage>
                   ),
                   SizedBox(height: 12),
                   Column(
-  crossAxisAlignment: CrossAxisAlignment.start,
-  children: [
-    Row(
-      children: [
-        if (total >= 0)
-          ElevatedButton.icon(
-            onPressed: () => _showRequestPayment(total),
-            icon: Icon(Icons.qr_code),
-            label: Text('Request ₹${total.toStringAsFixed(2)}'),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Color(0xFF3FB950),
-              foregroundColor: Color(0xFF0D1117),
-            ),
-          )
-        else
-          ElevatedButton.icon(
-            onPressed: () => _payNow(total.abs()),
-            icon: Icon(Icons.payment),
-            label: Text('Pay ₹${total.abs().toStringAsFixed(2)}'),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Color(0xFFF85149),
-              foregroundColor: Color(0xFF0D1117),
-            ),
-          ),
-        SizedBox(width: 8),
-        TextButton(
-          onPressed: () async {
-            if (total >= 0) {
-              await _setAppUpi();
-            } else {
-              await _setUserUpi();
-            }
-          },
-          child: Text(
-            total >= 0 ? 'Set my UPI' : 'Set ${widget.name} UPI',
-          ),
-        ),
-      ],
-    ),
-    if (total != 0) ...[
-      SizedBox(height: 8),
-      OutlinedButton(
-        onPressed: () => _markPaidAll(total),
-        child: Text('Paid all'),
-        style: OutlinedButton.styleFrom(
-          foregroundColor: Color(0xFF8B949E),
-          side: BorderSide(color: Color(0xFF30363D)),
-        ),
-      ),
-    ],
-  ],
-),
-
-    
-
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          if (total >= 0)
+                            ElevatedButton.icon(
+                              onPressed: () => _showRequestPayment(total),
+                              icon: Icon(Icons.qr_code),
+                              label: Text(
+                                'Request ₹${total.toStringAsFixed(2)}',
+                              ),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Color(0xFF3FB950),
+                                foregroundColor: Color(0xFF0D1117),
+                              ),
+                            )
+                          else
+                            ElevatedButton.icon(
+                              onPressed: () => _payNow(total.abs()),
+                              icon: Icon(Icons.payment),
+                              label: Text(
+                                'Pay ₹${total.abs().toStringAsFixed(2)}',
+                              ),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Color(0xFFF85149),
+                                foregroundColor: Color(0xFF0D1117),
+                              ),
+                            ),
+                          SizedBox(width: 8),
+                          TextButton(
+                            onPressed: () async {
+                              if (total >= 0) {
+                                await _setAppUpi();
+                              } else {
+                                await _setUserUpi();
+                              }
+                            },
+                            child: Text(
+                              total >= 0
+                                  ? 'Set my UPI'
+                                  : 'Set ${widget.name} UPI',
+                            ),
+                          ),
+                        ],
+                      ),
+                      if (total != 0) ...[
+                        SizedBox(height: 8),
+                        OutlinedButton(
+                          onPressed: () => _markPaidAll(total),
+                          child: Text('Paid all'),
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: Color(0xFF8B949E),
+                            side: BorderSide(color: Color(0xFF30363D)),
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
                 ],
               ),
             ),
@@ -1032,134 +1020,127 @@ class _FriendDetailPageState extends State<FriendDetailPage>
           Divider(color: Color(0xFF30363D), height: 0),
           // Transactions List
           Expanded(
-            child:
-                transactions.isEmpty
-                    ? Center(
-                      child: Text(
-                        'transactions_empty()',
-                        style: TextStyle(
-                          color: Color(0xFF6E7681),
-                          fontSize: 14,
-                          fontFamily: 'Courier New',
-                        ),
+            child: transactions.isEmpty
+                ? Center(
+                    child: Text(
+                      'transactions_empty()',
+                      style: TextStyle(
+                        color: Color(0xFF6E7681),
+                        fontSize: 14,
+                        fontFamily: 'Courier New',
                       ),
-                    )
-                    : ListView.builder(
-                      physics: BouncingScrollPhysics(
-                        parent: AlwaysScrollableScrollPhysics(),
-                      ),
-                      itemCount: transactions.length,
-                      itemBuilder: (_, index) {
-                        final tx = transactions[index];
-                        final isAdd = tx['type'] == 'add';
-                        final dateStr = _normalizeDate(tx['date']);
+                    ),
+                  )
+                : ListView.builder(
+                    physics: BouncingScrollPhysics(
+                      parent: AlwaysScrollableScrollPhysics(),
+                    ),
+                    itemCount: transactions.length,
+                    itemBuilder: (_, index) {
+                      final tx = transactions[index];
+                      final isAdd = tx['type'] == 'add';
+                      final dateStr = _normalizeDate(tx['date']);
 
-                        return AnimatedSlide(
-                          offset: Offset(0, 0),
-                          duration: Duration(milliseconds: 200),
-                          child: Container(
-                            margin: EdgeInsets.symmetric(
-                              horizontal: 8,
-                              vertical: 4,
+                      return AnimatedSlide(
+                        offset: Offset(0, 0),
+                        duration: Duration(milliseconds: 200),
+                        child: Container(
+                          margin: EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 4,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Color(0xFF161B22),
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(
+                              color: Color(0xFF30363D),
+                              width: 1,
                             ),
-                            decoration: BoxDecoration(
-                              color: Color(0xFF161B22),
-                              borderRadius: BorderRadius.circular(8),
-                              border: Border.all(
-                                color: Color(0xFF30363D),
-                                width: 1,
+                          ),
+                          child: ListTile(
+                            contentPadding: EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 8,
+                            ),
+                            leading: Container(
+                              width: 40,
+                              height: 40,
+                              decoration: BoxDecoration(
+                                color: isAdd
+                                    ? Color(0xFF3FB950).withOpacity(0.2)
+                                    : Color(0xFFF85149).withOpacity(0.2),
+                                borderRadius: BorderRadius.circular(6),
+                              ),
+                              child: Icon(
+                                isAdd ? Icons.add : Icons.remove,
+                                color: isAdd
+                                    ? Color(0xFF3FB950)
+                                    : Color(0xFFF85149),
+                                size: 20,
                               ),
                             ),
-                            child: ListTile(
-                              contentPadding: EdgeInsets.symmetric(
-                                horizontal: 16,
-                                vertical: 8,
+                            title: Text(
+                              '${isAdd ? "+" : "-"} ₹${tx['amount']}',
+                              style: TextStyle(
+                                fontFamily: 'Courier New',
+                                fontSize: 15,
+                                fontWeight: FontWeight.w600,
+                                color: Color(0xFFE6EDF3),
                               ),
-                              leading: Container(
-                                width: 40,
-                                height: 40,
-                                decoration: BoxDecoration(
-                                  color:
-                                      isAdd
-                                          ? Color(0xFF3FB950).withOpacity(0.2)
-                                          : Color(0xFFF85149).withOpacity(0.2),
-                                  borderRadius: BorderRadius.circular(6),
-                                ),
-                                child: Icon(
-                                  isAdd ? Icons.add : Icons.remove,
-                                  color:
-                                      isAdd
-                                          ? Color(0xFF3FB950)
-                                          : Color(0xFFF85149),
-                                  size: 20,
-                                ),
-                              ),
-                              title: Text(
-                                '${isAdd ? "+" : "-"} ₹${tx['amount']}',
-                                style: TextStyle(
-                                  fontFamily: 'Courier New',
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.w600,
-                                  color: Color(0xFFE6EDF3),
-                                ),
-                              ),
-                              subtitle: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  SizedBox(height: 4),
-                                  if (tx['note'].isNotEmpty)
-                                    Text(
-                                      tx['note'],
-                                      style: TextStyle(
-                                        fontSize: 12,
-                                        color: Color(0xFF8B949E),
-                                        fontFamily: 'Courier New',
-                                      ),
-                                    ),
-                                  SizedBox(
-                                    height: tx['note'].isNotEmpty ? 4 : 0,
-                                  ),
+                            ),
+                            subtitle: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                SizedBox(height: 4),
+                                if (tx['note'].isNotEmpty)
                                   Text(
-                                    dateStr,
+                                    tx['note'],
                                     style: TextStyle(
-                                      fontSize: 11,
-                                      color: Color(0xFF6E7681),
+                                      fontSize: 12,
+                                      color: Color(0xFF8B949E),
                                       fontFamily: 'Courier New',
                                     ),
                                   ),
-                                ],
-                              ),
-                              trailing: Container(
-                                padding: EdgeInsets.symmetric(
-                                  horizontal: 10,
-                                  vertical: 4,
-                                ),
-                                decoration: BoxDecoration(
-                                  color:
-                                      isAdd
-                                          ? Color(0xFF3FB950).withOpacity(0.15)
-                                          : Color(0xFFF85149).withOpacity(0.15),
-                                  borderRadius: BorderRadius.circular(4),
-                                ),
-                                child: Text(
-                                  isAdd ? 'add' : 'remove',
+                                SizedBox(height: tx['note'].isNotEmpty ? 4 : 0),
+                                Text(
+                                  dateStr,
                                   style: TextStyle(
-                                    fontSize: 10,
-                                    fontWeight: FontWeight.w600,
-                                    color:
-                                        isAdd
-                                            ? Color(0xFF3FB950)
-                                            : Color(0xFFF85149),
+                                    fontSize: 11,
+                                    color: Color(0xFF6E7681),
                                     fontFamily: 'Courier New',
-                                    letterSpacing: 0.3,
                                   ),
+                                ),
+                              ],
+                            ),
+                            trailing: Container(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 10,
+                                vertical: 4,
+                              ),
+                              decoration: BoxDecoration(
+                                color: isAdd
+                                    ? Color(0xFF3FB950).withOpacity(0.15)
+                                    : Color(0xFFF85149).withOpacity(0.15),
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                              child: Text(
+                                isAdd ? 'add' : 'remove',
+                                style: TextStyle(
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.w600,
+                                  color: isAdd
+                                      ? Color(0xFF3FB950)
+                                      : Color(0xFFF85149),
+                                  fontFamily: 'Courier New',
+                                  letterSpacing: 0.3,
                                 ),
                               ),
                             ),
                           ),
-                        );
-                      },
-                    ),
+                        ),
+                      );
+                    },
+                  ),
           ),
         ],
       ),
@@ -1205,153 +1186,129 @@ class _FriendDetailPageState extends State<FriendDetailPage>
   void showTxnDialog(String type) {
     showDialog(
       context: context,
-      builder:
-          (_) => Dialog(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-            backgroundColor: Color(0xFF161B22),
-            child: Container(
-              padding: EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: Color(0xFF161B22),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: Color(0xFF30363D), width: 1),
+      builder: (_) => Dialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        backgroundColor: Color(0xFF161B22),
+        child: Container(
+          padding: EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: Color(0xFF161B22),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: Color(0xFF30363D), width: 1),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                type == 'add' ? r'$ add_amount()' : r'$ remove_amount()',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF00D084),
+                  fontFamily: 'Courier New',
+                  letterSpacing: 0.3,
+                ),
               ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
+              SizedBox(height: 16),
+              TextField(
+                controller: amountController,
+                keyboardType: TextInputType.numberWithOptions(decimal: true),
+                style: TextStyle(
+                  color: Color(0xFFE6EDF3),
+                  fontFamily: 'Courier New',
+                ),
+                decoration: InputDecoration(
+                  labelText: 'amount',
+                  labelStyle: TextStyle(
+                    color: Color(0xFF8B949E),
+                    fontFamily: 'Courier New',
+                  ),
+                  filled: true,
+                  fillColor: Color(0xFF0D1117),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    borderSide: BorderSide(color: Color(0xFF30363D), width: 1),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    borderSide: BorderSide(color: Color(0xFF30363D), width: 1),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    borderSide: BorderSide(color: Color(0xFF00D084), width: 2),
+                  ),
+                ),
+                autofocus: true,
+              ),
+              SizedBox(height: 12),
+              TextField(
+                controller: noteController,
+                style: TextStyle(
+                  color: Color(0xFFE6EDF3),
+                  fontFamily: 'Courier New',
+                ),
+                decoration: InputDecoration(
+                  labelText: 'note (optional)',
+                  labelStyle: TextStyle(
+                    color: Color(0xFF8B949E),
+                    fontFamily: 'Courier New',
+                  ),
+                  filled: true,
+                  fillColor: Color(0xFF0D1117),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    borderSide: BorderSide(color: Color(0xFF30363D), width: 1),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    borderSide: BorderSide(color: Color(0xFF30363D), width: 1),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    borderSide: BorderSide(color: Color(0xFF00D084), width: 2),
+                  ),
+                ),
+              ),
+              SizedBox(height: 20),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  Text(
-                    type == 'add' ? r'$ add_amount()' : r'$ remove_amount()',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFF00D084),
-                      fontFamily: 'Courier New',
-                      letterSpacing: 0.3,
-                    ),
-                  ),
-                  SizedBox(height: 16),
-                  TextField(
-                    controller: amountController,
-                    keyboardType: TextInputType.numberWithOptions(
-                      decimal: true,
-                    ),
-                    style: TextStyle(
-                      color: Color(0xFFE6EDF3),
-                      fontFamily: 'Courier New',
-                    ),
-                    decoration: InputDecoration(
-                      labelText: 'amount',
-                      labelStyle: TextStyle(
+                  TextButton(
+                    child: Text(
+                      'cancel',
+                      style: TextStyle(
                         color: Color(0xFF8B949E),
                         fontFamily: 'Courier New',
                       ),
-                      filled: true,
-                      fillColor: Color(0xFF0D1117),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide(
-                          color: Color(0xFF30363D),
-                          width: 1,
-                        ),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide(
-                          color: Color(0xFF30363D),
-                          width: 1,
-                        ),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide(
-                          color: Color(0xFF00D084),
-                          width: 2,
-                        ),
-                      ),
                     ),
-                    autofocus: true,
+                    onPressed: () => Navigator.pop(context),
                   ),
-                  SizedBox(height: 12),
-                  TextField(
-                    controller: noteController,
-                    style: TextStyle(
-                      color: Color(0xFFE6EDF3),
-                      fontFamily: 'Courier New',
+                  SizedBox(width: 12),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: type == 'add'
+                          ? Color(0xFF3FB950)
+                          : Color(0xFFF85149),
+                      foregroundColor: Color(0xFF0D1117),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
                     ),
-                    decoration: InputDecoration(
-                      labelText: 'note (optional)',
-                      labelStyle: TextStyle(
-                        color: Color(0xFF8B949E),
+                    child: Text(
+                      'save',
+                      style: TextStyle(
                         fontFamily: 'Courier New',
-                      ),
-                      filled: true,
-                      fillColor: Color(0xFF0D1117),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide(
-                          color: Color(0xFF30363D),
-                          width: 1,
-                        ),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide(
-                          color: Color(0xFF30363D),
-                          width: 1,
-                        ),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide(
-                          color: Color(0xFF00D084),
-                          width: 2,
-                        ),
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
-                  ),
-                  SizedBox(height: 20),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      TextButton(
-                        child: Text(
-                          'cancel',
-                          style: TextStyle(
-                            color: Color(0xFF8B949E),
-                            fontFamily: 'Courier New',
-                          ),
-                        ),
-                        onPressed: () => Navigator.pop(context),
-                      ),
-                      SizedBox(width: 12),
-                      ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor:
-                              type == 'add'
-                                  ? Color(0xFF3FB950)
-                                  : Color(0xFFF85149),
-                          foregroundColor: Color(0xFF0D1117),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                        ),
-                        child: Text(
-                          'save',
-                          style: TextStyle(
-                            fontFamily: 'Courier New',
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        onPressed: () => addTransaction(type),
-                      ),
-                    ],
+                    onPressed: () => addTransaction(type),
                   ),
                 ],
               ),
-            ),
+            ],
           ),
+        ),
+      ),
     );
   }
 }

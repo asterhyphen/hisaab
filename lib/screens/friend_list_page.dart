@@ -45,9 +45,8 @@ class _FriendListPageState extends State<FriendListPage>
   @override
   void initState() {
     super.initState();
-    displayedKeys =
-        box.keys.cast<String>().toList()
-          ..sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
+    displayedKeys = box.keys.cast<String>().toList()
+      ..sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
     searchController.addListener(_filterFriends);
 
     _fadeController = AnimationController(
@@ -93,9 +92,8 @@ class _FriendListPageState extends State<FriendListPage>
   }
 
   Future<void> _showPersonSelector(String type) async {
-    final people =
-        box.keys.cast<String>().toList()
-          ..sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
+    final people = box.keys.cast<String>().toList()
+      ..sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
     if (people.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('No users found. Add a user first.')),
@@ -105,31 +103,29 @@ class _FriendListPageState extends State<FriendListPage>
 
     final person = await showDialog<String>(
       context: context,
-      builder:
-          (_) => AlertDialog(
-            backgroundColor: const Color(0xFF161B22),
-            title: Text(
-              type == 'add'
-                  ? 'Select person for + entry'
-                  : 'Select person for - entry',
-              style: const TextStyle(color: Color(0xFFE6EDF3)),
-            ),
-            content: SizedBox(
-              width: 360,
-              child: ListView.builder(
-                shrinkWrap: true,
-                itemCount: people.length,
-                itemBuilder:
-                    (context, index) => ListTile(
-                      title: Text(
-                        people[index],
-                        style: const TextStyle(color: Color(0xFFE6EDF3)),
-                      ),
-                      onTap: () => Navigator.pop(context, people[index]),
-                    ),
+      builder: (_) => AlertDialog(
+        backgroundColor: const Color(0xFF161B22),
+        title: Text(
+          type == 'add'
+              ? 'Select person for + entry'
+              : 'Select person for - entry',
+          style: const TextStyle(color: Color(0xFFE6EDF3)),
+        ),
+        content: SizedBox(
+          width: 360,
+          child: ListView.builder(
+            shrinkWrap: true,
+            itemCount: people.length,
+            itemBuilder: (context, index) => ListTile(
+              title: Text(
+                people[index],
+                style: const TextStyle(color: Color(0xFFE6EDF3)),
               ),
+              onTap: () => Navigator.pop(context, people[index]),
             ),
           ),
+        ),
+      ),
     );
 
     if (person == null) return;
@@ -145,115 +141,105 @@ class _FriendListPageState extends State<FriendListPage>
 
     await showDialog<void>(
       context: context,
-      builder:
-          (_) => Dialog(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-            backgroundColor: const Color(0xFF161B22),
-            child: Container(
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: const Color(0xFF161B22),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: const Color(0xFF30363D), width: 1),
+      builder: (_) => Dialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        backgroundColor: const Color(0xFF161B22),
+        child: Container(
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: const Color(0xFF161B22),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: const Color(0xFF30363D), width: 1),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                '${type == 'add' ? '+' : '-'} transaction for $person',
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF00D084),
+                  fontFamily: 'Courier New',
+                ),
               ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
+              const SizedBox(height: 16),
+              TextField(
+                controller: amountController,
+                keyboardType: const TextInputType.numberWithOptions(
+                  decimal: true,
+                ),
+                autofocus: true,
+                style: const TextStyle(
+                  color: Color(0xFFE6EDF3),
+                  fontFamily: 'Courier New',
+                ),
+                decoration: const InputDecoration(labelText: 'amount'),
+              ),
+              const SizedBox(height: 12),
+              TextField(
+                controller: noteController,
+                style: const TextStyle(
+                  color: Color(0xFFE6EDF3),
+                  fontFamily: 'Courier New',
+                ),
+                decoration: const InputDecoration(labelText: 'note (optional)'),
+              ),
+              const SizedBox(height: 20),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  Text(
-                    '${type == 'add' ? '+' : '-'} transaction for $person',
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFF00D084),
-                      fontFamily: 'Courier New',
-                    ),
+                  TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: const Text('cancel'),
                   ),
-                  const SizedBox(height: 16),
-                  TextField(
-                    controller: amountController,
-                    keyboardType: const TextInputType.numberWithOptions(
-                      decimal: true,
+                  const SizedBox(width: 12),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: type == 'add'
+                          ? const Color(0xFF3FB950)
+                          : const Color(0xFFF85149),
+                      foregroundColor: const Color(0xFF0D1117),
                     ),
-                    autofocus: true,
-                    style: const TextStyle(
-                      color: Color(0xFFE6EDF3),
-                      fontFamily: 'Courier New',
-                    ),
-                    decoration: const InputDecoration(labelText: 'amount'),
-                  ),
-                  const SizedBox(height: 12),
-                  TextField(
-                    controller: noteController,
-                    style: const TextStyle(
-                      color: Color(0xFFE6EDF3),
-                      fontFamily: 'Courier New',
-                    ),
-                    decoration: const InputDecoration(
-                      labelText: 'note (optional)',
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      TextButton(
-                        onPressed: () => Navigator.pop(context),
-                        child: const Text('cancel'),
-                      ),
-                      const SizedBox(width: 12),
-                      ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor:
-                              type == 'add'
-                                  ? const Color(0xFF3FB950)
-                                  : const Color(0xFFF85149),
-                          foregroundColor: const Color(0xFF0D1117),
+                    onPressed: () {
+                      final amount =
+                          double.tryParse(amountController.text.trim()) ?? 0;
+                      if (amount <= 0) return;
+                      final list = List.from(box.get(person) as List? ?? []);
+                      list.add({
+                        'type': type,
+                        'amount': amount,
+                        'note': noteController.text.trim(),
+                        'date': DateFormat(
+                          'dd-MM-yyyy hh:mm a',
+                        ).format(DateTime.now()),
+                      });
+                      box.put(person, list);
+                      _updateWidgetBalance();
+                      Navigator.pop(context);
+                      setState(() {
+                        displayedKeys = box.keys.cast<String>().toList()
+                          ..sort(
+                            (a, b) =>
+                                a.toLowerCase().compareTo(b.toLowerCase()),
+                          );
+                      });
+                      ScaffoldMessenger.of(this.context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            'Saved ${type == 'add' ? '+' : '-'} ₹${amount.toStringAsFixed(2)} for $person',
+                          ),
                         ),
-                        onPressed: () {
-                          final amount =
-                              double.tryParse(amountController.text.trim()) ??
-                              0;
-                          if (amount <= 0) return;
-                          final list = List.from(
-                            box.get(person) as List? ?? [],
-                          );
-                          list.add({
-                            'type': type,
-                            'amount': amount,
-                            'note': noteController.text.trim(),
-                            'date': DateFormat(
-                              'dd-MM-yyyy hh:mm a',
-                            ).format(DateTime.now()),
-                          });
-                          box.put(person, list);
-                          _updateWidgetBalance();
-                          Navigator.pop(context);
-                          setState(() {
-                            displayedKeys =
-                                box.keys.cast<String>().toList()..sort(
-                                  (a, b) => a.toLowerCase().compareTo(
-                                    b.toLowerCase(),
-                                  ),
-                                );
-                          });
-                          ScaffoldMessenger.of(this.context).showSnackBar(
-                            SnackBar(
-                              content: Text(
-                                'Saved ${type == 'add' ? '+' : '-'} ₹${amount.toStringAsFixed(2)} for $person',
-                              ),
-                            ),
-                          );
-                        },
-                        child: const Text('save'),
-                      ),
-                    ],
+                      );
+                    },
+                    child: const Text('save'),
                   ),
                 ],
               ),
-            ),
+            ],
           ),
+        ),
+      ),
     );
 
     amountController.dispose();
@@ -284,10 +270,9 @@ class _FriendListPageState extends State<FriendListPage>
         .trim()
         .split(RegExp(r'\s+'))
         .map(
-          (word) =>
-              word.isNotEmpty
-                  ? word[0].toUpperCase() + word.substring(1).toLowerCase()
-                  : '',
+          (word) => word.isNotEmpty
+              ? word[0].toUpperCase() + word.substring(1).toLowerCase()
+              : '',
         )
         .join(' ');
 
@@ -302,46 +287,42 @@ class _FriendListPageState extends State<FriendListPage>
     _selectedIcon = 'terminal';
     Navigator.pop(context);
     setState(() {
-      displayedKeys =
-          box.keys.cast<String>().toList()
-            ..sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
+      displayedKeys = box.keys.cast<String>().toList()
+        ..sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
     });
   }
 
   Future<bool?> deleteFriend(String name) async {
     final result = await showDialog<bool>(
       context: context,
-      builder:
-          (ctx) => AlertDialog(
-            backgroundColor: const Color(0xFF3D4C3A),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
+      builder: (ctx) => AlertDialog(
+        backgroundColor: const Color(0xFF3D4C3A),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: const Text(
+          'Confirm Deletion',
+          style: TextStyle(color: Colors.white),
+        ),
+        content: Text(
+          'Are you sure you want to delete "$name" and all their transactions? This action is non-reversible.',
+          style: const TextStyle(color: Colors.white70),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text(
+              'Cancel',
+              style: TextStyle(color: Colors.white70),
             ),
-            title: const Text(
-              'Confirm Deletion',
-              style: TextStyle(color: Colors.white),
-            ),
-            content: Text(
-              'Are you sure you want to delete "$name" and all their transactions? This action is non-reversible.',
-              style: const TextStyle(color: Colors.white70),
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(ctx, false),
-                child: const Text(
-                  'Cancel',
-                  style: TextStyle(color: Colors.white70),
-                ),
-              ),
-              TextButton(
-                onPressed: () => Navigator.pop(ctx, true),
-                child: const Text(
-                  'Delete',
-                  style: TextStyle(color: Colors.redAccent),
-                ),
-              ),
-            ],
           ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: const Text(
+              'Delete',
+              style: TextStyle(color: Colors.redAccent),
+            ),
+          ),
+        ],
+      ),
     );
 
     if (result == true) {
@@ -351,9 +332,8 @@ class _FriendListPageState extends State<FriendListPage>
       } catch (_) {}
 
       setState(() {
-        displayedKeys =
-            box.keys.cast<String>().toList()
-              ..sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
+        displayedKeys = box.keys.cast<String>().toList()
+          ..sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
       });
     }
 
@@ -448,10 +428,9 @@ class _FriendListPageState extends State<FriendListPage>
     } catch (_) {}
     try {
       final n = int.parse(s);
-      final dt =
-          n.toString().length <= 10
-              ? DateTime.fromMillisecondsSinceEpoch(n * 1000)
-              : DateTime.fromMillisecondsSinceEpoch(n);
+      final dt = n.toString().length <= 10
+          ? DateTime.fromMillisecondsSinceEpoch(n * 1000)
+          : DateTime.fromMillisecondsSinceEpoch(n);
       return DateFormat('dd-MM-yyyy hh:mm a').format(dt);
     } catch (_) {}
     final cleaned = s.replaceAll(RegExp(r'\b\d{10,}\b'), '').trim();
@@ -589,11 +568,10 @@ class _FriendListPageState extends State<FriendListPage>
       if (path == null) return;
       final file = File(path);
       final content = await file.readAsString();
-      final lines =
-          content
-              .split(RegExp(r'\r?\n'))
-              .where((l) => l.trim().isNotEmpty)
-              .toList();
+      final lines = content
+          .split(RegExp(r'\r?\n'))
+          .where((l) => l.trim().isNotEmpty)
+          .toList();
       if (lines.isEmpty) {
         ScaffoldMessenger.of(
           context,
@@ -654,9 +632,8 @@ class _FriendListPageState extends State<FriendListPage>
         imported++;
       }
       setState(() {
-        displayedKeys =
-            box.keys.cast<String>().toList()
-              ..sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
+        displayedKeys = box.keys.cast<String>().toList()
+          ..sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
       });
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Imported $imported transactions')),

@@ -40,8 +40,19 @@ extension _StatsPageTab on _FriendListPageState {
     if (_statsFilter == 'custom') {
       final range = _customStatsRange;
       if (range == null) return false;
-      final start = DateTime(range.start.year, range.start.month, range.start.day);
-      final end = DateTime(range.end.year, range.end.month, range.end.day, 23, 59, 59);
+      final start = DateTime(
+        range.start.year,
+        range.start.month,
+        range.start.day,
+      );
+      final end = DateTime(
+        range.end.year,
+        range.end.month,
+        range.end.day,
+        23,
+        59,
+        59,
+      );
       return !dt.isBefore(start) && !dt.isAfter(end);
     }
     return dt.year == now.year && dt.month == now.month;
@@ -49,11 +60,9 @@ extension _StatsPageTab on _FriendListPageState {
 
   Future<void> _pickCustomStatsRange() async {
     final now = DateTime.now();
-    final currentRange = _customStatsRange ??
-        DateTimeRange(
-          start: DateTime(now.year, now.month, 1),
-          end: now,
-        );
+    final currentRange =
+        _customStatsRange ??
+        DateTimeRange(start: DateTime(now.year, now.month, 1), end: now);
 
     PickerDateRange tempRange = PickerDateRange(
       currentRange.start,
@@ -439,15 +448,17 @@ extension _StatsPageTab on _FriendListPageState {
 
     final net = added - removed;
     final totalUsers = box.keys.length;
-    final avgTxnPerUser = activeUsers == 0 ? 0.0 : totalTransactions / activeUsers;
+    final avgTxnPerUser = activeUsers == 0
+        ? 0.0
+        : totalTransactions / activeUsers;
     final avgTxnAmount = totalTransactions == 0
         ? 0.0
         : (added + removed) / totalTransactions;
 
-    final rankedByCount =
-        userCountMap.entries.toList()..sort((a, b) => b.value.compareTo(a.value));
-    final rankedByVolume =
-        userVolumeMap.entries.toList()..sort((a, b) => b.value.compareTo(a.value));
+    final rankedByCount = userCountMap.entries.toList()
+      ..sort((a, b) => b.value.compareTo(a.value));
+    final rankedByVolume = userVolumeMap.entries.toList()
+      ..sort((a, b) => b.value.compareTo(a.value));
 
     final topCount = rankedByCount.isEmpty ? null : rankedByCount.first;
     final topVolume = rankedByVolume.isEmpty ? null : rankedByVolume.first;
@@ -459,8 +470,16 @@ extension _StatsPageTab on _FriendListPageState {
       children: [
         _buildStatsFilterBar(),
         _buildSectionTitle('overview (${_statsFilterLabel()})'),
-        _buildStatCard('total_users', totalUsers.toString(), const Color(0xFF58A6FF)),
-        _buildStatCard('active_users', activeUsers.toString(), const Color(0xFF58A6FF)),
+        _buildStatCard(
+          'total_users',
+          totalUsers.toString(),
+          const Color(0xFF58A6FF),
+        ),
+        _buildStatCard(
+          'active_users',
+          activeUsers.toString(),
+          const Color(0xFF58A6FF),
+        ),
         _buildStatCard(
           'total_transactions',
           totalTransactions.toString(),
@@ -511,26 +530,38 @@ extension _StatsPageTab on _FriendListPageState {
         ),
         _buildSectionTitle('top_users_by_transactions'),
         if (rankedByCount.isEmpty)
-          _buildStatCard('top_users', 'No data in selected range', const Color(0xFF8B949E)),
-        ...rankedByCount.take(5).map(
-          (entry) => _buildRankBar(
-            name: entry.key,
-            subtitle: '${entry.value} txns',
-            ratio: entry.value / maxCount,
-            color: const Color(0xFF3FB950),
+          _buildStatCard(
+            'top_users',
+            'No data in selected range',
+            const Color(0xFF8B949E),
           ),
-        ),
+        ...rankedByCount
+            .take(5)
+            .map(
+              (entry) => _buildRankBar(
+                name: entry.key,
+                subtitle: '${entry.value} txns',
+                ratio: entry.value / maxCount,
+                color: const Color(0xFF3FB950),
+              ),
+            ),
         _buildSectionTitle('top_users_by_volume'),
         if (rankedByVolume.isEmpty)
-          _buildStatCard('top_volume', 'No data in selected range', const Color(0xFF8B949E)),
-        ...rankedByVolume.take(5).map(
-          (entry) => _buildRankBar(
-            name: entry.key,
-            subtitle: '₹${entry.value.toStringAsFixed(2)}',
-            ratio: entry.value / maxVolume,
-            color: const Color(0xFF58A6FF),
+          _buildStatCard(
+            'top_volume',
+            'No data in selected range',
+            const Color(0xFF8B949E),
           ),
-        ),
+        ...rankedByVolume
+            .take(5)
+            .map(
+              (entry) => _buildRankBar(
+                name: entry.key,
+                subtitle: '₹${entry.value.toStringAsFixed(2)}',
+                ratio: entry.value / maxVolume,
+                color: const Color(0xFF58A6FF),
+              ),
+            ),
         _buildSectionTitle('last_6_months_transactions'),
         _buildMonthlyTransactionsChart(monthCounts),
       ],

@@ -8,34 +8,32 @@ extension _FriendListPageDangerZone on _FriendListPageState {
   }) async {
     final res = await showDialog<bool>(
       context: context,
-      builder:
-          (_) => AlertDialog(
-            backgroundColor: const Color(0xFF161B22),
-            title: Text(title, style: const TextStyle(color: Color(0xFFE6EDF3))),
-            content: Text(
-              message,
-              style: const TextStyle(color: Color(0xFF8B949E)),
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context, false),
-                child: const Text('Cancel'),
-              ),
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-                onPressed: () => Navigator.pop(context, true),
-                child: Text(confirmLabel),
-              ),
-            ],
+      builder: (_) => AlertDialog(
+        backgroundColor: const Color(0xFF161B22),
+        title: Text(title, style: const TextStyle(color: Color(0xFFE6EDF3))),
+        content: Text(
+          message,
+          style: const TextStyle(color: Color(0xFF8B949E)),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel'),
           ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+            onPressed: () => Navigator.pop(context, true),
+            child: Text(confirmLabel),
+          ),
+        ],
+      ),
     );
     return res == true;
   }
 
   Future<void> _resetSingleUserHistory() async {
-    final users =
-        box.keys.cast<String>().toList()
-          ..sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
+    final users = box.keys.cast<String>().toList()
+      ..sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
     if (users.isEmpty) {
       ScaffoldMessenger.of(
         context,
@@ -45,29 +43,27 @@ extension _FriendListPageDangerZone on _FriendListPageState {
 
     final selectedUser = await showDialog<String>(
       context: context,
-      builder:
-          (_) => AlertDialog(
-            backgroundColor: const Color(0xFF161B22),
-            title: const Text(
-              'Reset history of user',
-              style: TextStyle(color: Color(0xFFE6EDF3)),
-            ),
-            content: SizedBox(
-              width: 320,
-              child: ListView.builder(
-                shrinkWrap: true,
-                itemCount: users.length,
-                itemBuilder:
-                    (_, i) => ListTile(
-                      title: Text(
-                        users[i],
-                        style: const TextStyle(color: Color(0xFFE6EDF3)),
-                      ),
-                      onTap: () => Navigator.pop(context, users[i]),
-                    ),
+      builder: (_) => AlertDialog(
+        backgroundColor: const Color(0xFF161B22),
+        title: const Text(
+          'Reset history of user',
+          style: TextStyle(color: Color(0xFFE6EDF3)),
+        ),
+        content: SizedBox(
+          width: 320,
+          child: ListView.builder(
+            shrinkWrap: true,
+            itemCount: users.length,
+            itemBuilder: (_, i) => ListTile(
+              title: Text(
+                users[i],
+                style: const TextStyle(color: Color(0xFFE6EDF3)),
               ),
+              onTap: () => Navigator.pop(context, users[i]),
             ),
           ),
+        ),
+      ),
     );
     if (selectedUser == null) return;
 

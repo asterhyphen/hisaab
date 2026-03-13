@@ -227,10 +227,7 @@ extension _SettingsPageTab on _FriendListPageState {
               const SizedBox(height: 10),
               const Text(
                 'Note: All data is local, nothing is shared or stored on the cloud.',
-                style: TextStyle(
-                  color: Color(0xFF8B949E),
-                  fontSize: 12,
-                ),
+                style: TextStyle(color: Color(0xFF8B949E), fontSize: 12),
               ),
             ],
           ),
