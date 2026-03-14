@@ -228,7 +228,8 @@ class MyApp extends StatelessWidget {
     return ValueListenableBuilder(
       valueListenable: appMetaBox.listenable(keys: ['theme']),
       builder: (context, _, __) {
-        final themeKey = appMetaBox.get('theme') as String?;
+        final themeValue = appMetaBox.get('theme');
+        final themeKey = themeValue is String ? themeValue : null;
         return MaterialApp(
           debugShowCheckedModeBanner: false,
           title: 'Hisaab',
