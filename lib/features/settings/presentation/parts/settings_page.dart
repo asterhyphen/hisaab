@@ -10,19 +10,19 @@ extension _SettingsPageTab on _FriendListPageState {
         Container(
           padding: const EdgeInsets.all(14),
           decoration: BoxDecoration(
-            color: const Color(0xFF161B22),
+            color: Theme.of(context).colorScheme.surface,
             borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: const Color(0xFF30363D)),
+            border: Border.all(color: Theme.of(context).colorScheme.outline),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const Text(
+              Text(
                 'profile',
                 style: TextStyle(
-                  color: Color(0xFF00D084),
+                  color: Theme.of(context).colorScheme.primary,
                   fontWeight: FontWeight.w700,
-                  fontFamily: 'Courier New',
+                  fontFamily: context.hisaabFontFamily,
                 ),
               ),
               const SizedBox(height: 12),
@@ -36,16 +36,19 @@ extension _SettingsPageTab on _FriendListPageState {
                       children: [
                         Text(
                           name,
-                          style: const TextStyle(
-                            color: Color(0xFFE6EDF3),
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.onSurface,
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
                         const SizedBox(height: 4),
-                        const Text(
+                        Text(
                           'This name is used across your app profile.',
-                          style: TextStyle(color: Color(0xFF8B949E)),
+                          style: TextStyle(
+                            color:
+                                Theme.of(context).colorScheme.onSurfaceVariant,
+                          ),
                         ),
                       ],
                     ),
@@ -59,13 +62,13 @@ extension _SettingsPageTab on _FriendListPageState {
                 children: [
                   OutlinedButton.icon(
                     onPressed: _editProfileName,
-                    icon: const Icon(Icons.badge_outlined),
-                    label: const Text('Change name'),
+                    icon: Icon(Icons.badge_outlined),
+                    label: Text('Change name'),
                   ),
                   OutlinedButton.icon(
                     onPressed: _changeAppProfilePicture,
-                    icon: const Icon(Icons.image_outlined),
-                    label: const Text('Change photo'),
+                    icon: Icon(Icons.image_outlined),
+                    label: Text('Change photo'),
                   ),
                 ],
               ),
@@ -76,39 +79,43 @@ extension _SettingsPageTab on _FriendListPageState {
         Container(
           padding: const EdgeInsets.all(14),
           decoration: BoxDecoration(
-            color: const Color(0xFF161B22),
+            color: Theme.of(context).colorScheme.surface,
             borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: const Color(0xFF30363D)),
+            border: Border.all(color: Theme.of(context).colorScheme.outline),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const Text(
+              Text(
                 'appearance',
                 style: TextStyle(
-                  color: Color(0xFF00D084),
+                  color: Theme.of(context).colorScheme.primary,
                   fontWeight: FontWeight.w700,
-                  fontFamily: 'Courier New',
+                  fontFamily: context.hisaabFontFamily,
                 ),
               ),
               const SizedBox(height: 12),
               ListTile(
                 contentPadding: EdgeInsets.zero,
-                leading: const Icon(
+                leading: Icon(
                   Icons.palette_outlined,
-                  color: Color(0xFF58A6FF),
+                  color: Theme.of(context).colorScheme.secondary,
                 ),
-                title: const Text(
+                title: Text(
                   'Theme',
-                  style: TextStyle(color: Color(0xFFE6EDF3)),
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.onSurface,
+                  ),
                 ),
                 subtitle: Text(
                   _themeLabel(themeKey),
-                  style: const TextStyle(color: Color(0xFF8B949E)),
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
                 ),
-                trailing: const Icon(
+                trailing: Icon(
                   Icons.chevron_right,
-                  color: Color(0xFF8B949E),
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                 ),
                 onTap: _editThemePreference,
               ),
@@ -119,32 +126,32 @@ extension _SettingsPageTab on _FriendListPageState {
         Container(
           padding: const EdgeInsets.all(14),
           decoration: BoxDecoration(
-            color: const Color(0xFF161B22),
+            color: Theme.of(context).colorScheme.surface,
             borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: const Color(0xFF30363D)),
+            border: Border.all(color: Theme.of(context).colorScheme.outline),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const Text(
+              Text(
                 'data_management',
                 style: TextStyle(
-                  color: Color(0xFF00D084),
+                  color: Theme.of(context).colorScheme.primary,
                   fontWeight: FontWeight.w700,
-                  fontFamily: 'Courier New',
+                  fontFamily: context.hisaabFontFamily,
                 ),
               ),
               const SizedBox(height: 12),
               ElevatedButton.icon(
                 onPressed: _importAllCsv,
-                icon: const Icon(Icons.upload_file),
-                label: const Text('Import all CSV'),
+                icon: Icon(Icons.upload_file),
+                label: Text('Import all CSV'),
               ),
               const SizedBox(height: 10),
               ElevatedButton.icon(
                 onPressed: _exportAllCsv,
-                icon: const Icon(Icons.download_rounded),
-                label: const Text('Export all CSV'),
+                icon: Icon(Icons.download_rounded),
+                label: Text('Export all CSV'),
               ),
             ],
           ),
@@ -153,25 +160,28 @@ extension _SettingsPageTab on _FriendListPageState {
         Container(
           padding: const EdgeInsets.all(14),
           decoration: BoxDecoration(
-            color: const Color(0xFF161B22),
+            color: Theme.of(context).colorScheme.surface,
             borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: const Color(0xFF30363D)),
+            border: Border.all(color: Theme.of(context).colorScheme.outline),
           ),
           child: ListTile(
             contentPadding: EdgeInsets.zero,
-            leading: const FaIcon(
+            leading: FaIcon(
               FontAwesomeIcons.github,
-              color: Color(0xFF58A6FF),
+              color: Theme.of(context).colorScheme.secondary,
               size: 20,
             ),
-            title: const Text(
+            title: Text(
               'Open GitHub',
               style: TextStyle(
-                color: Color(0xFFE6EDF3),
-                fontFamily: 'Courier New',
+                color: Theme.of(context).colorScheme.onSurface,
+                fontFamily: context.hisaabFontFamily,
               ),
             ),
-            trailing: const Icon(Icons.open_in_new, color: Color(0xFF8B949E)),
+            trailing: Icon(
+              Icons.open_in_new,
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
             onTap: _launchGitHub,
           ),
         ),
@@ -179,55 +189,61 @@ extension _SettingsPageTab on _FriendListPageState {
         Container(
           padding: const EdgeInsets.all(14),
           decoration: BoxDecoration(
-            color: const Color(0xFF161B22),
+            color: Theme.of(context).colorScheme.surface,
             borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: const Color(0xFF8E2A2A)),
+            border: Border.all(
+              color: Theme.of(context).colorScheme.outlineVariant,
+            ),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const Text(
+              Text(
                 'danger_zone',
                 style: TextStyle(
-                  color: Color(0xFFF85149),
+                  color: Theme.of(context).colorScheme.error,
                   fontWeight: FontWeight.w700,
-                  fontFamily: 'Courier New',
+                  fontFamily: context.hisaabFontFamily,
                 ),
               ),
               const SizedBox(height: 10),
               OutlinedButton.icon(
                 onPressed: _resetSingleUserHistory,
                 style: OutlinedButton.styleFrom(
-                  foregroundColor: const Color(0xFFF85149),
-                  side: const BorderSide(color: Color(0xFFF85149)),
+                  foregroundColor: Theme.of(context).colorScheme.error,
+                  side: BorderSide(color: Theme.of(context).colorScheme.error),
                 ),
-                icon: const Icon(Icons.person_remove_alt_1_outlined),
-                label: const Text('Reset history of user'),
+                icon: Icon(Icons.person_remove_alt_1_outlined),
+                label: Text('Reset history of user'),
               ),
               const SizedBox(height: 8),
               OutlinedButton.icon(
                 onPressed: _resetAllUsersHistory,
                 style: OutlinedButton.styleFrom(
-                  foregroundColor: const Color(0xFFF85149),
-                  side: const BorderSide(color: Color(0xFFF85149)),
+                  foregroundColor: Theme.of(context).colorScheme.error,
+                  side: BorderSide(color: Theme.of(context).colorScheme.error),
                 ),
-                icon: const Icon(Icons.groups_2_outlined),
-                label: const Text('Reset history of all users'),
+                icon: Icon(Icons.groups_2_outlined),
+                label: Text('Reset history of all users'),
               ),
               const SizedBox(height: 8),
               ElevatedButton.icon(
                 onPressed: _deleteAllData,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFFF85149),
-                  foregroundColor: Colors.white,
+                  backgroundColor: Theme.of(context).colorScheme.error,
+                  foregroundColor:
+                      Theme.of(context).colorScheme.onErrorContainer,
                 ),
-                icon: const Icon(Icons.delete_forever_outlined),
-                label: const Text('Delete all data'),
+                icon: Icon(Icons.delete_forever_outlined),
+                label: Text('Delete all data'),
               ),
               const SizedBox(height: 10),
-              const Text(
+              Text(
                 'Note: All data is local, nothing is shared or stored on the cloud.',
-                style: TextStyle(color: Color(0xFF8B949E), fontSize: 12),
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  fontSize: 12,
+                ),
               ),
             ],
           ),

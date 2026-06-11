@@ -57,19 +57,26 @@ extension _FriendListPageProfileTheme on _FriendListPageState {
             (_) => StatefulBuilder(
               builder:
                   (dialogContext, setDialogState) => AlertDialog(
-                    backgroundColor: const Color(0xFF161B22),
-                    title: const Text(
+                    backgroundColor: Theme.of(context).colorScheme.surface,
+                    title: Text(
                       'Welcome to Hisaab',
-                      style: TextStyle(color: Color(0xFFE6EDF3)),
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.onSurface,
+                      ),
                     ),
                     content: SingleChildScrollView(
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
+                          Text(
                             'Set your name and preferred theme.',
-                            style: TextStyle(color: Color(0xFF8B949E)),
+                            style: TextStyle(
+                              color:
+                                  Theme.of(
+                                    context,
+                                  ).colorScheme.onSurfaceVariant,
+                            ),
                           ),
                           const SizedBox(height: 12),
                           TextField(
@@ -81,9 +88,14 @@ extension _FriendListPageProfileTheme on _FriendListPageState {
                             autofocus: true,
                           ),
                           const SizedBox(height: 16),
-                          const Text(
+                          Text(
                             'Theme',
-                            style: TextStyle(color: Color(0xFF8B949E)),
+                            style: TextStyle(
+                              color:
+                                  Theme.of(
+                                    context,
+                                  ).colorScheme.onSurfaceVariant,
+                            ),
                           ),
                           const SizedBox(height: 8),
                           Wrap(
@@ -120,7 +132,7 @@ extension _FriendListPageProfileTheme on _FriendListPageState {
                           await appMetaBox.put('firstSetupDone', true);
                           if (mounted) Navigator.of(context).pop();
                         },
-                        child: const Text('Save & Continue'),
+                        child: Text('Save & Continue'),
                       ),
                     ],
                   ),
@@ -142,10 +154,12 @@ extension _FriendListPageProfileTheme on _FriendListPageState {
           (_) => StatefulBuilder(
             builder:
                 (dialogContext, setDialogState) => AlertDialog(
-                  backgroundColor: const Color(0xFF161B22),
-                  title: const Text(
+                  backgroundColor: Theme.of(context).colorScheme.surface,
+                  title: Text(
                     'Update name',
-                    style: TextStyle(color: Color(0xFFE6EDF3)),
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.onSurface,
+                    ),
                   ),
                   content: TextField(
                     controller: controller,
@@ -158,7 +172,7 @@ extension _FriendListPageProfileTheme on _FriendListPageState {
                   actions: [
                     TextButton(
                       onPressed: () => Navigator.pop(dialogContext, false),
-                      child: const Text('Cancel'),
+                      child: Text('Cancel'),
                     ),
                     ElevatedButton(
                       onPressed: () {
@@ -170,7 +184,7 @@ extension _FriendListPageProfileTheme on _FriendListPageState {
                         }
                         Navigator.pop(dialogContext, true);
                       },
-                      child: const Text('Save'),
+                      child: Text('Save'),
                     ),
                   ],
                 ),
@@ -191,10 +205,12 @@ extension _FriendListPageProfileTheme on _FriendListPageState {
           (_) => StatefulBuilder(
             builder:
                 (dialogContext, setDialogState) => AlertDialog(
-                  backgroundColor: const Color(0xFF161B22),
-                  title: const Text(
+                  backgroundColor: Theme.of(context).colorScheme.surface,
+                  title: Text(
                     'Select theme',
-                    style: TextStyle(color: Color(0xFFE6EDF3)),
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.onSurface,
+                    ),
                   ),
                   content: Wrap(
                     spacing: 8,
@@ -216,11 +232,11 @@ extension _FriendListPageProfileTheme on _FriendListPageState {
                   actions: [
                     TextButton(
                       onPressed: () => Navigator.pop(dialogContext, false),
-                      child: const Text('Cancel'),
+                      child: Text('Cancel'),
                     ),
                     ElevatedButton(
                       onPressed: () => Navigator.pop(dialogContext, true),
-                      child: const Text('Save'),
+                      child: Text('Save'),
                     ),
                   ],
                 ),
@@ -248,15 +264,19 @@ extension _FriendListPageProfileTheme on _FriendListPageState {
           return CircleAvatar(
             radius: radius,
             backgroundImage: FileImage(file),
-            backgroundColor: const Color(0xFF0D1117),
+            backgroundColor: Theme.of(context).scaffoldBackgroundColor,
           );
         }
       }
     } catch (_) {}
     return CircleAvatar(
       radius: radius,
-      backgroundColor: const Color(0xFF0D1117),
-      child: Icon(Icons.person, size: radius, color: const Color(0xFF58A6FF)),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      child: Icon(
+        Icons.person,
+        size: radius,
+        color: Theme.of(context).colorScheme.secondary,
+      ),
     );
   }
 }

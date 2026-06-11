@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../core/theme/hisaab_typography.dart';
 import '../features/ledger/presentation/pages/friend_list_page.dart';
 import '../features/settings/data/app_preferences_repository.dart';
 
@@ -60,9 +61,19 @@ class HisaabApp extends ConsumerWidget {
       scaffoldBackgroundColor: Color(0xFF0D1117),
       colorScheme: ColorScheme.dark(
         primary: Color(0xFF00D084),
+        onPrimary: Color(0xFF0D1117),
         secondary: Color(0xFF58A6FF),
+        tertiary: Color(0xFF3FB950),
+        onTertiary: Color(0xFF0D1117),
+        error: Color(0xFFF85149),
+        onError: Color(0xFF0D1117),
+        errorContainer: Color(0xFF3D4C3A),
+        onErrorContainer: Colors.white,
         surface: Color(0xFF161B22),
         onSurface: Color(0xFFE6EDF3),
+        onSurfaceVariant: Color(0xFF8B949E),
+        outline: Color(0xFF30363D),
+        outlineVariant: Color(0xFF8E2A2A),
       ),
       appBarTheme: AppBarTheme(
         backgroundColor: Color(0xFF161B22),
@@ -109,6 +120,7 @@ class HisaabApp extends ConsumerWidget {
         secondaryText: const Color(0xFF8B949E),
         fontFamily: 'Moldern',
       ),
+      extensions: const [HisaabTypography(contentFontFamily: 'Courier New')],
     );
   }
 
@@ -117,44 +129,59 @@ class HisaabApp extends ConsumerWidget {
       brightness: Brightness.dark,
       useMaterial3: true,
       fontFamily: 'Merriweather',
-      colorScheme: ColorScheme.dark(
-        primary: Color(0xFF8AB4F8),
-        secondary: Color(0xFF7EDDD3),
-        surface: Color(0xFF1F232B),
-        onSurface: Color(0xFFF7FAFF),
-        outline: Color(0xFF3D4553),
+      colorScheme: const ColorScheme.dark(
+        primary: Color(0xFFB94B4B),
+        onPrimary: Color(0xFFFFF7F7),
+        primaryContainer: Color(0xFF743232),
+        onPrimaryContainer: Color(0xFFFFDADA),
+        secondary: Color(0xFFE7A0A0),
+        onSecondary: Color(0xFF442020),
+        secondaryContainer: Color(0xFF633838),
+        onSecondaryContainer: Color(0xFFFFDADA),
+        tertiary: Color(0xFF80C995),
+        onTertiary: Color(0xFF17341F),
+        surface: Color(0xFF453B3B),
+        onSurface: Color(0xFFFFF5F5),
+        onSurfaceVariant: Color(0xFFD8C2C2),
+        outline: Color(0xFF806D6D),
+        error: Color(0xFFFF7777),
+        onError: Color(0xFF3D1010),
+        errorContainer: Color(0xFF653B3B),
+        onErrorContainer: Color(0xFFFFE7E7),
+        outlineVariant: Color(0xFFA64A4A),
       ),
-      scaffoldBackgroundColor: Color(0xFF151922),
+      scaffoldBackgroundColor: const Color(0xFF342E2E),
       appBarTheme: const AppBarTheme(
-        backgroundColor: Color(0xFF1F232B),
-        foregroundColor: Color(0xFFF7FAFF),
+        backgroundColor: Color(0xFF453B3B),
+        foregroundColor: Color(0xFFFFF5F5),
         elevation: 0,
       ),
-      cardColor: const Color(0xFF1F232B),
-      dividerColor: const Color(0xFF3D4553),
+      cardColor: const Color(0xFF453B3B),
+      dividerColor: const Color(0xFF806D6D),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: const Color(0xFF202735),
-        hintStyle: const TextStyle(color: Color(0xFFAAB4C3)),
-        labelStyle: const TextStyle(color: Color(0xFFD8E0EC)),
+        fillColor: const Color(0xFF4E4242),
+        hintStyle: const TextStyle(color: Color(0xFFBCA7A7)),
+        labelStyle: const TextStyle(color: Color(0xFFE8D4D4)),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
-          borderSide: const BorderSide(color: Color(0xFF3D4553)),
+          borderSide: const BorderSide(color: Color(0xFF806D6D)),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
-          borderSide: const BorderSide(color: Color(0xFF3D4553)),
+          borderSide: const BorderSide(color: Color(0xFF806D6D)),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
-          borderSide: const BorderSide(color: Color(0xFF8AB4F8), width: 2),
+          borderSide: const BorderSide(color: Color(0xFFB94B4B), width: 2),
         ),
       ),
       textTheme: _readableTextTheme(
-        primaryText: const Color(0xFFF7FAFF),
-        secondaryText: const Color(0xFFB8C3D3),
+        primaryText: const Color(0xFFFFF5F5),
+        secondaryText: const Color(0xFFD8C2C2),
         fontFamily: 'Merriweather',
       ),
+      extensions: const [HisaabTypography(contentFontFamily: 'Merriweather')],
     );
   }
 
@@ -162,45 +189,60 @@ class HisaabApp extends ConsumerWidget {
     return ThemeData(
       brightness: Brightness.light,
       useMaterial3: true,
-      fontFamily: 'PlayfairDisplay',
-      colorScheme: ColorScheme.light(
-        primary: Color(0xFF0C5A44),
-        secondary: Color(0xFF0E5FB8),
-        surface: Color(0xFFFFFFFF),
-        onSurface: Color(0xFF1B2430),
-        outline: Color(0xFFC9D3DF),
+      fontFamily: 'Merriweather',
+      colorScheme: const ColorScheme.light(
+        primary: Color(0xFFB94B4B),
+        onPrimary: Color(0xFFFFFFFF),
+        primaryContainer: Color(0xFFFFB7B7),
+        onPrimaryContainer: Color(0xFF5C1E1E),
+        secondary: Color(0xFF7E3434),
+        onSecondary: Color(0xFFFFFFFF),
+        secondaryContainer: Color(0xFFFFCACA),
+        onSecondaryContainer: Color(0xFF4D1919),
+        tertiary: Color(0xFF327A48),
+        onTertiary: Color(0xFFFFFFFF),
+        surface: Color(0xFFFFB0B0),
+        onSurface: Color(0xFF3F2020),
+        onSurfaceVariant: Color(0xFF704545),
+        outline: Color(0xFFC85F5F),
+        error: Color(0xFF9F2525),
+        onError: Color(0xFFFFFFFF),
+        errorContainer: Color(0xFFFFA2A2),
+        onErrorContainer: Color(0xFF5A1717),
+        outlineVariant: Color(0xFFA94040),
       ),
-      scaffoldBackgroundColor: Color(0xFFF1F5F9),
+      scaffoldBackgroundColor: const Color(0xFFFF8282),
       appBarTheme: const AppBarTheme(
-        backgroundColor: Color(0xFFFFFFFF),
-        foregroundColor: Color(0xFF1B2430),
+        backgroundColor: Color(0xFFFFB0B0),
+        foregroundColor: Color(0xFF3F2020),
         elevation: 0,
       ),
-      cardColor: const Color(0xFFFFFFFF),
-      dividerColor: const Color(0xFFD5DDE7),
+      cardColor: const Color(0xFFFFB0B0),
+      dividerColor: const Color(0xFFC85F5F),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: const Color(0xFFFFFFFF),
-        hintStyle: const TextStyle(color: Color(0xFF6B7280)),
-        labelStyle: const TextStyle(color: Color(0xFF3A4353)),
+        fillColor: const Color(0xFFFFC2C2),
+        hintStyle: const TextStyle(color: Color(0xFF875656)),
+        labelStyle: const TextStyle(color: Color(0xFF663434)),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
-          borderSide: const BorderSide(color: Color(0xFFC9D3DF)),
+          borderSide: const BorderSide(color: Color(0xFFC85F5F)),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
-          borderSide: const BorderSide(color: Color(0xFFC9D3DF)),
+          borderSide: const BorderSide(color: Color(0xFFC85F5F)),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
-          borderSide: const BorderSide(color: Color(0xFF0E5FB8), width: 2),
+          borderSide: const BorderSide(color: Color(0xFFB94B4B), width: 2),
         ),
       ),
       textTheme: _readableTextTheme(
-        primaryText: const Color(0xFF1B2430),
-        secondaryText: const Color(0xFF5E6878),
-        fontFamily: 'PlayfairDisplay',
+        primaryText: const Color(0xFF3F2020),
+        secondaryText: const Color(0xFF704545),
+        fontFamily: 'Merriweather',
       ),
+      extensions: const [HisaabTypography(contentFontFamily: 'Merriweather')],
     );
   }
 

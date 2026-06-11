@@ -12,6 +12,7 @@ import 'package:crop_your_image/crop_your_image.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 import '../../../../core/platform/widget_action_bridge.dart';
+import '../../../../core/theme/hisaab_typography.dart';
 import '../../../settings/data/app_preferences_repository.dart';
 import '../../data/ledger_repository.dart';
 import '../../model/ledger_transaction.dart';
@@ -114,12 +115,12 @@ class _FriendListPageState extends ConsumerState<FriendListPage>
       context: context,
       builder:
           (_) => AlertDialog(
-            backgroundColor: const Color(0xFF161B22),
+            backgroundColor: Theme.of(context).colorScheme.surface,
             title: Text(
               type == 'add'
                   ? 'Select person for + entry'
                   : 'Select person for - entry',
-              style: const TextStyle(color: Color(0xFFE6EDF3)),
+              style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
             ),
             content: SizedBox(
               width: 360,
@@ -130,7 +131,9 @@ class _FriendListPageState extends ConsumerState<FriendListPage>
                     (context, index) => ListTile(
                       title: Text(
                         people[index],
-                        style: const TextStyle(color: Color(0xFFE6EDF3)),
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.onSurface,
+                        ),
                       ),
                       onTap: () => Navigator.pop(context, people[index]),
                     ),
@@ -157,24 +160,27 @@ class _FriendListPageState extends ConsumerState<FriendListPage>
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
             ),
-            backgroundColor: const Color(0xFF161B22),
+            backgroundColor: Theme.of(context).colorScheme.surface,
             child: Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: const Color(0xFF161B22),
+                color: Theme.of(context).colorScheme.surface,
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: const Color(0xFF30363D), width: 1),
+                border: Border.all(
+                  color: Theme.of(context).colorScheme.outline,
+                  width: 1,
+                ),
               ),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
                     '${type == 'add' ? '+' : '-'} transaction for $person',
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
-                      color: Color(0xFF00D084),
-                      fontFamily: 'Courier New',
+                      color: Theme.of(context).colorScheme.primary,
+                      fontFamily: context.hisaabFontFamily,
                     ),
                   ),
                   const SizedBox(height: 16),
@@ -184,18 +190,18 @@ class _FriendListPageState extends ConsumerState<FriendListPage>
                       decimal: true,
                     ),
                     autofocus: true,
-                    style: const TextStyle(
-                      color: Color(0xFFE6EDF3),
-                      fontFamily: 'Courier New',
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.onSurface,
+                      fontFamily: context.hisaabFontFamily,
                     ),
                     decoration: const InputDecoration(labelText: 'amount'),
                   ),
                   const SizedBox(height: 12),
                   TextField(
                     controller: noteController,
-                    style: const TextStyle(
-                      color: Color(0xFFE6EDF3),
-                      fontFamily: 'Courier New',
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.onSurface,
+                      fontFamily: context.hisaabFontFamily,
                     ),
                     decoration: const InputDecoration(
                       labelText: 'note (optional)',
@@ -207,16 +213,17 @@ class _FriendListPageState extends ConsumerState<FriendListPage>
                     children: [
                       TextButton(
                         onPressed: () => Navigator.pop(context),
-                        child: const Text('cancel'),
+                        child: Text('cancel'),
                       ),
                       const SizedBox(width: 12),
                       ElevatedButton(
                         style: ElevatedButton.styleFrom(
                           backgroundColor:
                               type == 'add'
-                                  ? const Color(0xFF3FB950)
-                                  : const Color(0xFFF85149),
-                          foregroundColor: const Color(0xFF0D1117),
+                                  ? Theme.of(context).colorScheme.tertiary
+                                  : Theme.of(context).colorScheme.error,
+                          foregroundColor:
+                              Theme.of(context).scaffoldBackgroundColor,
                         ),
                         onPressed: () async {
                           final amount =
@@ -253,7 +260,7 @@ class _FriendListPageState extends ConsumerState<FriendListPage>
                             ),
                           );
                         },
-                        child: const Text('save'),
+                        child: Text('save'),
                       ),
                     ],
                   ),
@@ -320,31 +327,41 @@ class _FriendListPageState extends ConsumerState<FriendListPage>
       context: context,
       builder:
           (ctx) => AlertDialog(
-            backgroundColor: const Color(0xFF3D4C3A),
+            backgroundColor: Theme.of(context).colorScheme.errorContainer,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(16),
             ),
-            title: const Text(
+            title: Text(
               'Confirm Deletion',
-              style: TextStyle(color: Colors.white),
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.onErrorContainer,
+              ),
             ),
             content: Text(
               'Are you sure you want to delete "$name" and all their transactions? This action is non-reversible.',
-              style: const TextStyle(color: Colors.white70),
+              style: TextStyle(
+                color: Theme.of(
+                  context,
+                ).colorScheme.onErrorContainer.withValues(alpha: 0.7),
+              ),
             ),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(ctx, false),
-                child: const Text(
+                child: Text(
                   'Cancel',
-                  style: TextStyle(color: Colors.white70),
+                  style: TextStyle(
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.onErrorContainer.withValues(alpha: 0.7),
+                  ),
                 ),
               ),
               TextButton(
                 onPressed: () => Navigator.pop(ctx, true),
-                child: const Text(
+                child: Text(
                   'Delete',
-                  style: TextStyle(color: Colors.redAccent),
+                  style: TextStyle(color: Theme.of(context).colorScheme.error),
                 ),
               ),
             ],
@@ -396,14 +413,24 @@ class _FriendListPageState extends ConsumerState<FriendListPage>
         child: Container(
           padding: EdgeInsets.all(6),
           decoration: BoxDecoration(
-            color: isSelected ? Color(0xFF0D1117) : Color(0xFF161B22),
+            color:
+                isSelected
+                    ? Theme.of(context).scaffoldBackgroundColor
+                    : Theme.of(context).colorScheme.surface,
             border: Border.all(
-              color: isSelected ? Color(0xFF00D084) : Color(0xFF30363D),
+              color:
+                  isSelected
+                      ? Theme.of(context).colorScheme.primary
+                      : Theme.of(context).colorScheme.outline,
               width: isSelected ? 2 : 1,
             ),
             borderRadius: BorderRadius.circular(8),
           ),
-          child: Icon(icon, color: Color(0xFF58A6FF), size: 20),
+          child: Icon(
+            icon,
+            color: Theme.of(context).colorScheme.secondary,
+            size: 20,
+          ),
         ),
       ),
     );
@@ -532,7 +559,7 @@ class _FriendListPageState extends ConsumerState<FriendListPage>
       builder: (_) {
         final controller = CropController();
         return Dialog(
-          backgroundColor: Color(0xFF0D1117),
+          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
           child: Container(
             width: 320,
             height: 480,

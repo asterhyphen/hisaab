@@ -9,29 +9,41 @@ extension _HomePageTab on _FriendListPageState {
           child: TextField(
             controller: searchController,
             style: TextStyle(
-              color: Color(0xFFE6EDF3),
-              fontFamily: 'Courier New',
+              color: Theme.of(context).colorScheme.onSurface,
+              fontFamily: context.hisaabFontFamily,
             ),
             decoration: InputDecoration(
               filled: true,
-              fillColor: Color(0xFF0D1117),
+              fillColor: Theme.of(context).scaffoldBackgroundColor,
               labelText: 'Search user',
               labelStyle: TextStyle(
-                color: Color(0xFF8B949E),
-                fontFamily: 'Courier New',
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+                fontFamily: context.hisaabFontFamily,
               ),
-              prefixIcon: Icon(Icons.search, color: Color(0xFF58A6FF)),
+              prefixIcon: Icon(
+                Icons.search,
+                color: Theme.of(context).colorScheme.secondary,
+              ),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8),
-                borderSide: BorderSide(color: Color(0xFF30363D), width: 1),
+                borderSide: BorderSide(
+                  color: Theme.of(context).colorScheme.outline,
+                  width: 1,
+                ),
               ),
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8),
-                borderSide: BorderSide(color: Color(0xFF30363D), width: 1),
+                borderSide: BorderSide(
+                  color: Theme.of(context).colorScheme.outline,
+                  width: 1,
+                ),
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8),
-                borderSide: BorderSide(color: Color(0xFF00D084), width: 2),
+                borderSide: BorderSide(
+                  color: Theme.of(context).colorScheme.primary,
+                  width: 2,
+                ),
               ),
             ),
           ),
@@ -43,16 +55,19 @@ extension _HomePageTab on _FriendListPageState {
             child: Container(
               padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               decoration: BoxDecoration(
-                border: Border.all(color: Color(0xFF30363D), width: 1),
+                border: Border.all(
+                  color: Theme.of(context).colorScheme.outline,
+                  width: 1,
+                ),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Text(
                 'total_pending: ₹${getOverallTotal().toStringAsFixed(2)}',
                 style: TextStyle(
                   fontSize: 14,
-                  fontFamily: 'Courier New',
+                  fontFamily: context.hisaabFontFamily,
                   fontWeight: FontWeight.w500,
-                  color: Color(0xFF58A6FF),
+                  color: Theme.of(context).colorScheme.secondary,
                   letterSpacing: 0.5,
                 ),
               ),
@@ -68,9 +83,9 @@ extension _HomePageTab on _FriendListPageState {
                       '\n\ntype "+ icon" to create_user()',
                       textAlign: TextAlign.center,
                       style: TextStyle(
-                        color: Color(0xFF6E7681),
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
                         fontSize: 14,
-                        fontFamily: 'Courier New',
+                        fontFamily: context.hisaabFontFamily,
                         height: 1.6,
                       ),
                     ),
@@ -116,7 +131,7 @@ extension _HomePageTab on _FriendListPageState {
                                   ),
                                   alignment: Alignment.centerRight,
                                   padding: const EdgeInsets.only(right: 24),
-                                  child: const Icon(
+                                  child: Icon(
                                     Icons.delete,
                                     color: Colors.white,
                                   ),
@@ -139,7 +154,7 @@ extension _HomePageTab on _FriendListPageState {
                                       color: Colors.red,
                                       borderRadius: BorderRadius.circular(8),
                                     ),
-                                    child: const Icon(
+                                    child: Icon(
                                       Icons.delete,
                                       color: Colors.white,
                                     ),
@@ -216,24 +231,32 @@ extension _HomePageTab on _FriendListPageState {
                                           vertical: 6,
                                         ),
                                         decoration: BoxDecoration(
-                                          color: const Color(0xFF161B22),
+                                          color:
+                                              Theme.of(
+                                                context,
+                                              ).colorScheme.surface,
                                           borderRadius: BorderRadius.circular(
                                             8,
                                           ),
                                           border: Border.all(
                                             color:
                                                 pressed
-                                                    ? const Color(0xFF00D084)
-                                                    : const Color(0xFF30363D),
+                                                    ? Theme.of(
+                                                      context,
+                                                    ).colorScheme.primary
+                                                    : Theme.of(
+                                                      context,
+                                                    ).colorScheme.outline,
                                             width: pressed ? 2 : 1,
                                           ),
                                           boxShadow:
                                               pressed
                                                   ? [
                                                     BoxShadow(
-                                                      color: const Color(
-                                                        0xFF00D084,
-                                                      ).withOpacity(0.3),
+                                                      color: Theme.of(context)
+                                                          .colorScheme
+                                                          .primary
+                                                          .withOpacity(0.3),
                                                       blurRadius: 8,
                                                     ),
                                                   ]
@@ -251,9 +274,10 @@ extension _HomePageTab on _FriendListPageState {
                                               children: [
                                                 CircleAvatar(
                                                   radius: 20,
-                                                  backgroundColor: const Color(
-                                                    0xFF0D1117,
-                                                  ),
+                                                  backgroundColor:
+                                                      Theme.of(
+                                                        context,
+                                                      ).scaffoldBackgroundColor,
                                                   child: Builder(
                                                     builder: (c) {
                                                       final iconKey =
@@ -293,40 +317,55 @@ extension _HomePageTab on _FriendListPageState {
                                                       } catch (_) {}
                                                       switch (iconKey) {
                                                         case 'code':
-                                                          return const Icon(
+                                                          return Icon(
                                                             Icons.code,
-                                                            color: Color(
-                                                              0xFF58A6FF,
-                                                            ),
+                                                            color:
+                                                                Theme.of(
+                                                                      context,
+                                                                    )
+                                                                    .colorScheme
+                                                                    .secondary,
                                                           );
                                                         case 'robot':
-                                                          return const Icon(
+                                                          return Icon(
                                                             Icons.smart_toy,
-                                                            color: Color(
-                                                              0xFF58A6FF,
-                                                            ),
+                                                            color:
+                                                                Theme.of(
+                                                                      context,
+                                                                    )
+                                                                    .colorScheme
+                                                                    .secondary,
                                                           );
                                                         case 'user':
-                                                          return const Icon(
+                                                          return Icon(
                                                             Icons.person,
-                                                            color: Color(
-                                                              0xFF58A6FF,
-                                                            ),
+                                                            color:
+                                                                Theme.of(
+                                                                      context,
+                                                                    )
+                                                                    .colorScheme
+                                                                    .secondary,
                                                           );
                                                         case 'smile':
-                                                          return const Icon(
+                                                          return Icon(
                                                             Icons
                                                                 .emoji_emotions,
-                                                            color: Color(
-                                                              0xFF58A6FF,
-                                                            ),
+                                                            color:
+                                                                Theme.of(
+                                                                      context,
+                                                                    )
+                                                                    .colorScheme
+                                                                    .secondary,
                                                           );
                                                         default:
-                                                          return const Icon(
+                                                          return Icon(
                                                             Icons.terminal,
-                                                            color: Color(
-                                                              0xFF58A6FF,
-                                                            ),
+                                                            color:
+                                                                Theme.of(
+                                                                      context,
+                                                                    )
+                                                                    .colorScheme
+                                                                    .secondary,
                                                           );
                                                       }
                                                     },
@@ -339,13 +378,14 @@ extension _HomePageTab on _FriendListPageState {
                                                   children: [
                                                     Text(
                                                       key,
-                                                      style: const TextStyle(
+                                                      style: TextStyle(
                                                         fontSize: 16,
                                                         fontWeight:
                                                             FontWeight.w600,
-                                                        color: Color(
-                                                          0xFFE6EDF3,
-                                                        ),
+                                                        color:
+                                                            Theme.of(context)
+                                                                .colorScheme
+                                                                .onSurface,
                                                         fontFamily:
                                                             'Courier New',
                                                       ),
@@ -359,12 +399,16 @@ extension _HomePageTab on _FriendListPageState {
                                                             'Courier New',
                                                         color:
                                                             total >= 0
-                                                                ? const Color(
-                                                                  0xFF3FB950,
-                                                                )
-                                                                : const Color(
-                                                                  0xFFF85149,
-                                                                ),
+                                                                ? Theme.of(
+                                                                      context,
+                                                                    )
+                                                                    .colorScheme
+                                                                    .tertiary
+                                                                : Theme.of(
+                                                                      context,
+                                                                    )
+                                                                    .colorScheme
+                                                                    .error,
                                                         fontWeight:
                                                             FontWeight.w500,
                                                       ),
@@ -373,9 +417,12 @@ extension _HomePageTab on _FriendListPageState {
                                                 ),
                                               ],
                                             ),
-                                            const Icon(
+                                            Icon(
                                               Icons.chevron_right,
-                                              color: Color(0xFF6E7681),
+                                              color:
+                                                  Theme.of(context)
+                                                      .colorScheme
+                                                      .onSurfaceVariant,
                                             ),
                                           ],
                                         ),
@@ -397,8 +444,8 @@ extension _HomePageTab on _FriendListPageState {
 
   Widget _buildAddUserFab() {
     return FloatingActionButton(
-      backgroundColor: Color(0xFF00D084),
-      foregroundColor: Color(0xFF0D1117),
+      backgroundColor: Theme.of(context).colorScheme.primary,
+      foregroundColor: Theme.of(context).scaffoldBackgroundColor,
       child: Icon(Icons.add, size: 28),
       elevation: 2,
       onPressed:
@@ -411,14 +458,14 @@ extension _HomePageTab on _FriendListPageState {
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
-                        backgroundColor: Color(0xFF161B22),
+                        backgroundColor: Theme.of(context).colorScheme.surface,
                         child: Container(
                           padding: EdgeInsets.all(24),
                           decoration: BoxDecoration(
-                            color: Color(0xFF161B22),
+                            color: Theme.of(context).colorScheme.surface,
                             borderRadius: BorderRadius.circular(12),
                             border: Border.all(
-                              color: Color(0xFF30363D),
+                              color: Theme.of(context).colorScheme.outline,
                               width: 1,
                             ),
                           ),
@@ -430,8 +477,8 @@ extension _HomePageTab on _FriendListPageState {
                                 style: TextStyle(
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold,
-                                  color: Color(0xFF00D084),
-                                  fontFamily: 'Courier New',
+                                  color: Theme.of(context).colorScheme.primary,
+                                  fontFamily: context.hisaabFontFamily,
                                   letterSpacing: 0.5,
                                 ),
                               ),
@@ -490,8 +537,12 @@ extension _HomePageTab on _FriendListPageState {
                                                       _selectedIcon.startsWith(
                                                         'file://',
                                                       ))
-                                                  ? Color(0xFF0D1117)
-                                                  : Color(0xFF161B22),
+                                                  ? Theme.of(
+                                                    context,
+                                                  ).scaffoldBackgroundColor
+                                                  : Theme.of(
+                                                    context,
+                                                  ).colorScheme.surface,
                                           border: Border.all(
                                             color:
                                                 (_selectedIcon.startsWith(
@@ -501,8 +552,12 @@ extension _HomePageTab on _FriendListPageState {
                                                             .startsWith(
                                                               'file://',
                                                             ))
-                                                    ? Color(0xFF00D084)
-                                                    : Color(0xFF30363D),
+                                                    ? Theme.of(
+                                                      context,
+                                                    ).colorScheme.primary
+                                                    : Theme.of(
+                                                      context,
+                                                    ).colorScheme.outline,
                                             width:
                                                 (_selectedIcon.startsWith(
                                                           '/',
@@ -520,7 +575,10 @@ extension _HomePageTab on _FriendListPageState {
                                         ),
                                         child: Icon(
                                           Icons.image,
-                                          color: Color(0xFF58A6FF),
+                                          color:
+                                              Theme.of(
+                                                context,
+                                              ).colorScheme.secondary,
                                           size: 20,
                                         ),
                                       ),
@@ -532,35 +590,43 @@ extension _HomePageTab on _FriendListPageState {
                               TextField(
                                 controller: nameController,
                                 style: TextStyle(
-                                  color: Color(0xFFE6EDF3),
-                                  fontFamily: 'Courier New',
+                                  color:
+                                      Theme.of(context).colorScheme.onSurface,
+                                  fontFamily: context.hisaabFontFamily,
                                 ),
                                 decoration: InputDecoration(
                                   hintText: 'name_',
                                   hintStyle: TextStyle(
-                                    color: Color(0xFF6E7681),
-                                    fontFamily: 'Courier New',
+                                    color:
+                                        Theme.of(
+                                          context,
+                                        ).colorScheme.onSurfaceVariant,
+                                    fontFamily: context.hisaabFontFamily,
                                   ),
                                   filled: true,
-                                  fillColor: Color(0xFF0D1117),
+                                  fillColor:
+                                      Theme.of(context).scaffoldBackgroundColor,
                                   border: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(8),
                                     borderSide: BorderSide(
-                                      color: Color(0xFF30363D),
+                                      color:
+                                          Theme.of(context).colorScheme.outline,
                                       width: 1,
                                     ),
                                   ),
                                   enabledBorder: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(8),
                                     borderSide: BorderSide(
-                                      color: Color(0xFF30363D),
+                                      color:
+                                          Theme.of(context).colorScheme.outline,
                                       width: 1,
                                     ),
                                   ),
                                   focusedBorder: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(8),
                                     borderSide: BorderSide(
-                                      color: Color(0xFF00D084),
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
                                       width: 2,
                                     ),
                                   ),
@@ -575,8 +641,11 @@ extension _HomePageTab on _FriendListPageState {
                                     child: Text(
                                       'cancel',
                                       style: TextStyle(
-                                        color: Color(0xFF8B949E),
-                                        fontFamily: 'Courier New',
+                                        color:
+                                            Theme.of(
+                                              context,
+                                            ).colorScheme.onSurfaceVariant,
+                                        fontFamily: context.hisaabFontFamily,
                                       ),
                                     ),
                                     onPressed: () => Navigator.pop(context),
@@ -584,8 +653,12 @@ extension _HomePageTab on _FriendListPageState {
                                   SizedBox(width: 12),
                                   ElevatedButton(
                                     style: ElevatedButton.styleFrom(
-                                      backgroundColor: Color(0xFF00D084),
-                                      foregroundColor: Color(0xFF0D1117),
+                                      backgroundColor:
+                                          Theme.of(context).colorScheme.primary,
+                                      foregroundColor:
+                                          Theme.of(
+                                            context,
+                                          ).scaffoldBackgroundColor,
                                       shape: RoundedRectangleBorder(
                                         borderRadius: BorderRadius.circular(8),
                                       ),
@@ -593,7 +666,7 @@ extension _HomePageTab on _FriendListPageState {
                                     child: Text(
                                       'create',
                                       style: TextStyle(
-                                        fontFamily: 'Courier New',
+                                        fontFamily: context.hisaabFontFamily,
                                         fontWeight: FontWeight.w600,
                                       ),
                                     ),

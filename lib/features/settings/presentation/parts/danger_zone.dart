@@ -10,22 +10,27 @@ extension _FriendListPageDangerZone on _FriendListPageState {
       context: context,
       builder:
           (_) => AlertDialog(
-            backgroundColor: const Color(0xFF161B22),
+            backgroundColor: Theme.of(context).colorScheme.surface,
             title: Text(
               title,
-              style: const TextStyle(color: Color(0xFFE6EDF3)),
+              style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
             ),
             content: Text(
               message,
-              style: const TextStyle(color: Color(0xFF8B949E)),
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
             ),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context, false),
-                child: const Text('Cancel'),
+                child: Text('Cancel'),
               ),
               ElevatedButton(
-                style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Theme.of(context).colorScheme.error,
+                  foregroundColor: Theme.of(context).colorScheme.onError,
+                ),
                 onPressed: () => Navigator.pop(context, true),
                 child: Text(confirmLabel),
               ),
@@ -50,10 +55,10 @@ extension _FriendListPageDangerZone on _FriendListPageState {
       context: context,
       builder:
           (_) => AlertDialog(
-            backgroundColor: const Color(0xFF161B22),
-            title: const Text(
+            backgroundColor: Theme.of(context).colorScheme.surface,
+            title: Text(
               'Reset history of user',
-              style: TextStyle(color: Color(0xFFE6EDF3)),
+              style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
             ),
             content: SizedBox(
               width: 320,
@@ -64,7 +69,9 @@ extension _FriendListPageDangerZone on _FriendListPageState {
                     (_, i) => ListTile(
                       title: Text(
                         users[i],
-                        style: const TextStyle(color: Color(0xFFE6EDF3)),
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.onSurface,
+                        ),
                       ),
                       onTap: () => Navigator.pop(context, users[i]),
                     ),

@@ -75,10 +75,10 @@ extension _StatsPageTab on _FriendListPageState {
       context: context,
       builder: (_) {
         return AlertDialog(
-          backgroundColor: const Color(0xFF161B22),
-          title: const Text(
+          backgroundColor: Theme.of(context).colorScheme.surface,
+          title: Text(
             'Drag to select date range',
-            style: TextStyle(color: Color(0xFFE6EDF3)),
+            style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
           ),
           content: SizedBox(
             width: 360,
@@ -120,7 +120,7 @@ extension _StatsPageTab on _FriendListPageState {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text('Cancel'),
+              child: Text('Cancel'),
             ),
             ElevatedButton(
               onPressed: () {
@@ -136,7 +136,7 @@ extension _StatsPageTab on _FriendListPageState {
                 );
                 Navigator.pop(context, normalized);
               },
-              child: const Text('Apply'),
+              child: Text('Apply'),
             ),
           ],
         );
@@ -159,18 +159,18 @@ extension _StatsPageTab on _FriendListPageState {
       margin: const EdgeInsets.fromLTRB(12, 4, 12, 8),
       padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
-        color: const Color(0xFF161B22),
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: const Color(0xFF30363D)),
+        border: Border.all(color: Theme.of(context).colorScheme.outline),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             'time_filter',
             style: TextStyle(
-              color: Color(0xFF8B949E),
-              fontFamily: 'Courier New',
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+              fontFamily: context.hisaabFontFamily,
               fontSize: 12,
             ),
           ),
@@ -180,7 +180,7 @@ extension _StatsPageTab on _FriendListPageState {
             runSpacing: 8,
             children: [
               ChoiceChip(
-                label: const Text('Monthly'),
+                label: Text('Monthly'),
                 selected: _statsFilter == 'monthly',
                 onSelected: (_) {
                   _statsFilter = 'monthly';
@@ -188,7 +188,7 @@ extension _StatsPageTab on _FriendListPageState {
                 },
               ),
               ChoiceChip(
-                label: const Text('Yearly'),
+                label: Text('Yearly'),
                 selected: _statsFilter == 'yearly',
                 onSelected: (_) {
                   _statsFilter = 'yearly';
@@ -196,14 +196,14 @@ extension _StatsPageTab on _FriendListPageState {
                 },
               ),
               ChoiceChip(
-                label: const Text('Custom'),
+                label: Text('Custom'),
                 selected: _statsFilter == 'custom',
                 onSelected: (_) => _pickCustomStatsRange(),
               ),
               if (_statsFilter == 'custom')
                 OutlinedButton.icon(
                   onPressed: _pickCustomStatsRange,
-                  icon: const Icon(Icons.date_range_outlined, size: 18),
+                  icon: Icon(Icons.date_range_outlined, size: 18),
                   label: Text(customLabel),
                 ),
             ],
@@ -218,9 +218,9 @@ extension _StatsPageTab on _FriendListPageState {
       margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: const Color(0xFF161B22),
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: const Color(0xFF30363D)),
+        border: Border.all(color: Theme.of(context).colorScheme.outline),
       ),
       child: Row(
         children: [
@@ -229,9 +229,9 @@ extension _StatsPageTab on _FriendListPageState {
               label,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: const TextStyle(
-                color: Color(0xFF8B949E),
-                fontFamily: 'Courier New',
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+                fontFamily: context.hisaabFontFamily,
               ),
             ),
           ),
@@ -245,7 +245,7 @@ extension _StatsPageTab on _FriendListPageState {
               style: TextStyle(
                 color: color,
                 fontWeight: FontWeight.bold,
-                fontFamily: 'Courier New',
+                fontFamily: context.hisaabFontFamily,
               ),
             ),
           ),
@@ -259,11 +259,11 @@ extension _StatsPageTab on _FriendListPageState {
       padding: const EdgeInsets.fromLTRB(12, 14, 12, 4),
       child: Text(
         title,
-        style: const TextStyle(
-          color: Color(0xFF58A6FF),
+        style: TextStyle(
+          color: Theme.of(context).colorScheme.secondary,
           fontWeight: FontWeight.w700,
           fontSize: 14,
-          fontFamily: 'Courier New',
+          fontFamily: context.hisaabFontFamily,
         ),
       ),
     );
@@ -280,9 +280,9 @@ extension _StatsPageTab on _FriendListPageState {
       margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: const Color(0xFF161B22),
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: const Color(0xFF30363D)),
+        border: Border.all(color: Theme.of(context).colorScheme.outline),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -294,10 +294,10 @@ extension _StatsPageTab on _FriendListPageState {
                   name,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                    color: Color(0xFFE6EDF3),
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.onSurface,
                     fontWeight: FontWeight.w600,
-                    fontFamily: 'Courier New',
+                    fontFamily: context.hisaabFontFamily,
                   ),
                 ),
               ),
@@ -308,9 +308,9 @@ extension _StatsPageTab on _FriendListPageState {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   textAlign: TextAlign.right,
-                  style: const TextStyle(
-                    color: Color(0xFF8B949E),
-                    fontFamily: 'Courier New',
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    fontFamily: context.hisaabFontFamily,
                   ),
                 ),
               ),
@@ -322,7 +322,7 @@ extension _StatsPageTab on _FriendListPageState {
             child: LinearProgressIndicator(
               value: safeRatio,
               minHeight: 8,
-              backgroundColor: const Color(0xFF30363D),
+              backgroundColor: Theme.of(context).colorScheme.outline,
               valueColor: AlwaysStoppedAnimation<Color>(color),
             ),
           ),
@@ -341,9 +341,9 @@ extension _StatsPageTab on _FriendListPageState {
       margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: const Color(0xFF161B22),
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: const Color(0xFF30363D)),
+        border: Border.all(color: Theme.of(context).colorScheme.outline),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.end,
@@ -361,17 +361,17 @@ extension _StatsPageTab on _FriendListPageState {
                         '$count',
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 10,
-                          color: Color(0xFF8B949E),
-                          fontFamily: 'Courier New',
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                          fontFamily: context.hisaabFontFamily,
                         ),
                       ),
                       const SizedBox(height: 4),
                       Container(
                         height: 70 * ratio + 6,
                         decoration: BoxDecoration(
-                          color: const Color(0xFF58A6FF),
+                          color: Theme.of(context).colorScheme.secondary,
                           borderRadius: BorderRadius.circular(4),
                         ),
                       ),
@@ -380,10 +380,10 @@ extension _StatsPageTab on _FriendListPageState {
                         month,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 10,
-                          color: Color(0xFF8B949E),
-                          fontFamily: 'Courier New',
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                          fontFamily: context.hisaabFontFamily,
                         ),
                       ),
                     ],
@@ -475,67 +475,69 @@ extension _StatsPageTab on _FriendListPageState {
         _buildStatCard(
           'total_users',
           totalUsers.toString(),
-          const Color(0xFF58A6FF),
+          Theme.of(context).colorScheme.secondary,
         ),
         _buildStatCard(
           'active_users',
           activeUsers.toString(),
-          const Color(0xFF58A6FF),
+          Theme.of(context).colorScheme.secondary,
         ),
         _buildStatCard(
           'total_transactions',
           totalTransactions.toString(),
-          const Color(0xFF58A6FF),
+          Theme.of(context).colorScheme.secondary,
         ),
         _buildStatCard(
           'avg_txn_per_active_user',
           avgTxnPerUser.toStringAsFixed(2),
-          const Color(0xFF58A6FF),
+          Theme.of(context).colorScheme.secondary,
         ),
         _buildStatCard(
           'avg_txn_amount',
           '₹${avgTxnAmount.toStringAsFixed(2)}',
-          const Color(0xFF58A6FF),
+          Theme.of(context).colorScheme.secondary,
         ),
         _buildStatCard(
           'largest_single_transaction',
           '₹${biggestTxn.toStringAsFixed(2)}',
-          const Color(0xFF58A6FF),
+          Theme.of(context).colorScheme.secondary,
         ),
         _buildStatCard(
           'total_added',
           '₹${added.toStringAsFixed(2)}',
-          const Color(0xFF3FB950),
+          Theme.of(context).colorScheme.tertiary,
         ),
         _buildStatCard(
           'total_removed',
           '₹${removed.toStringAsFixed(2)}',
-          const Color(0xFFF85149),
+          Theme.of(context).colorScheme.error,
         ),
         _buildStatCard(
           'net_balance',
           '₹${net.toStringAsFixed(2)}',
-          net >= 0 ? const Color(0xFF3FB950) : const Color(0xFFF85149),
+          net >= 0
+              ? Theme.of(context).colorScheme.tertiary
+              : Theme.of(context).colorScheme.error,
         ),
         _buildSectionTitle('insights'),
         _buildStatCard(
           'most_transactions_with',
           topCount == null ? '--' : '${topCount.key} (${topCount.value})',
-          const Color(0xFF58A6FF),
+          Theme.of(context).colorScheme.secondary,
         ),
         _buildStatCard(
           'highest_transaction_volume',
           topVolume == null
               ? '--'
               : '${topVolume.key} (₹${topVolume.value.toStringAsFixed(2)})',
-          const Color(0xFF58A6FF),
+          Theme.of(context).colorScheme.secondary,
         ),
         _buildSectionTitle('top_users_by_transactions'),
         if (rankedByCount.isEmpty)
           _buildStatCard(
             'top_users',
             'No data in selected range',
-            const Color(0xFF8B949E),
+            Theme.of(context).colorScheme.onSurfaceVariant,
           ),
         ...rankedByCount
             .take(5)
@@ -544,7 +546,7 @@ extension _StatsPageTab on _FriendListPageState {
                 name: entry.key,
                 subtitle: '${entry.value} txns',
                 ratio: entry.value / maxCount,
-                color: const Color(0xFF3FB950),
+                color: Theme.of(context).colorScheme.tertiary,
               ),
             ),
         _buildSectionTitle('top_users_by_volume'),
@@ -552,7 +554,7 @@ extension _StatsPageTab on _FriendListPageState {
           _buildStatCard(
             'top_volume',
             'No data in selected range',
-            const Color(0xFF8B949E),
+            Theme.of(context).colorScheme.onSurfaceVariant,
           ),
         ...rankedByVolume
             .take(5)
@@ -561,7 +563,7 @@ extension _StatsPageTab on _FriendListPageState {
                 name: entry.key,
                 subtitle: '₹${entry.value.toStringAsFixed(2)}',
                 ratio: entry.value / maxVolume,
-                color: const Color(0xFF58A6FF),
+                color: Theme.of(context).colorScheme.secondary,
               ),
             ),
         _buildSectionTitle('last_6_months_transactions'),

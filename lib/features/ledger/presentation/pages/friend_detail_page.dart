@@ -6,6 +6,8 @@ import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/services.dart';
+
+import '../../../../core/theme/hisaab_typography.dart';
 import 'package:crop_your_image/crop_your_image.dart';
 import 'dart:ui' as ui;
 import 'package:qr_flutter/qr_flutter.dart';
@@ -507,7 +509,7 @@ class _FriendDetailPageState extends ConsumerState<FriendDetailPage>
       builder: (_) {
         final controller = CropController();
         return Dialog(
-          backgroundColor: Color(0xFF0D1117),
+          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
           child: Container(
             width: 320,
             height: 480,
@@ -697,7 +699,7 @@ class _FriendDetailPageState extends ConsumerState<FriendDetailPage>
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  backgroundColor: Color(0xFF161B22),
+                  backgroundColor: Theme.of(context).colorScheme.surface,
                   child: Container(
                     padding: EdgeInsets.all(16),
                     child: Column(
@@ -706,8 +708,8 @@ class _FriendDetailPageState extends ConsumerState<FriendDetailPage>
                         Text(
                           'choose_icon()',
                           style: TextStyle(
-                            color: Color(0xFF00D084),
-                            fontFamily: 'Courier New',
+                            color: Theme.of(context).colorScheme.primary,
+                            fontFamily: context.hisaabFontFamily,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -759,14 +761,22 @@ class _FriendDetailPageState extends ConsumerState<FriendDetailPage>
                                   color:
                                       current.startsWith('/') ||
                                               current.startsWith('file://')
-                                          ? Color(0xFF0D1117)
-                                          : Color(0xFF161B22),
+                                          ? Theme.of(
+                                            context,
+                                          ).scaffoldBackgroundColor
+                                          : Theme.of(
+                                            context,
+                                          ).colorScheme.surface,
                                   border: Border.all(
                                     color:
                                         current.startsWith('/') ||
                                                 current.startsWith('file://')
-                                            ? Color(0xFF00D084)
-                                            : Color(0xFF30363D),
+                                            ? Theme.of(
+                                              context,
+                                            ).colorScheme.primary
+                                            : Theme.of(
+                                              context,
+                                            ).colorScheme.outline,
                                     width:
                                         current.startsWith('/') ||
                                                 current.startsWith('file://')
@@ -777,7 +787,8 @@ class _FriendDetailPageState extends ConsumerState<FriendDetailPage>
                                 ),
                                 child: Icon(
                                   Icons.image,
-                                  color: Color(0xFF58A6FF),
+                                  color:
+                                      Theme.of(context).colorScheme.secondary,
                                   size: 20,
                                 ),
                               ),
@@ -825,14 +836,24 @@ class _FriendDetailPageState extends ConsumerState<FriendDetailPage>
       child: Container(
         padding: EdgeInsets.all(6),
         decoration: BoxDecoration(
-          color: isSelected ? Color(0xFF0D1117) : Color(0xFF161B22),
+          color:
+              isSelected
+                  ? Theme.of(context).scaffoldBackgroundColor
+                  : Theme.of(context).colorScheme.surface,
           border: Border.all(
-            color: isSelected ? Color(0xFF00D084) : Color(0xFF30363D),
+            color:
+                isSelected
+                    ? Theme.of(context).colorScheme.primary
+                    : Theme.of(context).colorScheme.outline,
             width: isSelected ? 2 : 1,
           ),
           borderRadius: BorderRadius.circular(8),
         ),
-        child: Icon(icon, color: Color(0xFF58A6FF), size: 20),
+        child: Icon(
+          icon,
+          color: Theme.of(context).colorScheme.secondary,
+          size: 20,
+        ),
       ),
     );
   }
@@ -872,17 +893,17 @@ class _FriendDetailPageState extends ConsumerState<FriendDetailPage>
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Color(0xFF161B22),
-        foregroundColor: Color(0xFF00D084),
+        backgroundColor: Theme.of(context).colorScheme.surface,
+        foregroundColor: Theme.of(context).colorScheme.primary,
         elevation: 0,
         title: Text(
           '> ${widget.name}',
           style: TextStyle(
-            fontFamily: 'Courier New',
+            fontFamily: context.hisaabFontFamily,
             fontSize: 18,
             fontWeight: FontWeight.w600,
             letterSpacing: 0.5,
-            color: Color(0xFF00D084),
+            color: Theme.of(context).colorScheme.primary,
           ),
         ),
         actions: [
@@ -909,14 +930,18 @@ class _FriendDetailPageState extends ConsumerState<FriendDetailPage>
                 context: context,
                 builder:
                     (_) => AlertDialog(
-                      backgroundColor: Color(0xFF161B22),
+                      backgroundColor: Theme.of(context).colorScheme.surface,
                       title: Text(
                         'Delete user?',
-                        style: TextStyle(color: Color(0xFFE6EDF3)),
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.onSurface,
+                        ),
                       ),
                       content: Text(
                         'Delete ${widget.name} and all transactions?',
-                        style: TextStyle(color: Color(0xFF8B949E)),
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        ),
                       ),
                       actions: [
                         TextButton(
@@ -951,9 +976,12 @@ class _FriendDetailPageState extends ConsumerState<FriendDetailPage>
               padding: EdgeInsets.all(16),
               margin: EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: Color(0xFF161B22),
+                color: Theme.of(context).colorScheme.surface,
                 borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: Color(0xFF30363D), width: 1),
+                border: Border.all(
+                  color: Theme.of(context).colorScheme.outline,
+                  width: 1,
+                ),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -962,8 +990,8 @@ class _FriendDetailPageState extends ConsumerState<FriendDetailPage>
                     'total_balance',
                     style: TextStyle(
                       fontSize: 12,
-                      color: Color(0xFF8B949E),
-                      fontFamily: 'Courier New',
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      fontFamily: context.hisaabFontFamily,
                       letterSpacing: 0.3,
                     ),
                   ),
@@ -973,8 +1001,11 @@ class _FriendDetailPageState extends ConsumerState<FriendDetailPage>
                     style: TextStyle(
                       fontSize: 28,
                       fontWeight: FontWeight.bold,
-                      fontFamily: 'Courier New',
-                      color: total >= 0 ? Color(0xFF3FB950) : Color(0xFFF85149),
+                      fontFamily: context.hisaabFontFamily,
+                      color:
+                          total >= 0
+                              ? Theme.of(context).colorScheme.tertiary
+                              : Theme.of(context).colorScheme.error,
                       letterSpacing: 0.5,
                     ),
                   ),
@@ -992,8 +1023,10 @@ class _FriendDetailPageState extends ConsumerState<FriendDetailPage>
                                 'Request ₹${total.toStringAsFixed(2)}',
                               ),
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: Color(0xFF3FB950),
-                                foregroundColor: Color(0xFF0D1117),
+                                backgroundColor:
+                                    Theme.of(context).colorScheme.tertiary,
+                                foregroundColor:
+                                    Theme.of(context).scaffoldBackgroundColor,
                               ),
                             )
                           else
@@ -1004,8 +1037,10 @@ class _FriendDetailPageState extends ConsumerState<FriendDetailPage>
                                 'Pay ₹${total.abs().toStringAsFixed(2)}',
                               ),
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: Color(0xFFF85149),
-                                foregroundColor: Color(0xFF0D1117),
+                                backgroundColor:
+                                    Theme.of(context).colorScheme.error,
+                                foregroundColor:
+                                    Theme.of(context).scaffoldBackgroundColor,
                               ),
                             ),
                           SizedBox(width: 8),
@@ -1031,8 +1066,11 @@ class _FriendDetailPageState extends ConsumerState<FriendDetailPage>
                           onPressed: () => _markPaidAll(total),
                           child: Text('Paid all'),
                           style: OutlinedButton.styleFrom(
-                            foregroundColor: Color(0xFF8B949E),
-                            side: BorderSide(color: Color(0xFF30363D)),
+                            foregroundColor:
+                                Theme.of(context).colorScheme.onSurfaceVariant,
+                            side: BorderSide(
+                              color: Theme.of(context).colorScheme.outline,
+                            ),
                           ),
                         ),
                       ],
@@ -1042,7 +1080,7 @@ class _FriendDetailPageState extends ConsumerState<FriendDetailPage>
               ),
             ),
           ),
-          Divider(color: Color(0xFF30363D), height: 0),
+          Divider(color: Theme.of(context).colorScheme.outline, height: 0),
           // Transactions List
           Expanded(
             child:
@@ -1051,9 +1089,9 @@ class _FriendDetailPageState extends ConsumerState<FriendDetailPage>
                       child: Text(
                         'transactions_empty()',
                         style: TextStyle(
-                          color: Color(0xFF6E7681),
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
                           fontSize: 14,
-                          fontFamily: 'Courier New',
+                          fontFamily: context.hisaabFontFamily,
                         ),
                       ),
                     )
@@ -1076,10 +1114,10 @@ class _FriendDetailPageState extends ConsumerState<FriendDetailPage>
                               vertical: 4,
                             ),
                             decoration: BoxDecoration(
-                              color: Color(0xFF161B22),
+                              color: Theme.of(context).colorScheme.surface,
                               borderRadius: BorderRadius.circular(8),
                               border: Border.all(
-                                color: Color(0xFF30363D),
+                                color: Theme.of(context).colorScheme.outline,
                                 width: 1,
                               ),
                             ),
@@ -1094,26 +1132,34 @@ class _FriendDetailPageState extends ConsumerState<FriendDetailPage>
                                 decoration: BoxDecoration(
                                   color:
                                       isAdd
-                                          ? Color(0xFF3FB950).withOpacity(0.2)
-                                          : Color(0xFFF85149).withOpacity(0.2),
+                                          ? Theme.of(context)
+                                              .colorScheme
+                                              .tertiary
+                                              .withOpacity(0.2)
+                                          : Theme.of(
+                                            context,
+                                          ).colorScheme.error.withOpacity(0.2),
                                   borderRadius: BorderRadius.circular(6),
                                 ),
                                 child: Icon(
                                   isAdd ? Icons.add : Icons.remove,
                                   color:
                                       isAdd
-                                          ? Color(0xFF3FB950)
-                                          : Color(0xFFF85149),
+                                          ? Theme.of(
+                                            context,
+                                          ).colorScheme.tertiary
+                                          : Theme.of(context).colorScheme.error,
                                   size: 20,
                                 ),
                               ),
                               title: Text(
                                 '${isAdd ? "+" : "-"} ₹${tx['amount']}',
                                 style: TextStyle(
-                                  fontFamily: 'Courier New',
+                                  fontFamily: context.hisaabFontFamily,
                                   fontSize: 15,
                                   fontWeight: FontWeight.w600,
-                                  color: Color(0xFFE6EDF3),
+                                  color:
+                                      Theme.of(context).colorScheme.onSurface,
                                 ),
                               ),
                               subtitle: Column(
@@ -1125,8 +1171,11 @@ class _FriendDetailPageState extends ConsumerState<FriendDetailPage>
                                       tx['note'],
                                       style: TextStyle(
                                         fontSize: 12,
-                                        color: Color(0xFF8B949E),
-                                        fontFamily: 'Courier New',
+                                        color:
+                                            Theme.of(
+                                              context,
+                                            ).colorScheme.onSurfaceVariant,
+                                        fontFamily: context.hisaabFontFamily,
                                       ),
                                     ),
                                   SizedBox(
@@ -1136,8 +1185,11 @@ class _FriendDetailPageState extends ConsumerState<FriendDetailPage>
                                     dateStr,
                                     style: TextStyle(
                                       fontSize: 11,
-                                      color: Color(0xFF6E7681),
-                                      fontFamily: 'Courier New',
+                                      color:
+                                          Theme.of(
+                                            context,
+                                          ).colorScheme.onSurfaceVariant,
+                                      fontFamily: context.hisaabFontFamily,
                                     ),
                                   ),
                                 ],
@@ -1150,8 +1202,13 @@ class _FriendDetailPageState extends ConsumerState<FriendDetailPage>
                                 decoration: BoxDecoration(
                                   color:
                                       isAdd
-                                          ? Color(0xFF3FB950).withOpacity(0.15)
-                                          : Color(0xFFF85149).withOpacity(0.15),
+                                          ? Theme.of(context)
+                                              .colorScheme
+                                              .tertiary
+                                              .withOpacity(0.15)
+                                          : Theme.of(
+                                            context,
+                                          ).colorScheme.error.withOpacity(0.15),
                                   borderRadius: BorderRadius.circular(4),
                                 ),
                                 child: Text(
@@ -1161,9 +1218,13 @@ class _FriendDetailPageState extends ConsumerState<FriendDetailPage>
                                     fontWeight: FontWeight.w600,
                                     color:
                                         isAdd
-                                            ? Color(0xFF3FB950)
-                                            : Color(0xFFF85149),
-                                    fontFamily: 'Courier New',
+                                            ? Theme.of(
+                                              context,
+                                            ).colorScheme.tertiary
+                                            : Theme.of(
+                                              context,
+                                            ).colorScheme.error,
+                                    fontFamily: context.hisaabFontFamily,
                                     letterSpacing: 0.3,
                                   ),
                                 ),
@@ -1183,7 +1244,7 @@ class _FriendDetailPageState extends ConsumerState<FriendDetailPage>
             label: Text(
               'add',
               style: TextStyle(
-                fontFamily: 'Courier New',
+                fontFamily: context.hisaabFontFamily,
                 fontWeight: FontWeight.w600,
                 letterSpacing: 0.3,
               ),
@@ -1191,23 +1252,23 @@ class _FriendDetailPageState extends ConsumerState<FriendDetailPage>
             icon: Icon(Icons.add),
             onPressed: () => showTxnDialog('add'),
             heroTag: "addBtn",
-            backgroundColor: Color(0xFF3FB950),
-            foregroundColor: Color(0xFF0D1117),
+            backgroundColor: Theme.of(context).colorScheme.tertiary,
+            foregroundColor: Theme.of(context).scaffoldBackgroundColor,
           ),
           SizedBox(height: 12),
           FloatingActionButton.extended(
             label: Text(
               'remove',
               style: TextStyle(
-                fontFamily: 'Courier New',
+                fontFamily: context.hisaabFontFamily,
                 fontWeight: FontWeight.w600,
                 letterSpacing: 0.3,
               ),
             ),
             icon: Icon(Icons.remove),
             onPressed: () => showTxnDialog('subtract'),
-            backgroundColor: Color(0xFFF85149),
-            foregroundColor: Color(0xFF0D1117),
+            backgroundColor: Theme.of(context).colorScheme.error,
+            foregroundColor: Theme.of(context).scaffoldBackgroundColor,
             heroTag: "subtractBtn",
           ),
         ],
@@ -1223,13 +1284,16 @@ class _FriendDetailPageState extends ConsumerState<FriendDetailPage>
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
             ),
-            backgroundColor: Color(0xFF161B22),
+            backgroundColor: Theme.of(context).colorScheme.surface,
             child: Container(
               padding: EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: Color(0xFF161B22),
+                color: Theme.of(context).colorScheme.surface,
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: Color(0xFF30363D), width: 1),
+                border: Border.all(
+                  color: Theme.of(context).colorScheme.outline,
+                  width: 1,
+                ),
               ),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
@@ -1239,8 +1303,8 @@ class _FriendDetailPageState extends ConsumerState<FriendDetailPage>
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
-                      color: Color(0xFF00D084),
-                      fontFamily: 'Courier New',
+                      color: Theme.of(context).colorScheme.primary,
+                      fontFamily: context.hisaabFontFamily,
                       letterSpacing: 0.3,
                     ),
                   ),
@@ -1251,35 +1315,35 @@ class _FriendDetailPageState extends ConsumerState<FriendDetailPage>
                       decimal: true,
                     ),
                     style: TextStyle(
-                      color: Color(0xFFE6EDF3),
-                      fontFamily: 'Courier New',
+                      color: Theme.of(context).colorScheme.onSurface,
+                      fontFamily: context.hisaabFontFamily,
                     ),
                     decoration: InputDecoration(
                       labelText: 'amount',
                       labelStyle: TextStyle(
-                        color: Color(0xFF8B949E),
-                        fontFamily: 'Courier New',
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        fontFamily: context.hisaabFontFamily,
                       ),
                       filled: true,
-                      fillColor: Color(0xFF0D1117),
+                      fillColor: Theme.of(context).scaffoldBackgroundColor,
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
                         borderSide: BorderSide(
-                          color: Color(0xFF30363D),
+                          color: Theme.of(context).colorScheme.outline,
                           width: 1,
                         ),
                       ),
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
                         borderSide: BorderSide(
-                          color: Color(0xFF30363D),
+                          color: Theme.of(context).colorScheme.outline,
                           width: 1,
                         ),
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
                         borderSide: BorderSide(
-                          color: Color(0xFF00D084),
+                          color: Theme.of(context).colorScheme.primary,
                           width: 2,
                         ),
                       ),
@@ -1290,35 +1354,35 @@ class _FriendDetailPageState extends ConsumerState<FriendDetailPage>
                   TextField(
                     controller: noteController,
                     style: TextStyle(
-                      color: Color(0xFFE6EDF3),
-                      fontFamily: 'Courier New',
+                      color: Theme.of(context).colorScheme.onSurface,
+                      fontFamily: context.hisaabFontFamily,
                     ),
                     decoration: InputDecoration(
                       labelText: 'note (optional)',
                       labelStyle: TextStyle(
-                        color: Color(0xFF8B949E),
-                        fontFamily: 'Courier New',
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        fontFamily: context.hisaabFontFamily,
                       ),
                       filled: true,
-                      fillColor: Color(0xFF0D1117),
+                      fillColor: Theme.of(context).scaffoldBackgroundColor,
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
                         borderSide: BorderSide(
-                          color: Color(0xFF30363D),
+                          color: Theme.of(context).colorScheme.outline,
                           width: 1,
                         ),
                       ),
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
                         borderSide: BorderSide(
-                          color: Color(0xFF30363D),
+                          color: Theme.of(context).colorScheme.outline,
                           width: 1,
                         ),
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
                         borderSide: BorderSide(
-                          color: Color(0xFF00D084),
+                          color: Theme.of(context).colorScheme.primary,
                           width: 2,
                         ),
                       ),
@@ -1332,8 +1396,9 @@ class _FriendDetailPageState extends ConsumerState<FriendDetailPage>
                         child: Text(
                           'cancel',
                           style: TextStyle(
-                            color: Color(0xFF8B949E),
-                            fontFamily: 'Courier New',
+                            color:
+                                Theme.of(context).colorScheme.onSurfaceVariant,
+                            fontFamily: context.hisaabFontFamily,
                           ),
                         ),
                         onPressed: () => Navigator.pop(context),
@@ -1343,9 +1408,10 @@ class _FriendDetailPageState extends ConsumerState<FriendDetailPage>
                         style: ElevatedButton.styleFrom(
                           backgroundColor:
                               type == 'add'
-                                  ? Color(0xFF3FB950)
-                                  : Color(0xFFF85149),
-                          foregroundColor: Color(0xFF0D1117),
+                                  ? Theme.of(context).colorScheme.tertiary
+                                  : Theme.of(context).colorScheme.error,
+                          foregroundColor:
+                              Theme.of(context).scaffoldBackgroundColor,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(8),
                           ),
@@ -1353,7 +1419,7 @@ class _FriendDetailPageState extends ConsumerState<FriendDetailPage>
                         child: Text(
                           'save',
                           style: TextStyle(
-                            fontFamily: 'Courier New',
+                            fontFamily: context.hisaabFontFamily,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
