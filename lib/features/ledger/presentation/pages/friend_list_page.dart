@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'dart:io';
 import 'dart:async';
+import 'dart:ui';
 
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
@@ -21,6 +22,7 @@ part '../../../settings/presentation/parts/profile_settings.dart';
 part '../../../settings/presentation/parts/danger_zone.dart';
 part 'home_page.dart';
 part 'stats_page.dart';
+part 'trackkars_page.dart';
 part '../../../settings/presentation/parts/settings_page.dart';
 
 class FriendListPage extends ConsumerStatefulWidget {
@@ -53,9 +55,8 @@ class _FriendListPageState extends ConsumerState<FriendListPage>
   @override
   void initState() {
     super.initState();
-    displayedKeys =
-        List<String>.from(box.keys)
-          ..sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
+    displayedKeys = List<String>.from(box.keys)
+      ..sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
     searchController.addListener(_filterFriends);
 
     _fadeController = AnimationController(
@@ -101,9 +102,8 @@ class _FriendListPageState extends ConsumerState<FriendListPage>
   }
 
   Future<void> _showPersonSelector(String type) async {
-    final people =
-        List<String>.from(box.keys)
-          ..sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
+    final people = List<String>.from(box.keys)
+      ..sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
     if (people.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('No users found. Add a user first.')),
@@ -245,12 +245,10 @@ class _FriendListPageState extends ConsumerState<FriendListPage>
                           if (!mounted) return;
                           Navigator.pop(context);
                           setState(() {
-                            displayedKeys =
-                                List<String>.from(box.keys)..sort(
-                                  (a, b) => a.toLowerCase().compareTo(
-                                    b.toLowerCase(),
-                                  ),
-                                );
+                            displayedKeys = List<String>.from(box.keys)..sort(
+                              (a, b) =>
+                                  a.toLowerCase().compareTo(b.toLowerCase()),
+                            );
                           });
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
@@ -277,11 +275,9 @@ class _FriendListPageState extends ConsumerState<FriendListPage>
   void _filterFriends() {
     final query = searchController.text.toLowerCase();
     setState(() {
-      displayedKeys =
-          List<String>.from(
-            box.keys.where((key) => key.toString().toLowerCase().contains(query))
-          )
-            ..sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
+      displayedKeys = List<String>.from(
+        box.keys.where((key) => key.toString().toLowerCase().contains(query)),
+      )..sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
     });
   }
 
@@ -315,9 +311,8 @@ class _FriendListPageState extends ConsumerState<FriendListPage>
     _selectedIcon = 'terminal';
     Navigator.pop(context);
     setState(() {
-      displayedKeys =
-          List<String>.from(box.keys)
-            ..sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
+      displayedKeys = List<String>.from(box.keys)
+        ..sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
     });
   }
 
@@ -374,9 +369,8 @@ class _FriendListPageState extends ConsumerState<FriendListPage>
       } catch (_) {}
 
       setState(() {
-        displayedKeys =
-            List<String>.from(box.keys)
-              ..sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
+        displayedKeys = List<String>.from(box.keys)
+          ..sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
       });
     }
 
@@ -682,9 +676,8 @@ class _FriendListPageState extends ConsumerState<FriendListPage>
         imported++;
       }
       setState(() {
-        displayedKeys =
-            List<String>.from(box.keys)
-              ..sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
+        displayedKeys = List<String>.from(box.keys)
+          ..sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
       });
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Imported $imported transactions')),
@@ -711,7 +704,8 @@ class _FriendListPageState extends ConsumerState<FriendListPage>
   Widget build(BuildContext context) {
     final title = switch (_currentTab) {
       1 => '> statistics',
-      2 => '> settings',
+      2 => '> trackkars',
+      3 => '> settings',
       _ => '> hisaab',
     };
 
@@ -734,30 +728,76 @@ class _FriendListPageState extends ConsumerState<FriendListPage>
       ),
       body: switch (_currentTab) {
         1 => _buildStatisticsBody(),
-        2 => _buildSettingsBody(),
+        2 => _buildTrackKarsBody(),
+        3 => _buildSettingsBody(),
         _ => _buildHomeBody(),
       },
       floatingActionButton: _currentTab == 0 ? _buildAddUserFab() : null,
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _currentTab,
-        onTap: (index) => setState(() => _currentTab = index),
-        backgroundColor: Theme.of(context).colorScheme.surface,
-        selectedItemColor: Theme.of(context).colorScheme.primary,
-        unselectedItemColor: Theme.of(context).textTheme.bodySmall?.color,
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home_rounded),
-            label: 'Home',
+      bottomNavigationBar: Padding(
+        padding: const EdgeInsets.only(bottom: 28.0, left: 24.0, right: 24.0),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(24),
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
+            child: Container(
+              decoration: BoxDecoration(
+                color: Theme.of(
+                  context,
+                ).colorScheme.surface.withValues(alpha: 0.85),
+                borderRadius: BorderRadius.circular(24),
+                border: Border.all(
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.primary.withValues(alpha: 0.2),
+                  width: 1.5,
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.08),
+                    blurRadius: 16,
+                    offset: const Offset(0, 8),
+                    spreadRadius: 2,
+                  ),
+                  BoxShadow(
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.primary.withValues(alpha: 0.05),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: BottomNavigationBar(
+                currentIndex: _currentTab,
+                onTap: (index) => setState(() => _currentTab = index),
+                backgroundColor: Colors.transparent,
+                selectedItemColor: Theme.of(context).colorScheme.primary,
+                unselectedItemColor: Theme.of(
+                  context,
+                ).textTheme.bodySmall?.color?.withValues(alpha: 0.6),
+                elevation: 0,
+                items: const [
+                  BottomNavigationBarItem(
+                    icon: Icon(Icons.home_rounded),
+                    label: 'Home',
+                  ),
+                  BottomNavigationBarItem(
+                    icon: Icon(Icons.bar_chart_rounded),
+                    label: 'Stats',
+                  ),
+                  BottomNavigationBarItem(
+                    icon: Icon(Icons.track_changes_rounded),
+                    label: 'TrackKars',
+                  ),
+                  BottomNavigationBarItem(
+                    icon: Icon(Icons.settings_rounded),
+                    label: 'Settings',
+                  ),
+                ],
+              ),
+            ),
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.bar_chart_rounded),
-            label: 'Stats',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.settings_rounded),
-            label: 'Settings',
-          ),
-        ],
+        ),
       ),
     );
   }
