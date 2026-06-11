@@ -750,69 +750,73 @@ class _FriendListPageState extends ConsumerState<FriendListPage>
         ),
         centerTitle: false,
       ),
-      body: switch (_currentTab) {
-        1 => _buildStatisticsBody(),
-        2 => _buildTrackKarsBody(),
-        3 => _buildSettingsBody(),
-        _ => _buildHomeBody(),
-      },
+      body: SafeArea(
+        child: switch (_currentTab) {
+          1 => _buildStatisticsBody(),
+          2 => _buildTrackKarsBody(),
+          3 => _buildSettingsBody(),
+          _ => _buildHomeBody(),
+        },
+      ),
       floatingActionButton: _currentTab == 0 ? _buildAddUserFab() : null,
-      bottomNavigationBar: Padding(
-        padding: const EdgeInsets.fromLTRB(20.0, 0, 20.0, 14.0),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(20),
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-            child: Container(
-              height: 64,
-              decoration: BoxDecoration(
-                color: Theme.of(
-                  context,
-                ).colorScheme.surface.withValues(alpha: 0.88),
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(
+      bottomNavigationBar: SafeArea(
+        top: false,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(20, 0, 20, 12),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(20),
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+              child: Container(
+                height: 64,
+                decoration: BoxDecoration(
                   color: Theme.of(
                     context,
-                  ).colorScheme.primaryContainer.withValues(alpha: 0.3),
-                  width: 1,
+                  ).colorScheme.surface.withValues(alpha: 0.88),
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.primaryContainer.withValues(alpha: 0.3),
+                    width: 1,
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.06),
+                      blurRadius: 20,
+                      offset: const Offset(0, 8),
+                    ),
+                  ],
                 ),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.06),
-                    blurRadius: 20,
-                    offset: const Offset(0, 8),
-                    spreadRadius: 0,
-                  ),
-                ],
-              ),
-              child: BottomNavigationBar(
-                currentIndex: _currentTab,
-                onTap: (index) => setState(() => _currentTab = index),
-                backgroundColor: Colors.transparent,
-                selectedItemColor: Theme.of(context).colorScheme.primary,
-                unselectedItemColor: Theme.of(
-                  context,
-                ).textTheme.bodySmall?.color?.withValues(alpha: 0.5),
-                elevation: 0,
-                type: BottomNavigationBarType.fixed,
-                items: const [
-                  BottomNavigationBarItem(
-                    icon: Icon(Icons.home_rounded),
-                    label: 'Home',
-                  ),
-                  BottomNavigationBarItem(
-                    icon: Icon(Icons.bar_chart_rounded),
-                    label: 'Stats',
-                  ),
-                  BottomNavigationBarItem(
-                    icon: Icon(Icons.track_changes_rounded),
-                    label: 'TrackKars',
-                  ),
-                  BottomNavigationBarItem(
-                    icon: Icon(Icons.settings_rounded),
-                    label: 'Settings',
-                  ),
-                ],
+                child: BottomNavigationBar(
+                  currentIndex: _currentTab,
+                  onTap: (index) => setState(() => _currentTab = index),
+                  backgroundColor: Colors.transparent,
+                  selectedItemColor: Theme.of(context).colorScheme.primary,
+                  unselectedItemColor: Theme.of(
+                    context,
+                  ).textTheme.bodySmall?.color?.withValues(alpha: 0.5),
+                  elevation: 0,
+                  type: BottomNavigationBarType.fixed,
+                  items: const [
+                    BottomNavigationBarItem(
+                      icon: Icon(Icons.home_rounded),
+                      label: 'Home',
+                    ),
+                    BottomNavigationBarItem(
+                      icon: Icon(Icons.bar_chart_rounded),
+                      label: 'Stats',
+                    ),
+                    BottomNavigationBarItem(
+                      icon: Icon(Icons.track_changes_rounded),
+                      label: 'TrackKars',
+                    ),
+                    BottomNavigationBarItem(
+                      icon: Icon(Icons.settings_rounded),
+                      label: 'Settings',
+                    ),
+                  ],
+                ),
               ),
             ),
           ),

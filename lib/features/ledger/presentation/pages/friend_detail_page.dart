@@ -144,9 +144,9 @@ class _FriendDetailPageState extends ConsumerState<FriendDetailPage>
             context,
           ).showSnackBar(const SnackBar(content: Text('Transaction updated')));
         } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Invalid amount')),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(const SnackBar(content: Text('Invalid amount')));
         }
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
