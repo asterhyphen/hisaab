@@ -54,7 +54,7 @@ class _FriendListPageState extends ConsumerState<FriendListPage>
   void initState() {
     super.initState();
     displayedKeys =
-        box.keys.cast<String>().toList()
+        List<String>.from(box.keys)
           ..sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
     searchController.addListener(_filterFriends);
 
@@ -102,7 +102,7 @@ class _FriendListPageState extends ConsumerState<FriendListPage>
 
   Future<void> _showPersonSelector(String type) async {
     final people =
-        box.keys.cast<String>().toList()
+        List<String>.from(box.keys)
           ..sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
     if (people.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -246,7 +246,7 @@ class _FriendListPageState extends ConsumerState<FriendListPage>
                           Navigator.pop(context);
                           setState(() {
                             displayedKeys =
-                                box.keys.cast<String>().toList()..sort(
+                                List<String>.from(box.keys)..sort(
                                   (a, b) => a.toLowerCase().compareTo(
                                     b.toLowerCase(),
                                   ),
@@ -278,10 +278,9 @@ class _FriendListPageState extends ConsumerState<FriendListPage>
     final query = searchController.text.toLowerCase();
     setState(() {
       displayedKeys =
-          box.keys
-              .cast<String>()
-              .where((key) => key.toLowerCase().contains(query))
-              .toList()
+          List<String>.from(
+            box.keys.where((key) => key.toString().toLowerCase().contains(query))
+          )
             ..sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
     });
   }
@@ -317,7 +316,7 @@ class _FriendListPageState extends ConsumerState<FriendListPage>
     Navigator.pop(context);
     setState(() {
       displayedKeys =
-          box.keys.cast<String>().toList()
+          List<String>.from(box.keys)
             ..sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
     });
   }
@@ -376,7 +375,7 @@ class _FriendListPageState extends ConsumerState<FriendListPage>
 
       setState(() {
         displayedKeys =
-            box.keys.cast<String>().toList()
+            List<String>.from(box.keys)
               ..sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
       });
     }
@@ -493,7 +492,7 @@ class _FriendListPageState extends ConsumerState<FriendListPage>
 
   Future<void> _exportAllCsv() async {
     try {
-      final keys = box.keys.cast<String>().toList();
+      final keys = List<String>.from(box.keys);
       final rows = <String>[];
       rows.add('user,type,amount,note,date');
       for (var user in keys) {
@@ -684,7 +683,7 @@ class _FriendListPageState extends ConsumerState<FriendListPage>
       }
       setState(() {
         displayedKeys =
-            box.keys.cast<String>().toList()
+            List<String>.from(box.keys)
               ..sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
       });
       ScaffoldMessenger.of(context).showSnackBar(

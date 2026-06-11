@@ -1,4 +1,7 @@
-1.0.2 (Not released yet)
+1.0.3
+- Add multithemes
+
+1.0.2 
 - Add Settings and statistics page with lots of features
 - Add Share QR button
 - Remove Share CSV
