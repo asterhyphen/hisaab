@@ -734,36 +734,30 @@ class _FriendListPageState extends ConsumerState<FriendListPage>
       },
       floatingActionButton: _currentTab == 0 ? _buildAddUserFab() : null,
       bottomNavigationBar: Padding(
-        padding: const EdgeInsets.only(bottom: 28.0, left: 24.0, right: 24.0),
+        padding: const EdgeInsets.fromLTRB(20.0, 0, 20.0, 24.0),
         child: ClipRRect(
-          borderRadius: BorderRadius.circular(24),
+          borderRadius: BorderRadius.circular(20),
           child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
+            filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
             child: Container(
+              height: 64,
               decoration: BoxDecoration(
                 color: Theme.of(
                   context,
-                ).colorScheme.surface.withValues(alpha: 0.85),
-                borderRadius: BorderRadius.circular(24),
+                ).colorScheme.surface.withValues(alpha: 0.88),
+                borderRadius: BorderRadius.circular(20),
                 border: Border.all(
                   color: Theme.of(
                     context,
-                  ).colorScheme.primary.withValues(alpha: 0.2),
-                  width: 1.5,
+                  ).colorScheme.primaryContainer.withValues(alpha: 0.3),
+                  width: 1,
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.08),
-                    blurRadius: 16,
+                    color: Colors.black.withValues(alpha: 0.06),
+                    blurRadius: 20,
                     offset: const Offset(0, 8),
-                    spreadRadius: 2,
-                  ),
-                  BoxShadow(
-                    color: Theme.of(
-                      context,
-                    ).colorScheme.primary.withValues(alpha: 0.05),
-                    blurRadius: 8,
-                    offset: const Offset(0, 2),
+                    spreadRadius: 0,
                   ),
                 ],
               ),
@@ -774,8 +768,9 @@ class _FriendListPageState extends ConsumerState<FriendListPage>
                 selectedItemColor: Theme.of(context).colorScheme.primary,
                 unselectedItemColor: Theme.of(
                   context,
-                ).textTheme.bodySmall?.color?.withValues(alpha: 0.6),
+                ).textTheme.bodySmall?.color?.withValues(alpha: 0.5),
                 elevation: 0,
+                type: BottomNavigationBarType.fixed,
                 items: const [
                   BottomNavigationBarItem(
                     icon: Icon(Icons.home_rounded),

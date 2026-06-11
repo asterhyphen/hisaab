@@ -75,6 +75,121 @@ class _FriendDetailPageState extends ConsumerState<FriendDetailPage>
     setState(() {});
   }
 
+  Future<void> _editTransaction(int index) async {
+    final txns = box.get(widget.name) as List;
+    final tx = txns[index];
+
+    final amountCtrl = TextEditingController(text: tx['amount'].toString());
+    final noteCtrl = TextEditingController(text: tx['note'] ?? '');
+
+    final result = await showDialog<bool>(
+      context: context,
+      builder:
+          (_) => AlertDialog(
+            title: const Text('Edit transaction'),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextField(
+                  controller: amountCtrl,
+                  keyboardType: const TextInputType.numberWithOptions(
+                    decimal: true,
+                  ),
+                  decoration: const InputDecoration(labelText: 'Amount'),
+                ),
+                const SizedBox(height: 12),
+                TextField(
+                  controller: noteCtrl,
+                  decoration: const InputDecoration(
+                    labelText: 'Note (optional)',
+                  ),
+                ),
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, false),
+                child: const Text('Cancel'),
+              ),
+              ElevatedButton(
+                onPressed: () => Navigator.pop(context, true),
+                child: const Text('Save'),
+              ),
+            ],
+          ),
+    );
+
+    if (result == true) {
+      final newAmount = double.tryParse(amountCtrl.text.trim());
+      if (newAmount != null && newAmount > 0) {
+        txns[index] = {
+          'type': tx['type'],
+          'amount': newAmount,
+          'note': noteCtrl.text.trim(),
+          'date': tx['date'],
+        };
+        box.put(widget.name, txns);
+        setState(() {});
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Transaction updated')));
+      }
+    }
+    amountCtrl.dispose();
+    noteCtrl.dispose();
+  }
+
+  Future<void> _deleteTransaction(int index) async {
+    final txns = box.get(widget.name) as List;
+    final tx = txns[index];
+
+    final shouldAffectBalance = await showDialog<bool?>(
+      context: context,
+      builder:
+          (_) => AlertDialog(
+            title: const Text('Delete transaction?'),
+            content: Text(
+              'Should this deletion affect the balance? If YES, the balance will be recalculated without this transaction. If NO, only the record is removed.',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, null),
+                child: const Text('Cancel'),
+              ),
+              TextButton(
+                onPressed: () => Navigator.pop(context, false),
+                child: const Text('Remove record only'),
+              ),
+              ElevatedButton(
+                onPressed: () => Navigator.pop(context, true),
+                child: const Text('Affect balance'),
+              ),
+            ],
+          ),
+    );
+
+    if (shouldAffectBalance != null) {
+      txns.removeAt(index);
+
+      if (shouldAffectBalance) {
+        box.put(widget.name, txns);
+      } else {
+        txns.add({
+          'type': tx['type'] == 'add' ? 'subtract' : 'add',
+          'amount': tx['amount'],
+          'note': '[Reversed] ${tx['note']}',
+          'date': DateFormat('dd-MM-yyyy hh:mm a').format(DateTime.now()),
+        });
+        box.put(widget.name, txns);
+      }
+
+      setState(() {});
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Transaction deleted')));
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -1108,124 +1223,126 @@ class _FriendDetailPageState extends ConsumerState<FriendDetailPage>
                         return AnimatedSlide(
                           offset: Offset(0, 0),
                           duration: Duration(milliseconds: 200),
-                          child: Container(
-                            margin: EdgeInsets.symmetric(
-                              horizontal: 8,
-                              vertical: 4,
-                            ),
-                            decoration: BoxDecoration(
-                              color: Theme.of(context).colorScheme.surface,
-                              borderRadius: BorderRadius.circular(8),
-                              border: Border.all(
-                                color: Theme.of(context).colorScheme.outline,
-                                width: 1,
+                          child: Dismissible(
+                            key: ValueKey('tx_$index'),
+                            direction: DismissDirection.endToStart,
+                            background: Container(
+                              margin: EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 4,
+                              ),
+                              decoration: BoxDecoration(
+                                color: Theme.of(context).colorScheme.error,
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              alignment: Alignment.centerRight,
+                              padding: EdgeInsets.only(right: 24),
+                              child: Icon(
+                                Icons.delete_rounded,
+                                color: Colors.white,
                               ),
                             ),
-                            child: ListTile(
-                              contentPadding: EdgeInsets.symmetric(
-                                horizontal: 16,
-                                vertical: 8,
+                            confirmDismiss: (_) => Future.value(false),
+                            onUpdate: (details) {
+                              if (details.progress > 0.3) {
+                                _deleteTransaction(index);
+                              }
+                            },
+                            child: Container(
+                              margin: EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 4,
                               ),
-                              leading: Container(
-                                width: 40,
-                                height: 40,
-                                decoration: BoxDecoration(
-                                  color:
-                                      isAdd
-                                          ? Theme.of(context)
-                                              .colorScheme
-                                              .tertiary
-                                              .withOpacity(0.2)
-                                          : Theme.of(
-                                            context,
-                                          ).colorScheme.error.withOpacity(0.2),
-                                  borderRadius: BorderRadius.circular(6),
-                                ),
-                                child: Icon(
-                                  isAdd ? Icons.add : Icons.remove,
-                                  color:
-                                      isAdd
-                                          ? Theme.of(
-                                            context,
-                                          ).colorScheme.tertiary
-                                          : Theme.of(context).colorScheme.error,
-                                  size: 20,
+                              decoration: BoxDecoration(
+                                color: Theme.of(context).colorScheme.surface,
+                                borderRadius: BorderRadius.circular(8),
+                                border: Border.all(
+                                  color: Theme.of(context).colorScheme.outline,
+                                  width: 1,
                                 ),
                               ),
-                              title: Text(
-                                '${isAdd ? "+" : "-"} ₹${tx['amount']}',
-                                style: TextStyle(
-                                  fontFamily: context.hisaabFontFamily,
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.w600,
-                                  color:
-                                      Theme.of(context).colorScheme.onSurface,
-                                ),
-                              ),
-                              subtitle: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  SizedBox(height: 4),
-                                  if (tx['note'].isNotEmpty)
-                                    Text(
-                                      tx['note'],
-                                      style: TextStyle(
-                                        fontSize: 12,
-                                        color:
-                                            Theme.of(
-                                              context,
-                                            ).colorScheme.onSurfaceVariant,
-                                        fontFamily: context.hisaabFontFamily,
-                                      ),
-                                    ),
-                                  SizedBox(
-                                    height: tx['note'].isNotEmpty ? 4 : 0,
+                              child: InkWell(
+                                borderRadius: BorderRadius.circular(8),
+                                onTap: () => _editTransaction(index),
+                                child: ListTile(
+                                  contentPadding: EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                    vertical: 8,
                                   ),
-                                  Text(
-                                    dateStr,
+                                  leading: Container(
+                                    width: 40,
+                                    height: 40,
+                                    decoration: BoxDecoration(
+                                      color:
+                                          isAdd
+                                              ? Theme.of(context)
+                                                  .colorScheme
+                                                  .tertiary
+                                                  .withOpacity(0.2)
+                                              : Theme.of(context)
+                                                  .colorScheme
+                                                  .error
+                                                  .withOpacity(0.2),
+                                      borderRadius: BorderRadius.circular(6),
+                                    ),
+                                    child: Icon(
+                                      isAdd ? Icons.add : Icons.remove,
+                                      color:
+                                          isAdd
+                                              ? Theme.of(
+                                                context,
+                                              ).colorScheme.tertiary
+                                              : Theme.of(
+                                                context,
+                                              ).colorScheme.error,
+                                      size: 20,
+                                    ),
+                                  ),
+                                  title: Text(
+                                    '${isAdd ? "+" : "-"} ₹${tx['amount']}',
                                     style: TextStyle(
-                                      fontSize: 11,
+                                      fontFamily: context.hisaabFontFamily,
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.w600,
                                       color:
                                           Theme.of(
                                             context,
-                                          ).colorScheme.onSurfaceVariant,
-                                      fontFamily: context.hisaabFontFamily,
+                                          ).colorScheme.onSurface,
                                     ),
                                   ),
-                                ],
-                              ),
-                              trailing: Container(
-                                padding: EdgeInsets.symmetric(
-                                  horizontal: 10,
-                                  vertical: 4,
-                                ),
-                                decoration: BoxDecoration(
-                                  color:
-                                      isAdd
-                                          ? Theme.of(context)
-                                              .colorScheme
-                                              .tertiary
-                                              .withOpacity(0.15)
-                                          : Theme.of(
-                                            context,
-                                          ).colorScheme.error.withOpacity(0.15),
-                                  borderRadius: BorderRadius.circular(4),
-                                ),
-                                child: Text(
-                                  isAdd ? 'add' : 'remove',
-                                  style: TextStyle(
-                                    fontSize: 10,
-                                    fontWeight: FontWeight.w600,
-                                    color:
-                                        isAdd
-                                            ? Theme.of(
-                                              context,
-                                            ).colorScheme.tertiary
-                                            : Theme.of(
-                                              context,
-                                            ).colorScheme.error,
-                                    fontFamily: context.hisaabFontFamily,
-                                    letterSpacing: 0.3,
+                                  subtitle: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      SizedBox(height: 4),
+                                      if (tx['note'].isNotEmpty)
+                                        Text(
+                                          tx['note'],
+                                          style: TextStyle(
+                                            fontSize: 12,
+                                            color:
+                                                Theme.of(
+                                                  context,
+                                                ).colorScheme.onSurfaceVariant,
+                                            fontFamily:
+                                                context.hisaabFontFamily,
+                                          ),
+                                        ),
+                                      SizedBox(
+                                        height: tx['note'].isNotEmpty ? 4 : 0,
+                                      ),
+                                      Text(
+                                        dateStr,
+                                        style: TextStyle(
+                                          fontSize: 11,
+                                          color:
+                                              Theme.of(
+                                                context,
+                                              ).colorScheme.onSurfaceVariant,
+                                          fontFamily: context.hisaabFontFamily,
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ),
                               ),
