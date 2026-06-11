@@ -273,12 +273,18 @@ class _FriendListPageState extends ConsumerState<FriendListPage>
   }
 
   void _filterFriends() {
-    final query = searchController.text.toLowerCase();
-    setState(() {
-      displayedKeys = List<String>.from(
-        box.keys.where((key) => key.toString().toLowerCase().contains(query)),
-      )..sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
-    });
+    try {
+      final query = searchController.text.toLowerCase();
+      setState(() {
+        displayedKeys = List<String>.from(
+          box.keys.where((key) => key.toString().toLowerCase().contains(query)),
+        )..sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
+      });
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error filtering: ${e.toString()}')),
+      );
+    }
   }
 
   void _refreshView() {
@@ -287,33 +293,42 @@ class _FriendListPageState extends ConsumerState<FriendListPage>
   }
 
   void addFriend(String name) {
-    if (name.isEmpty) return;
-
-    String formattedName = name
-        .trim()
-        .split(RegExp(r'\s+'))
-        .map(
-          (word) =>
-              word.isNotEmpty
-                  ? word[0].toUpperCase() + word.substring(1).toLowerCase()
-                  : '',
-        )
-        .join(' ');
-
-    if (formattedName.isEmpty || box.containsKey(formattedName)) return;
-
-    box.put(formattedName, []);
-    // save selected icon in metadata box
     try {
-      metaBox.put(formattedName, _selectedIcon);
-    } catch (_) {}
-    nameController.clear();
-    _selectedIcon = 'terminal';
-    Navigator.pop(context);
-    setState(() {
-      displayedKeys = List<String>.from(box.keys)
-        ..sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
-    });
+      if (name.isEmpty) return;
+
+      String formattedName = name
+          .trim()
+          .split(RegExp(r'\s+'))
+          .map(
+            (word) =>
+                word.isNotEmpty
+                    ? word[0].toUpperCase() + word.substring(1).toLowerCase()
+                    : '',
+          )
+          .join(' ');
+
+      if (formattedName.isEmpty || box.containsKey(formattedName)) return;
+
+      box.put(formattedName, []);
+      // save selected icon in metadata box
+      try {
+        metaBox.put(formattedName, _selectedIcon);
+      } catch (_) {}
+      nameController.clear();
+      _selectedIcon = 'terminal';
+      Navigator.pop(context);
+      setState(() {
+        displayedKeys = List<String>.from(box.keys)
+          ..sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
+      });
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('User $formattedName created')));
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error creating user: ${e.toString()}')),
+      );
+    }
   }
 
   Future<bool?> deleteFriend(String name) async {
@@ -363,15 +378,24 @@ class _FriendListPageState extends ConsumerState<FriendListPage>
     );
 
     if (result == true) {
-      box.delete(name);
       try {
-        metaBox.delete(name);
-      } catch (_) {}
+        box.delete(name);
+        try {
+          metaBox.delete(name);
+        } catch (_) {}
 
-      setState(() {
-        displayedKeys = List<String>.from(box.keys)
-          ..sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
-      });
+        setState(() {
+          displayedKeys = List<String>.from(box.keys)
+            ..sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
+        });
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('User $name deleted')));
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error deleting user: ${e.toString()}')),
+        );
+      }
     }
 
     return result;
@@ -734,7 +758,7 @@ class _FriendListPageState extends ConsumerState<FriendListPage>
       },
       floatingActionButton: _currentTab == 0 ? _buildAddUserFab() : null,
       bottomNavigationBar: Padding(
-        padding: const EdgeInsets.fromLTRB(20.0, 0, 20.0, 24.0),
+        padding: const EdgeInsets.fromLTRB(20.0, 0, 20.0, 14.0),
         child: ClipRRect(
           borderRadius: BorderRadius.circular(20),
           child: BackdropFilter(

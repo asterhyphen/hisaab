@@ -78,16 +78,52 @@ extension _HomePageTab on _FriendListPageState {
           child:
               displayedKeys.isEmpty
                   ? Center(
-                    child: Text(
-                      r'$ user_not_found()'
-                      '\n\ntype "+ icon" to create_user()',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: Theme.of(context).colorScheme.onSurfaceVariant,
-                        fontSize: 14,
-                        fontFamily: context.hisaabFontFamily,
-                        height: 1.6,
-                      ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          searchController.text.isEmpty
+                              ? r'$ user_not_found()'
+                              : 'search for "${searchController.text}" is not found',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color:
+                                Theme.of(context).colorScheme.onSurfaceVariant,
+                            fontSize: 14,
+                            fontFamily: context.hisaabFontFamily,
+                            height: 1.6,
+                          ),
+                        ),
+                        if (searchController.text.isNotEmpty) ...[
+                          SizedBox(height: 16),
+                          ElevatedButton(
+                            onPressed: () {
+                              final nameToPush = searchController.text.trim();
+                              addFriend(nameToPush);
+                            },
+                            child: Text(
+                              'Create "${searchController.text}"',
+                              style: TextStyle(
+                                fontFamily: context.hisaabFontFamily,
+                              ),
+                            ),
+                          ),
+                        ] else ...[
+                          SizedBox(height: 16),
+                          Text(
+                            'type "+  icon" to create_user()',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              color:
+                                  Theme.of(
+                                    context,
+                                  ).colorScheme.onSurfaceVariant,
+                              fontSize: 12,
+                              fontFamily: context.hisaabFontFamily,
+                            ),
+                          ),
+                        ],
+                      ],
                     ),
                   )
                   : ListView.builder(

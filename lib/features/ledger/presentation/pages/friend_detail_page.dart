@@ -62,17 +62,26 @@ class _FriendDetailPageState extends ConsumerState<FriendDetailPage>
 
     if (confirm != true) return;
 
-    final txns = List.from(box.get(widget.name) as List);
+    try {
+      final txns = List.from(box.get(widget.name) as List);
 
-    txns.add({
-      'type': total > 0 ? 'subtract' : 'add',
-      'amount': total.abs(),
-      'note': 'Paid all / Settled',
-      'date': DateFormat('dd-MM-yyyy hh:mm a').format(DateTime.now()),
-    });
+      txns.add({
+        'type': total > 0 ? 'subtract' : 'add',
+        'amount': total.abs(),
+        'note': 'Paid all / Settled',
+        'date': DateFormat('dd-MM-yyyy hh:mm a').format(DateTime.now()),
+      });
 
-    box.put(widget.name, txns);
-    setState(() {});
+      box.put(widget.name, txns);
+      setState(() {});
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Balance cleared')));
+    } catch (e) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Error: ${e.toString()}')));
+    }
   }
 
   Future<void> _editTransaction(int index) async {
@@ -120,19 +129,29 @@ class _FriendDetailPageState extends ConsumerState<FriendDetailPage>
     );
 
     if (result == true) {
-      final newAmount = double.tryParse(amountCtrl.text.trim());
-      if (newAmount != null && newAmount > 0) {
-        txns[index] = {
-          'type': tx['type'],
-          'amount': newAmount,
-          'note': noteCtrl.text.trim(),
-          'date': tx['date'],
-        };
-        box.put(widget.name, txns);
-        setState(() {});
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(const SnackBar(content: Text('Transaction updated')));
+      try {
+        final newAmount = double.tryParse(amountCtrl.text.trim());
+        if (newAmount != null && newAmount > 0) {
+          txns[index] = {
+            'type': tx['type'],
+            'amount': newAmount,
+            'note': noteCtrl.text.trim(),
+            'date': tx['date'],
+          };
+          box.put(widget.name, txns);
+          setState(() {});
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(const SnackBar(content: Text('Transaction updated')));
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Invalid amount')),
+          );
+        }
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error updating: ${e.toString()}')),
+        );
       }
     }
     amountCtrl.dispose();
@@ -169,24 +188,30 @@ class _FriendDetailPageState extends ConsumerState<FriendDetailPage>
     );
 
     if (shouldAffectBalance != null) {
-      txns.removeAt(index);
+      try {
+        txns.removeAt(index);
 
-      if (shouldAffectBalance) {
-        box.put(widget.name, txns);
-      } else {
-        txns.add({
-          'type': tx['type'] == 'add' ? 'subtract' : 'add',
-          'amount': tx['amount'],
-          'note': '[Reversed] ${tx['note']}',
-          'date': DateFormat('dd-MM-yyyy hh:mm a').format(DateTime.now()),
-        });
-        box.put(widget.name, txns);
+        if (shouldAffectBalance) {
+          box.put(widget.name, txns);
+        } else {
+          txns.add({
+            'type': tx['type'] == 'add' ? 'subtract' : 'add',
+            'amount': tx['amount'],
+            'note': '[Reversed] ${tx['note']}',
+            'date': DateFormat('dd-MM-yyyy hh:mm a').format(DateTime.now()),
+          });
+          box.put(widget.name, txns);
+        }
+
+        setState(() {});
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Transaction deleted')));
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error deleting: ${e.toString()}')),
+        );
       }
-
-      setState(() {});
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Transaction deleted')));
     }
   }
 
