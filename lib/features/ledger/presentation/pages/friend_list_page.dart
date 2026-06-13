@@ -14,6 +14,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 import '../../../../core/platform/widget_action_bridge.dart';
 import '../../../../core/theme/hisaab_typography.dart';
+import '../../../../core/widgets/glass_alert.dart';
 import '../../../settings/data/app_preferences_repository.dart';
 import '../../data/ledger_repository.dart';
 import '../../model/ledger_transaction.dart';
@@ -105,8 +106,9 @@ class _FriendListPageState extends ConsumerState<FriendListPage>
     final people = List<String>.from(box.keys)
       ..sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
     if (people.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('No users found. Add a user first.')),
+      GlassAlert.showInfo(
+        context,
+        'No users found. Add a user first.',
       );
       return;
     }
@@ -250,12 +252,9 @@ class _FriendListPageState extends ConsumerState<FriendListPage>
                                   a.toLowerCase().compareTo(b.toLowerCase()),
                             );
                           });
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(
-                                'Saved ${type == 'add' ? '+' : '-'} ₹${amount.toStringAsFixed(2)} for $person',
-                              ),
-                            ),
+                          GlassAlert.showSuccess(
+                            context,
+                            'Saved ${type == 'add' ? '+' : '-'} ₹${amount.toStringAsFixed(2)} for $person',
                           );
                         },
                         child: Text('save'),
@@ -281,8 +280,9 @@ class _FriendListPageState extends ConsumerState<FriendListPage>
         )..sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
       });
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error filtering: ${e.toString()}')),
+      GlassAlert.showError(
+        context,
+        'Error filtering: ${e.toString()}',
       );
     }
   }
@@ -321,12 +321,14 @@ class _FriendListPageState extends ConsumerState<FriendListPage>
         displayedKeys = List<String>.from(box.keys)
           ..sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
       });
-      ScaffoldMessenger.of(
+      GlassAlert.showSuccess(
         context,
-      ).showSnackBar(SnackBar(content: Text('User $formattedName created')));
+        'User $formattedName created',
+      );
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error creating user: ${e.toString()}')),
+      GlassAlert.showError(
+        context,
+        'Error creating user: ${e.toString()}',
       );
     }
   }
@@ -388,12 +390,14 @@ class _FriendListPageState extends ConsumerState<FriendListPage>
           displayedKeys = List<String>.from(box.keys)
             ..sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
         });
-        ScaffoldMessenger.of(
+        GlassAlert.showSuccess(
           context,
-        ).showSnackBar(SnackBar(content: Text('User $name deleted')));
+          'User $name deleted',
+        );
       } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error deleting user: ${e.toString()}')),
+        GlassAlert.showError(
+          context,
+          'Error deleting user: ${e.toString()}',
         );
       }
     }
@@ -529,18 +533,15 @@ class _FriendListPageState extends ConsumerState<FriendListPage>
           'all_transactions_${DateFormat('yyyyMMdd_HHmm').format(DateTime.now())}.csv';
       final file = File('${dir.path}/$fname');
       await file.writeAsString(csv);
-      await Clipboard.setData(ClipboardData(text: file.path));
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'Exported all transactions to ${file.path} (path copied)',
-          ),
-        ),
+      GlassAlert.showInfo(
+        context,
+        'Exported all transactions to ${file.path} (path copied)',
       );
     } catch (e) {
-      ScaffoldMessenger.of(
+      GlassAlert.showError(
         context,
-      ).showSnackBar(SnackBar(content: Text('Export failed: $e')));
+        'Export failed: $e',
+      );
     }
   }
 
@@ -641,9 +642,10 @@ class _FriendListPageState extends ConsumerState<FriendListPage>
               .where((l) => l.trim().isNotEmpty)
               .toList();
       if (lines.isEmpty) {
-        ScaffoldMessenger.of(
+        GlassAlert.showInfo(
           context,
-        ).showSnackBar(SnackBar(content: Text('CSV is empty')));
+          'CSV is empty',
+        );
         return;
       }
       final header = lines.first.toLowerCase();
@@ -651,12 +653,9 @@ class _FriendListPageState extends ConsumerState<FriendListPage>
           !header.contains('type') ||
           !header.contains('amount') ||
           !header.contains('date')) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              'CSV header missing required columns (user,type,amount,date)',
-            ),
-          ),
+        GlassAlert.showError(
+          context,
+          'CSV header missing required columns (user,type,amount,date)',
         );
         return;
       }
@@ -664,8 +663,9 @@ class _FriendListPageState extends ConsumerState<FriendListPage>
       for (var i = 1; i < lines.length; i++) {
         final cols = _splitCsvLine(lines[i]);
         if (cols.length < 5) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Invalid CSV format on line ${i + 1}')),
+          GlassAlert.showError(
+            context,
+            'Invalid CSV format on line ${i + 1}',
           );
           return;
         }
@@ -676,8 +676,9 @@ class _FriendListPageState extends ConsumerState<FriendListPage>
             double.tryParse(cols[2]) ??
             double.tryParse(cols[2].replaceAll('"', ''));
         if (amount == null) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Invalid amount on line ${i + 1}')),
+          GlassAlert.showError(
+            context,
+            'Invalid amount on line ${i + 1}',
           );
           return;
         }
@@ -703,13 +704,15 @@ class _FriendListPageState extends ConsumerState<FriendListPage>
         displayedKeys = List<String>.from(box.keys)
           ..sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
       });
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Imported $imported transactions')),
+      GlassAlert.showSuccess(
+        context,
+        'Imported $imported transactions',
       );
     } catch (e) {
-      ScaffoldMessenger.of(
+      GlassAlert.showError(
         context,
-      ).showSnackBar(SnackBar(content: Text('Import failed: $e')));
+        'Import failed: $e',
+      );
     }
   }
 
@@ -718,9 +721,10 @@ class _FriendListPageState extends ConsumerState<FriendListPage>
       'https://github.com/asterhyphen/hisaab',
     ); // replace
     if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
-      ScaffoldMessenger.of(
+      GlassAlert.showError(
         context,
-      ).showSnackBar(SnackBar(content: Text('Could not launch GitHub')));
+        'Could not launch GitHub',
+      );
     }
   }
 

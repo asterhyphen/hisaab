@@ -45,9 +45,7 @@ extension _FriendListPageDangerZone on _FriendListPageState {
         box.keys.cast<String>().toList()
           ..sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
     if (users.isEmpty) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('No users found')));
+      GlassAlert.showInfo(context, 'No users found');
       return;
     }
 
@@ -91,16 +89,12 @@ extension _FriendListPageDangerZone on _FriendListPageState {
     await box.put(selectedUser, []);
     if (!mounted) return;
     _refreshView();
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text('$selectedUser history reset')));
+    GlassAlert.showSuccess(context, '$selectedUser history reset');
   }
 
   Future<void> _resetAllUsersHistory() async {
     if (box.keys.isEmpty) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('No users found')));
+      GlassAlert.showInfo(context, 'No users found');
       return;
     }
     final confirmed = await _confirmDangerAction(
@@ -116,9 +110,7 @@ extension _FriendListPageDangerZone on _FriendListPageState {
     }
     if (!mounted) return;
     _refreshView();
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(const SnackBar(content: Text('All user histories reset')));
+    GlassAlert.showSuccess(context, 'All user histories reset');
   }
 
   Future<void> _deleteAllData() async {
@@ -136,9 +128,7 @@ extension _FriendListPageDangerZone on _FriendListPageState {
     if (!mounted) return;
     displayedKeys = [];
     _refreshView();
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(const SnackBar(content: Text('All local data deleted')));
+    GlassAlert.showSuccess(context, 'All local data deleted');
     _maybeRunFirstInstallSetup();
   }
 }

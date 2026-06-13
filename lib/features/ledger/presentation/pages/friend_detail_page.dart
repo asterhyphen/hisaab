@@ -8,6 +8,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/services.dart';
 
 import '../../../../core/theme/hisaab_typography.dart';
+import '../../../../core/widgets/glass_alert.dart';
 import 'package:crop_your_image/crop_your_image.dart';
 import 'dart:ui' as ui;
 import 'package:qr_flutter/qr_flutter.dart';
@@ -74,13 +75,9 @@ class _FriendDetailPageState extends ConsumerState<FriendDetailPage>
 
       box.put(widget.name, txns);
       setState(() {});
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Balance cleared')));
+      GlassAlert.showSuccess(context, 'Balance cleared');
     } catch (e) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Error: ${e.toString()}')));
+      GlassAlert.showError(context, 'Error: ${e.toString()}');
     }
   }
 
@@ -140,17 +137,14 @@ class _FriendDetailPageState extends ConsumerState<FriendDetailPage>
           };
           box.put(widget.name, txns);
           setState(() {});
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(const SnackBar(content: Text('Transaction updated')));
+          GlassAlert.showSuccess(context, 'Transaction updated');
         } else {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(const SnackBar(content: Text('Invalid amount')));
+          GlassAlert.showError(context, 'Invalid amount');
         }
       } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error updating: ${e.toString()}')),
+        GlassAlert.showError(
+          context,
+          'Error updating: ${e.toString()}',
         );
       }
     }
@@ -204,12 +198,11 @@ class _FriendDetailPageState extends ConsumerState<FriendDetailPage>
         }
 
         setState(() {});
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(const SnackBar(content: Text('Transaction deleted')));
+        GlassAlert.showSuccess(context, 'Transaction deleted');
       } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error deleting: ${e.toString()}')),
+        GlassAlert.showError(
+          context,
+          'Error deleting: ${e.toString()}',
         );
       }
     }
@@ -245,18 +238,16 @@ class _FriendDetailPageState extends ConsumerState<FriendDetailPage>
       if (file != null) {
         // copy path to clipboard for convenience and show share action
         await Clipboard.setData(ClipboardData(text: file.path));
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Exported to ${file.path} (path copied)'),
-            action: SnackBarAction(label: 'Share', onPressed: _shareCsv),
-            duration: Duration(seconds: 6),
-          ),
+        GlassAlert.showInfo(
+          context,
+          'Exported to ${file.path} (path copied)',
+          actionLabel: 'Share',
+          onAction: _shareCsv,
+          duration: const Duration(seconds: 6),
         );
       }
     } catch (e) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Export failed: $e')));
+      GlassAlert.showError(context, 'Export failed: $e');
     }
   }
 
@@ -357,9 +348,7 @@ class _FriendDetailPageState extends ConsumerState<FriendDetailPage>
     );
     if (ok == true) {
       appBox.put('upi', controller.text.trim());
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Saved your UPI')));
+      GlassAlert.showSuccess(context, 'Saved your UPI');
     }
   }
 
@@ -390,9 +379,7 @@ class _FriendDetailPageState extends ConsumerState<FriendDetailPage>
     );
     if (ok == true) {
       metaBox.put('${widget.name}_upi', controller.text.trim());
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Saved ${widget.name} UPI')));
+      GlassAlert.showSuccess(context, 'Saved ${widget.name} UPI');
     }
   }
 
@@ -521,9 +508,7 @@ class _FriendDetailPageState extends ConsumerState<FriendDetailPage>
                           '₹${amount.toStringAsFixed(2)} pending\nScan to pay via UPI',
                     );
                   } catch (e) {
-                    ScaffoldMessenger.of(
-                      context,
-                    ).showSnackBar(SnackBar(content: Text('Share failed')));
+                    GlassAlert.showError(context, 'Share failed');
                   }
                 },
                 child: Text('Share'),
@@ -560,31 +545,23 @@ class _FriendDetailPageState extends ConsumerState<FriendDetailPage>
             final file = File('${dir.path}/$fname');
             await file.writeAsBytes(bytes);
             await Clipboard.setData(ClipboardData(text: uri));
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text('QR saved to ${file.path} (UPI URI copied)'),
-              ),
+            GlassAlert.showSuccess(
+              context,
+              'QR saved to ${file.path} (UPI URI copied)',
             );
           }
         } catch (e) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                'QR data too long to encode. Please shorten the UPI details.',
-              ),
-            ),
+          GlassAlert.showError(
+            context,
+            'QR data too long to encode. Please shorten the UPI details.',
           );
         }
       } catch (e) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Save failed: $e')));
+        GlassAlert.showError(context, 'Save failed: $e');
       }
     } else {
       await Clipboard.setData(ClipboardData(text: uri));
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('UPI URI copied to clipboard')));
+      GlassAlert.showInfo(context, 'UPI URI copied to clipboard');
     }
   }
 
@@ -624,15 +601,17 @@ class _FriendDetailPageState extends ConsumerState<FriendDetailPage>
         mode: LaunchMode.externalApplication,
       );
       if (!launched) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Could not open UPI app. URI copied.')),
+        GlassAlert.showInfo(
+          context,
+          'Could not open UPI app. URI copied.',
         );
         await Clipboard.setData(ClipboardData(text: uri));
       }
     } catch (e) {
       await Clipboard.setData(ClipboardData(text: uri));
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to open UPI app, URI copied')),
+      GlassAlert.showInfo(
+        context,
+        'Failed to open UPI app, URI copied',
       );
     }
   }
@@ -699,20 +678,14 @@ class _FriendDetailPageState extends ConsumerState<FriendDetailPage>
     try {
       final file = await _exportCsvFile();
       if (file == null) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('No transactions to share')));
+        GlassAlert.showInfo(context, 'No transactions to share');
         return;
       }
       // Copy path to clipboard as a lightweight share fallback.
       await Clipboard.setData(ClipboardData(text: file.path));
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Exported file path copied to clipboard')),
-      );
+      GlassAlert.showInfo(context, 'Exported file path copied to clipboard');
     } catch (e) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Share failed: $e')));
+      GlassAlert.showError(context, 'Share failed: $e');
     }
   }
 
@@ -766,9 +739,7 @@ class _FriendDetailPageState extends ConsumerState<FriendDetailPage>
               .where((l) => l.trim().isNotEmpty)
               .toList();
       if (lines.isEmpty) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('CSV is empty')));
+        GlassAlert.showInfo(context, 'CSV is empty');
         return;
       }
       // Expect header with type,amount,note,date
@@ -776,12 +747,9 @@ class _FriendDetailPageState extends ConsumerState<FriendDetailPage>
       if (!header.contains('type') ||
           !header.contains('amount') ||
           !header.contains('date')) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              'CSV header missing required columns (type, amount, date)',
-            ),
-          ),
+        GlassAlert.showError(
+          context,
+          'CSV header missing required columns (type, amount, date)',
         );
         return;
       }
@@ -790,8 +758,9 @@ class _FriendDetailPageState extends ConsumerState<FriendDetailPage>
         final row = lines[i];
         final cols = _splitCsvLine(row);
         if (cols.length < 4) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Invalid CSV format on line ${i + 1}')),
+          GlassAlert.showError(
+            context,
+            'Invalid CSV format on line ${i + 1}',
           );
           return;
         }
@@ -801,8 +770,9 @@ class _FriendDetailPageState extends ConsumerState<FriendDetailPage>
             double.tryParse(cols[1]) ??
             double.tryParse(cols[1].replaceAll('"', ''));
         if (amount == null) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Invalid amount on line ${i + 1}')),
+          GlassAlert.showError(
+            context,
+            'Invalid amount on line ${i + 1}',
           );
           return;
         }
@@ -818,13 +788,15 @@ class _FriendDetailPageState extends ConsumerState<FriendDetailPage>
       }
       box.put(widget.name, list);
       setState(() {});
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Imported ${lines.length - 1} transactions')),
+      GlassAlert.showSuccess(
+        context,
+        'Imported ${lines.length - 1} transactions',
       );
     } catch (e) {
-      ScaffoldMessenger.of(
+      GlassAlert.showError(
         context,
-      ).showSnackBar(SnackBar(content: Text('Import failed: $e')));
+        'Import failed: $e',
+      );
     }
   }
 
