@@ -4,6 +4,7 @@ extension _SettingsPageTab on _FriendListPageState {
   Widget _buildSettingsBody() {
     final name = _profileName();
     final themeKey = _currentThemeKey();
+    final upi = _profileUpi();
     return ListView(
       padding: const EdgeInsets.all(12),
       children: [
@@ -50,6 +51,16 @@ extension _SettingsPageTab on _FriendListPageState {
                                 Theme.of(context).colorScheme.onSurfaceVariant,
                           ),
                         ),
+                        if (upi.isNotEmpty) ...[
+                          const SizedBox(height: 4),
+                          Text(
+                            'UPI: $upi',
+                            style: TextStyle(
+                              color: Theme.of(context).colorScheme.secondary,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
                       ],
                     ),
                   ),
@@ -69,6 +80,11 @@ extension _SettingsPageTab on _FriendListPageState {
                     onPressed: _changeAppProfilePicture,
                     icon: Icon(Icons.image_outlined),
                     label: Text('Change photo'),
+                  ),
+                  OutlinedButton.icon(
+                    onPressed: _editAppUpi,
+                    icon: Icon(Icons.qr_code_outlined),
+                    label: Text('Change UPI'),
                   ),
                 ],
               ),

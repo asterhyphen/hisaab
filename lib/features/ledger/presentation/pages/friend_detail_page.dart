@@ -320,37 +320,7 @@ class _FriendDetailPageState extends ConsumerState<FriendDetailPage>
     return t;
   }
 
-  Future<void> _setAppUpi() async {
-    final appBox = _preferencesRepository.box;
-    final controller = TextEditingController(
-      text: appBox.get('upi') as String? ?? '',
-    );
-    final ok = await showDialog<bool?>(
-      context: context,
-      builder:
-          (_) => AlertDialog(
-            title: Text('Set your UPI id'),
-            content: TextField(
-              controller: controller,
-              decoration: InputDecoration(hintText: 'example@upi'),
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context, false),
-                child: Text('Cancel'),
-              ),
-              ElevatedButton(
-                onPressed: () => Navigator.pop(context, true),
-                child: Text('Save'),
-              ),
-            ],
-          ),
-    );
-    if (ok == true) {
-      appBox.put('upi', controller.text.trim());
-      GlassAlert.showSuccess(context, 'Saved your UPI');
-    }
-  }
+
 
   Future<void> _setUserUpi() async {
     final controller = TextEditingController(
@@ -405,27 +375,10 @@ class _FriendDetailPageState extends ConsumerState<FriendDetailPage>
     final appBox = _preferencesRepository.box;
     final upi = (appBox.get('upi') as String?)?.trim();
     if (upi == null || upi.isEmpty) {
-      final setNow = await showDialog<bool?>(
-        context: context,
-        builder:
-            (_) => AlertDialog(
-              title: Text('Set your UPI id'),
-              content: Text(
-                'You need to set your UPI id to share QR for payment.',
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.pop(context, false),
-                  child: Text('Cancel'),
-                ),
-                ElevatedButton(
-                  onPressed: () => Navigator.pop(context, true),
-                  child: Text('Set now'),
-                ),
-              ],
-            ),
+      GlassAlert.showInfo(
+        context,
+        'Please set your UPI ID in Settings to generate a QR.',
       );
-      if (setNow == true) await _setAppUpi();
       return;
     }
     final uri = _buildUpiUri(upi, amount, pn: 'Hisaab', tn: 'Payment');
@@ -1155,21 +1108,15 @@ class _FriendDetailPageState extends ConsumerState<FriendDetailPage>
                                     Theme.of(context).scaffoldBackgroundColor,
                               ),
                             ),
-                          SizedBox(width: 8),
-                          TextButton(
-                            onPressed: () async {
-                              if (total >= 0) {
-                                await _setAppUpi();
-                              } else {
+                          if (total < 0) ...[
+                            SizedBox(width: 8),
+                            TextButton(
+                              onPressed: () async {
                                 await _setUserUpi();
-                              }
-                            },
-                            child: Text(
-                              total >= 0
-                                  ? 'Set my UPI'
-                                  : 'Set ${widget.name} UPI',
+                              },
+                              child: Text('Set ${widget.name} UPI'),
                             ),
-                          ),
+                          ],
                         ],
                       ),
                       if (total != 0) ...[

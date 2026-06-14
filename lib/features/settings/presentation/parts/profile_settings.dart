@@ -279,4 +279,54 @@ extension _FriendListPageProfileTheme on _FriendListPageState {
       ),
     );
   }
+
+  String _profileUpi() {
+    return (appMetaBox.get('upi') as String?) ?? '';
+  }
+
+  Future<void> _editAppUpi() async {
+    final controller = TextEditingController(
+      text: (appMetaBox.get('upi') as String?) ?? '',
+    );
+    final saved = await showDialog<bool>(
+      context: context,
+      builder:
+          (_) => AlertDialog(
+            backgroundColor: Theme.of(context).colorScheme.surface,
+            title: Text(
+              'Update UPI ID',
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.onSurface,
+              ),
+            ),
+            content: TextField(
+              controller: controller,
+              autofocus: true,
+              decoration: const InputDecoration(
+                labelText: 'UPI ID',
+                hintText: 'example@upi',
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, false),
+                child: const Text('Cancel'),
+              ),
+              ElevatedButton(
+                onPressed: () => Navigator.pop(context, true),
+                child: const Text('Save'),
+              ),
+            ],
+          ),
+    );
+
+    if (saved == true) {
+      await appMetaBox.put('upi', controller.text.trim());
+      if (mounted) {
+        GlassAlert.showSuccess(context, 'UPI ID updated');
+      }
+      _refreshView();
+    }
+    controller.dispose();
+  }
 }
