@@ -142,10 +142,7 @@ class _FriendDetailPageState extends ConsumerState<FriendDetailPage>
           GlassAlert.showError(context, 'Invalid amount');
         }
       } catch (e) {
-        GlassAlert.showError(
-          context,
-          'Error updating: ${e.toString()}',
-        );
+        GlassAlert.showError(context, 'Error updating: ${e.toString()}');
       }
     }
     amountCtrl.dispose();
@@ -200,10 +197,7 @@ class _FriendDetailPageState extends ConsumerState<FriendDetailPage>
         setState(() {});
         GlassAlert.showSuccess(context, 'Transaction deleted');
       } catch (e) {
-        GlassAlert.showError(
-          context,
-          'Error deleting: ${e.toString()}',
-        );
+        GlassAlert.showError(context, 'Error deleting: ${e.toString()}');
       }
     }
   }
@@ -319,8 +313,6 @@ class _FriendDetailPageState extends ConsumerState<FriendDetailPage>
     );
     return t;
   }
-
-
 
   Future<void> _setUserUpi() async {
     final controller = TextEditingController(
@@ -554,18 +546,12 @@ class _FriendDetailPageState extends ConsumerState<FriendDetailPage>
         mode: LaunchMode.externalApplication,
       );
       if (!launched) {
-        GlassAlert.showInfo(
-          context,
-          'Could not open UPI app. URI copied.',
-        );
+        GlassAlert.showInfo(context, 'Could not open UPI app. URI copied.');
         await Clipboard.setData(ClipboardData(text: uri));
       }
     } catch (e) {
       await Clipboard.setData(ClipboardData(text: uri));
-      GlassAlert.showInfo(
-        context,
-        'Failed to open UPI app, URI copied',
-      );
+      GlassAlert.showInfo(context, 'Failed to open UPI app, URI copied');
     }
   }
 
@@ -711,10 +697,7 @@ class _FriendDetailPageState extends ConsumerState<FriendDetailPage>
         final row = lines[i];
         final cols = _splitCsvLine(row);
         if (cols.length < 4) {
-          GlassAlert.showError(
-            context,
-            'Invalid CSV format on line ${i + 1}',
-          );
+          GlassAlert.showError(context, 'Invalid CSV format on line ${i + 1}');
           return;
         }
         final typeRaw = cols[0].toLowerCase();
@@ -723,10 +706,7 @@ class _FriendDetailPageState extends ConsumerState<FriendDetailPage>
             double.tryParse(cols[1]) ??
             double.tryParse(cols[1].replaceAll('"', ''));
         if (amount == null) {
-          GlassAlert.showError(
-            context,
-            'Invalid amount on line ${i + 1}',
-          );
+          GlassAlert.showError(context, 'Invalid amount on line ${i + 1}');
           return;
         }
         final note = cols[2];
@@ -746,10 +726,7 @@ class _FriendDetailPageState extends ConsumerState<FriendDetailPage>
         'Imported ${lines.length - 1} transactions',
       );
     } catch (e) {
-      GlassAlert.showError(
-        context,
-        'Import failed: $e',
-      );
+      GlassAlert.showError(context, 'Import failed: $e');
     }
   }
 

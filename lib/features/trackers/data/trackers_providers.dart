@@ -111,9 +111,8 @@ class TrackersNotifier extends Notifier<List<Tracker>> {
       final raw = all[id];
       if (raw is! Map) continue;
       final tracker = Tracker.fromMap(raw);
-      all[id] = tracker
-          .copyWith(users: [...tracker.users, ...newUsers])
-          .toMap();
+      all[id] =
+          tracker.copyWith(users: [...tracker.users, ...newUsers]).toMap();
     }
 
     await _box.put('trackkars', all);
@@ -142,8 +141,7 @@ class TrackersNotifier extends Notifier<List<Tracker>> {
   }
 
   List<Tracker> _readTrackers() {
-    final raw =
-        _box.get('trackkars', defaultValue: <String, dynamic>{}) as Map;
+    final raw = _box.get('trackkars', defaultValue: <String, dynamic>{}) as Map;
     return raw.values.map((value) => Tracker.fromMap(value)).toList()
       ..sort((a, b) => a.title.toLowerCase().compareTo(b.title.toLowerCase()));
   }

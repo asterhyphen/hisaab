@@ -54,16 +54,18 @@ _Paid ({paidCount}; ₹{paidAmount})_
   factory TrackerSettings.fromMap(Map? map) {
     if (map == null) return defaults;
     return TrackerSettings(
-      confirmDelete: map['confirmDelete'] is bool
-          ? map['confirmDelete'] as bool
-          : defaults.confirmDelete,
+      confirmDelete:
+          map['confirmDelete'] is bool
+              ? map['confirmDelete'] as bool
+              : defaults.confirmDelete,
       messageTemplate: _normalizeMessageTemplate(map['messageTemplate']),
       allPaidMessageTemplate: _normalizeAllPaidMessageTemplate(
         map['allPaidMessageTemplate'],
       ),
-      notificationsEnabled: map['notificationsEnabled'] is bool
-          ? map['notificationsEnabled'] as bool
-          : defaults.notificationsEnabled,
+      notificationsEnabled:
+          map['notificationsEnabled'] is bool
+              ? map['notificationsEnabled'] as bool
+              : defaults.notificationsEnabled,
       reminderDaysBefore: _normalizeReminderDays(map['reminderDaysBefore']),
     );
   }

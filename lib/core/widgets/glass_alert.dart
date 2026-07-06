@@ -102,7 +102,8 @@ class GlassAlert extends StatefulWidget {
   State<GlassAlert> createState() => _GlassAlertState();
 }
 
-class _GlassAlertState extends State<GlassAlert> with SingleTickerProviderStateMixin {
+class _GlassAlertState extends State<GlassAlert>
+    with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _yTranslation;
   late Animation<double> _opacity;
@@ -116,13 +117,15 @@ class _GlassAlertState extends State<GlassAlert> with SingleTickerProviderStateM
       duration: const Duration(milliseconds: 350),
     );
 
-    _yTranslation = Tween<double>(begin: -100.0, end: 0.0).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeOutBack),
-    );
+    _yTranslation = Tween<double>(
+      begin: -100.0,
+      end: 0.0,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOutBack));
 
-    _opacity = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeIn),
-    );
+    _opacity = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeIn));
 
     _controller.forward();
 
@@ -179,13 +182,12 @@ class _GlassAlertState extends State<GlassAlert> with SingleTickerProviderStateM
         break;
     }
 
-    final baseBgColor = isDark 
-        ? Colors.black.withValues(alpha: 0.65) 
-        : Colors.white.withValues(alpha: 0.75);
-        
-    final textColor = isDark 
-        ? Colors.white 
-        : Colors.black87;
+    final baseBgColor =
+        isDark
+            ? Colors.black.withValues(alpha: 0.65)
+            : Colors.white.withValues(alpha: 0.75);
+
+    final textColor = isDark ? Colors.white : Colors.black87;
 
     return Positioned(
       top: padding.top + 16,
@@ -204,10 +206,7 @@ class _GlassAlertState extends State<GlassAlert> with SingleTickerProviderStateM
             builder: (context, child) {
               return Transform.translate(
                 offset: Offset(0, _yTranslation.value),
-                child: Opacity(
-                  opacity: _opacity.value,
-                  child: child,
-                ),
+                child: Opacity(opacity: _opacity.value, child: child),
               );
             },
             child: ClipRRect(
@@ -215,17 +214,19 @@ class _GlassAlertState extends State<GlassAlert> with SingleTickerProviderStateM
               child: BackdropFilter(
                 filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 14,
+                  ),
                   decoration: BoxDecoration(
                     color: Color.alphaBlend(glassBg, baseBgColor),
                     borderRadius: BorderRadius.circular(16),
-                    border: Border.all(
-                      color: borderCol,
-                      width: 1.5,
-                    ),
+                    border: Border.all(color: borderCol, width: 1.5),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withValues(alpha: isDark ? 0.25 : 0.08),
+                        color: Colors.black.withValues(
+                          alpha: isDark ? 0.25 : 0.08,
+                        ),
                         blurRadius: 16,
                         offset: const Offset(0, 8),
                       ),
@@ -244,7 +245,8 @@ class _GlassAlertState extends State<GlassAlert> with SingleTickerProviderStateM
                           ),
                         ),
                       ),
-                      if (widget.actionLabel != null && widget.onAction != null) ...[
+                      if (widget.actionLabel != null &&
+                          widget.onAction != null) ...[
                         const SizedBox(width: 8),
                         TextButton(
                           onPressed: () {
@@ -252,7 +254,10 @@ class _GlassAlertState extends State<GlassAlert> with SingleTickerProviderStateM
                             widget.onAction!();
                           },
                           style: TextButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 6,
+                            ),
                             backgroundColor: iconCol.withValues(alpha: 0.15),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(8),

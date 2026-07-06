@@ -25,10 +25,11 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
     final updatedTemplates = await Navigator.push<MessageTemplateEditResult>(
       context,
       MaterialPageRoute(
-        builder: (_) => MessageTemplateEditorPage(
-          initialTemplate: settings.messageTemplate,
-          initialAllPaidTemplate: settings.allPaidMessageTemplate,
-        ),
+        builder:
+            (_) => MessageTemplateEditorPage(
+              initialTemplate: settings.messageTemplate,
+              initialAllPaidTemplate: settings.allPaidMessageTemplate,
+            ),
       ),
     );
 
@@ -58,22 +59,23 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
     final shouldClear =
         await showDialog<bool>(
           context: context,
-          builder: (ctx) => AlertDialog(
-            title: const Text('Clear monthly records?'),
-            content: const Text(
-              'This removes paid and pending records for all months, but keeps your trackkars.',
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(ctx, false),
-                child: const Text('Cancel'),
+          builder:
+              (ctx) => AlertDialog(
+                title: const Text('Clear monthly records?'),
+                content: const Text(
+                  'This removes paid and pending records for all months, but keeps your trackkars.',
+                ),
+                actions: [
+                  TextButton(
+                    onPressed: () => Navigator.pop(ctx, false),
+                    child: const Text('Cancel'),
+                  ),
+                  TextButton(
+                    onPressed: () => Navigator.pop(ctx, true),
+                    child: const Text('Clear'),
+                  ),
+                ],
               ),
-              TextButton(
-                onPressed: () => Navigator.pop(ctx, true),
-                child: const Text('Clear'),
-              ),
-            ],
-          ),
         ) ??
         false;
 
@@ -132,9 +134,10 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
         gradient: LinearGradient(
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
-          colors: isDark
-              ? const [Color(0xFF10192B), Color(0xFF090F1B)]
-              : const [Color(0xFFF9FCFE), Color(0xFFEAF2F7)],
+          colors:
+              isDark
+                  ? const [Color(0xFF10192B), Color(0xFF090F1B)]
+                  : const [Color(0xFFF9FCFE), Color(0xFFEAF2F7)],
         ),
       ),
       child: ListView(
@@ -144,24 +147,27 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
             padding: const EdgeInsets.all(18),
             decoration: BoxDecoration(
               gradient: LinearGradient(
-                colors: isDark
-                    ? [
-                        Colors.white.withValues(alpha: 0.10),
-                        Colors.white.withValues(alpha: 0.04),
-                      ]
-                    : [Colors.white, const Color(0xFFF1F7FB)],
+                colors:
+                    isDark
+                        ? [
+                          Colors.white.withValues(alpha: 0.10),
+                          Colors.white.withValues(alpha: 0.04),
+                        ]
+                        : [Colors.white, const Color(0xFFF1F7FB)],
               ),
               borderRadius: BorderRadius.circular(24),
               border: Border.all(
-                color: isDark
-                    ? Colors.white.withValues(alpha: 0.10)
-                    : const Color(0xFFD9E6EF),
+                color:
+                    isDark
+                        ? Colors.white.withValues(alpha: 0.10)
+                        : const Color(0xFFD9E6EF),
               ),
               boxShadow: [
                 BoxShadow(
-                  color: isDark
-                      ? Colors.black.withValues(alpha: 0.24)
-                      : const Color(0xFF8FA8BA).withValues(alpha: 0.16),
+                  color:
+                      isDark
+                          ? Colors.black.withValues(alpha: 0.24)
+                          : const Color(0xFF8FA8BA).withValues(alpha: 0.16),
                   blurRadius: 24,
                   offset: const Offset(0, 14),
                 ),
@@ -183,9 +189,10 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                       ),
                       child: Icon(
                         Icons.tune,
-                        color: isDark
-                            ? const Color(0xFF77FFD8)
-                            : colorScheme.primary,
+                        color:
+                            isDark
+                                ? const Color(0xFF77FFD8)
+                                : colorScheme.primary,
                       ),
                     ),
                     const SizedBox(width: 12),
@@ -254,9 +261,10 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                     if (!context.mounted) return;
                     showAppAlert(
                       context,
-                      message: value
-                          ? 'Delete confirmation enabled.'
-                          : 'Delete confirmation disabled.',
+                      message:
+                          value
+                              ? 'Delete confirmation enabled.'
+                              : 'Delete confirmation disabled.',
                     );
                   },
                 ),
@@ -369,12 +377,15 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
           ),
         );
       },
-      child: visible
-          ? KeyedSubtree(
-              key: const ValueKey('notification-options'),
-              child: child,
-            )
-          : const SizedBox.shrink(key: ValueKey('notification-options-hidden')),
+      child:
+          visible
+              ? KeyedSubtree(
+                key: const ValueKey('notification-options'),
+                child: child,
+              )
+              : const SizedBox.shrink(
+                key: ValueKey('notification-options-hidden'),
+              ),
     );
   }
 
@@ -391,14 +402,16 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: isDark
-            ? Colors.white.withValues(alpha: 0.065)
-            : Colors.white.withValues(alpha: 0.82),
+        color:
+            isDark
+                ? Colors.white.withValues(alpha: 0.065)
+                : Colors.white.withValues(alpha: 0.82),
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: isDark
-              ? Colors.white.withValues(alpha: 0.10)
-              : const Color(0xFFD9E6EF),
+          color:
+              isDark
+                  ? Colors.white.withValues(alpha: 0.10)
+                  : const Color(0xFFD9E6EF),
         ),
       ),
       child: Column(
@@ -413,17 +426,19 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                       width: 34,
                       height: 34,
                       decoration: BoxDecoration(
-                        color: isDark
-                            ? Colors.white.withValues(alpha: 0.08)
-                            : const Color(0xFFF1F6FA),
+                        color:
+                            isDark
+                                ? Colors.white.withValues(alpha: 0.08)
+                                : const Color(0xFFF1F6FA),
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Icon(
                         icon,
                         size: 18,
-                        color: isDark
-                            ? const Color(0xFF77FFD8)
-                            : theme.colorScheme.primary,
+                        color:
+                            isDark
+                                ? const Color(0xFF77FFD8)
+                                : theme.colorScheme.primary,
                       ),
                     ),
                     const SizedBox(width: 10),

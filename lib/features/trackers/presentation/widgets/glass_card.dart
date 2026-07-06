@@ -20,23 +20,26 @@ class TrackerGlassCard extends StatelessWidget {
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: isDark
-              ? [
-                  Colors.white.withValues(alpha: 0.10),
-                  Colors.white.withValues(alpha: 0.03),
-                ]
-              : [Colors.white, const Color(0xFFF1F6FA)],
+          colors:
+              isDark
+                  ? [
+                    Colors.white.withValues(alpha: 0.10),
+                    Colors.white.withValues(alpha: 0.03),
+                  ]
+                  : [Colors.white, const Color(0xFFF1F6FA)],
         ),
         border: Border.all(
-          color: isDark
-              ? Colors.white.withValues(alpha: 0.14)
-              : const Color(0xFFD9E6EF),
+          color:
+              isDark
+                  ? Colors.white.withValues(alpha: 0.14)
+                  : const Color(0xFFD9E6EF),
         ),
         boxShadow: [
           BoxShadow(
-            color: isDark
-                ? Colors.black.withValues(alpha: 0.35)
-                : const Color(0xFF8FA8BA).withValues(alpha: 0.16),
+            color:
+                isDark
+                    ? Colors.black.withValues(alpha: 0.35)
+                    : const Color(0xFF8FA8BA).withValues(alpha: 0.16),
             blurRadius: 30,
             offset: const Offset(0, 12),
           ),

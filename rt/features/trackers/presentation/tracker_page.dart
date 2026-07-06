@@ -86,9 +86,10 @@ class _TrackerPageState extends ConsumerState<TrackerPage> {
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: isDark
-                ? const [Color(0xFF10192B), Color(0xFF090F1B)]
-                : const [Color(0xFFF9FCFE), Color(0xFFEAF2F7)],
+            colors:
+                isDark
+                    ? const [Color(0xFF10192B), Color(0xFF090F1B)]
+                    : const [Color(0xFFF9FCFE), Color(0xFFEAF2F7)],
           ),
         ),
         child: SafeArea(
@@ -193,20 +194,28 @@ class _TrackerPageState extends ConsumerState<TrackerPage> {
                             width: 180,
                             padding: const EdgeInsets.all(14),
                             decoration: BoxDecoration(
-                              color: allAdded
-                                  ? colorScheme.primary.withValues(
-                                      alpha: isDark ? 0.16 : 0.12,
-                                    )
-                                  : (isDark
-                                        ? Colors.white.withValues(alpha: 0.06)
-                                        : Colors.white.withValues(alpha: 0.82)),
+                              color:
+                                  allAdded
+                                      ? colorScheme.primary.withValues(
+                                        alpha: isDark ? 0.16 : 0.12,
+                                      )
+                                      : (isDark
+                                          ? Colors.white.withValues(alpha: 0.06)
+                                          : Colors.white.withValues(
+                                            alpha: 0.82,
+                                          )),
                               borderRadius: BorderRadius.circular(18),
                               border: Border.all(
-                                color: allAdded
-                                    ? colorScheme.primary.withValues(alpha: 0.4)
-                                    : (isDark
-                                          ? Colors.white.withValues(alpha: 0.08)
-                                          : const Color(0xFFD9E6EF)),
+                                color:
+                                    allAdded
+                                        ? colorScheme.primary.withValues(
+                                          alpha: 0.4,
+                                        )
+                                        : (isDark
+                                            ? Colors.white.withValues(
+                                              alpha: 0.08,
+                                            )
+                                            : const Color(0xFFD9E6EF)),
                               ),
                             ),
                             child: Column(
@@ -216,9 +225,10 @@ class _TrackerPageState extends ConsumerState<TrackerPage> {
                                   children: [
                                     Icon(
                                       Icons.groups_rounded,
-                                      color: allAdded
-                                          ? colorScheme.primary
-                                          : colorScheme.onSurface,
+                                      color:
+                                          allAdded
+                                              ? colorScheme.primary
+                                              : colorScheme.onSurface,
                                     ),
                                     const Spacer(),
                                     Icon(
@@ -226,11 +236,11 @@ class _TrackerPageState extends ConsumerState<TrackerPage> {
                                           ? Icons.check_circle
                                           : Icons.add_circle_outline,
                                       size: 18,
-                                      color: allAdded
-                                          ? colorScheme.primary
-                                          : colorScheme.onSurface.withValues(
-                                              alpha: 0.64,
-                                            ),
+                                      color:
+                                          allAdded
+                                              ? colorScheme.primary
+                                              : colorScheme.onSurface
+                                                  .withValues(alpha: 0.64),
                                     ),
                                   ],
                                 ),
@@ -277,20 +287,21 @@ class _TrackerPageState extends ConsumerState<TrackerPage> {
                   Wrap(
                     spacing: 8,
                     runSpacing: 8,
-                    children: savedUsers.map((savedUser) {
-                      final added = users.contains(savedUser);
-                      return FilterChip(
-                        label: Text(savedUser),
-                        selected: added,
-                        onSelected: (selected) {
-                          if (selected) {
-                            _addUsers([savedUser]);
-                          } else {
-                            setState(() => users.remove(savedUser));
-                          }
-                        },
-                      );
-                    }).toList(),
+                    children:
+                        savedUsers.map((savedUser) {
+                          final added = users.contains(savedUser);
+                          return FilterChip(
+                            label: Text(savedUser),
+                            selected: added,
+                            onSelected: (selected) {
+                              if (selected) {
+                                _addUsers([savedUser]);
+                              } else {
+                                setState(() => users.remove(savedUser));
+                              }
+                            },
+                          );
+                        }).toList(),
                   ),
                   const SizedBox(height: 14),
                 ],
@@ -298,14 +309,16 @@ class _TrackerPageState extends ConsumerState<TrackerPage> {
                   Container(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: isDark
-                          ? Colors.white.withValues(alpha: 0.06)
-                          : Colors.white.withValues(alpha: 0.82),
+                      color:
+                          isDark
+                              ? Colors.white.withValues(alpha: 0.06)
+                              : Colors.white.withValues(alpha: 0.82),
                       borderRadius: BorderRadius.circular(18),
                       border: Border.all(
-                        color: isDark
-                            ? Colors.white.withValues(alpha: 0.08)
-                            : const Color(0xFFD9E6EF),
+                        color:
+                            isDark
+                                ? Colors.white.withValues(alpha: 0.08)
+                                : const Color(0xFFD9E6EF),
                       ),
                     ),
                     child: Column(
@@ -385,28 +398,31 @@ class _TrackerPageState extends ConsumerState<TrackerPage> {
                 Wrap(
                   spacing: 8,
                   runSpacing: 8,
-                  children: users
-                      .map(
-                        (u) => Chip(
-                          label: Text(u),
-                          deleteIcon: const Icon(Icons.close, size: 16),
-                          onDeleted: () => setState(() => users.remove(u)),
-                        ),
-                      )
-                      .toList(),
+                  children:
+                      users
+                          .map(
+                            (u) => Chip(
+                              label: Text(u),
+                              deleteIcon: const Icon(Icons.close, size: 16),
+                              onDeleted: () => setState(() => users.remove(u)),
+                            ),
+                          )
+                          .toList(),
                 ),
                 const SizedBox(height: 14),
                 Container(
                   padding: const EdgeInsets.all(14),
                   decoration: BoxDecoration(
-                    color: isDark
-                        ? Colors.white.withValues(alpha: 0.07)
-                        : Colors.white.withValues(alpha: 0.82),
+                    color:
+                        isDark
+                            ? Colors.white.withValues(alpha: 0.07)
+                            : Colors.white.withValues(alpha: 0.82),
                     borderRadius: BorderRadius.circular(16),
                     border: Border.all(
-                      color: isDark
-                          ? Colors.white.withValues(alpha: 0.10)
-                          : const Color(0xFFD9E6EF),
+                      color:
+                          isDark
+                              ? Colors.white.withValues(alpha: 0.10)
+                              : const Color(0xFFD9E6EF),
                     ),
                   ),
                   child: Row(
@@ -443,36 +459,39 @@ class _TrackerPageState extends ConsumerState<TrackerPage> {
                 Wrap(
                   spacing: 12,
                   runSpacing: 12,
-                  children: trackerIcons.entries.map((e) {
-                    final selected = iconId == e.key;
-                    return GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          iconId = e.key;
-                          iconManuallySelected = true;
-                        });
-                      },
-                      child: AnimatedContainer(
-                        duration: const Duration(milliseconds: 200),
-                        width: 52,
-                        height: 52,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(15),
-                          color: selected
-                              ? const Color(0xFF00B894)
-                              : (isDark
-                                    ? Colors.white.withValues(alpha: 0.08)
-                                    : const Color(0xFFF0F5F9)),
-                        ),
-                        child: Icon(
-                          e.value,
-                          color: selected
-                              ? colorScheme.onPrimary
-                              : colorScheme.onSurface,
-                        ),
-                      ),
-                    );
-                  }).toList(),
+                  children:
+                      trackerIcons.entries.map((e) {
+                        final selected = iconId == e.key;
+                        return GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              iconId = e.key;
+                              iconManuallySelected = true;
+                            });
+                          },
+                          child: AnimatedContainer(
+                            duration: const Duration(milliseconds: 200),
+                            width: 52,
+                            height: 52,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(15),
+                              color:
+                                  selected
+                                      ? const Color(0xFF00B894)
+                                      : (isDark
+                                          ? Colors.white.withValues(alpha: 0.08)
+                                          : const Color(0xFFF0F5F9)),
+                            ),
+                            child: Icon(
+                              e.value,
+                              color:
+                                  selected
+                                      ? colorScheme.onPrimary
+                                      : colorScheme.onSurface,
+                            ),
+                          ),
+                        );
+                      }).toList(),
                 ),
                 const SizedBox(height: 24),
                 SizedBox(
@@ -533,14 +552,16 @@ class _TrackerPageState extends ConsumerState<TrackerPage> {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
         decoration: BoxDecoration(
-          color: isDark
-              ? Colors.white.withValues(alpha: 0.07)
-              : Colors.white.withValues(alpha: 0.82),
+          color:
+              isDark
+                  ? Colors.white.withValues(alpha: 0.07)
+                  : Colors.white.withValues(alpha: 0.82),
           borderRadius: BorderRadius.circular(14),
           border: Border.all(
-            color: isDark
-                ? Colors.white.withValues(alpha: 0.10)
-                : const Color(0xFFD9E6EF),
+            color:
+                isDark
+                    ? Colors.white.withValues(alpha: 0.10)
+                    : const Color(0xFFD9E6EF),
           ),
         ),
         child: Column(

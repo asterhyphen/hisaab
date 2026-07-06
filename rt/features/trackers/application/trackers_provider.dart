@@ -79,9 +79,8 @@ class TrackersNotifier extends Notifier<List<Tracker>> {
       if (raw is! Map) continue;
 
       final tracker = Tracker.fromMap(raw);
-      all[id] = tracker
-          .copyWith(users: [...tracker.users, ...newUsers])
-          .toMap();
+      all[id] =
+          tracker.copyWith(users: [...tracker.users, ...newUsers]).toMap();
     }
 
     await _box.put('trackkars', all);
@@ -93,9 +92,8 @@ class TrackersNotifier extends Notifier<List<Tracker>> {
     final all = Map<String, dynamic>.from(
       _box.get('trackkars', defaultValue: <String, dynamic>{}) as Map,
     );
-    final deleted = all[trackerId] == null
-        ? null
-        : Tracker.fromMap(all[trackerId]);
+    final deleted =
+        all[trackerId] == null ? null : Tracker.fromMap(all[trackerId]);
     all.remove(trackerId);
     await _box.put('trackkars', all);
     state = _readTrackers();

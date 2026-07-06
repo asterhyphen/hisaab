@@ -295,9 +295,7 @@ extension _FriendListPageProfileTheme on _FriendListPageState {
             backgroundColor: Theme.of(context).colorScheme.surface,
             title: Text(
               'Update UPI ID',
-              style: TextStyle(
-                color: Theme.of(context).colorScheme.onSurface,
-              ),
+              style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
             ),
             content: TextField(
               controller: controller,

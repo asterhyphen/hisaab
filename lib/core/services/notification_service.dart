@@ -68,11 +68,12 @@ class NotificationService {
   Future<bool> requestPermission() async {
     await initialize();
 
-    final androidGranted = await _plugin
-        .resolvePlatformSpecificImplementation<
-          AndroidFlutterLocalNotificationsPlugin
-        >()
-        ?.requestNotificationsPermission();
+    final androidGranted =
+        await _plugin
+            .resolvePlatformSpecificImplementation<
+              AndroidFlutterLocalNotificationsPlugin
+            >()
+            ?.requestNotificationsPermission();
 
     final iosGranted = await _plugin
         .resolvePlatformSpecificImplementation<
@@ -99,10 +100,11 @@ class NotificationService {
     if (!settings.notificationsEnabled) return;
 
     final raw = box.get('trackkars', defaultValue: {}) as Map;
-    final trackkars = raw.values
-        .map((value) => Tracker.fromMap(value))
-        .where((tracker) => !tracker.archived)
-        .toList();
+    final trackkars =
+        raw.values
+            .map((value) => Tracker.fromMap(value))
+            .where((tracker) => !tracker.archived)
+            .toList();
 
     for (final tracker in trackkars) {
       await _scheduleTrackerReminders(tracker, settings.reminderDaysBefore);

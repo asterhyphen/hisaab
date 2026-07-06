@@ -28,9 +28,10 @@ class _UsersPageState extends ConsumerState<UsersPage> {
         gradient: LinearGradient(
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
-          colors: isDark
-              ? const [Color(0xFF111A2B), Color(0xFF090F1B)]
-              : const [Color(0xFFF9FCFE), Color(0xFFEAF2F7)],
+          colors:
+              isDark
+                  ? const [Color(0xFF111A2B), Color(0xFF090F1B)]
+                  : const [Color(0xFFF9FCFE), Color(0xFFEAF2F7)],
         ),
       ),
       child: SafeArea(
@@ -108,22 +109,24 @@ class _UsersPageState extends ConsumerState<UsersPage> {
               title: 'Users',
               actionLabel: 'Add User',
               onAction: _showAddUserSheet,
-              child: users.isEmpty
-                  ? _emptyBody(
-                      context,
-                      'No users have been saved yet. Add people here so trackkar creation is easier and faster later.',
-                    )
-                  : Wrap(
-                      spacing: 10,
-                      runSpacing: 10,
-                      children: users.map((user) {
-                        return Chip(
-                          label: Text(user),
-                          onDeleted: () => _confirmDeleteUser(user),
-                          deleteIcon: const Icon(Icons.close, size: 18),
-                        );
-                      }).toList(),
-                    ),
+              child:
+                  users.isEmpty
+                      ? _emptyBody(
+                        context,
+                        'No users have been saved yet. Add people here so trackkar creation is easier and faster later.',
+                      )
+                      : Wrap(
+                        spacing: 10,
+                        runSpacing: 10,
+                        children:
+                            users.map((user) {
+                              return Chip(
+                                label: Text(user),
+                                onDeleted: () => _confirmDeleteUser(user),
+                                deleteIcon: const Icon(Icons.close, size: 18),
+                              );
+                            }).toList(),
+                      ),
             ),
             const SizedBox(height: 12),
             _sectionCard(
@@ -131,137 +134,164 @@ class _UsersPageState extends ConsumerState<UsersPage> {
               title: 'Groups',
               actionLabel: users.isEmpty ? null : 'Create Group',
               onAction: users.isEmpty ? null : () => _showGroupSheet(),
-              child: groups.isEmpty
-                  ? _emptyBody(
-                      context,
-                      users.isEmpty
-                          ? 'Add users first, then combine them into reusable groups.'
-                          : 'No groups have been created yet. Create groups from existing users for one-tap trackkar setup.',
-                    )
-                  : Column(
-                      children: groups.map((group) {
-                        return Padding(
-                          padding: const EdgeInsets.only(bottom: 10),
-                          child: Container(
-                            padding: const EdgeInsets.all(14),
-                            decoration: BoxDecoration(
-                              color: isDark
-                                  ? Colors.white.withValues(alpha: 0.05)
-                                  : Colors.white.withValues(alpha: 0.76),
-                              borderRadius: BorderRadius.circular(18),
-                              border: Border.all(
-                                color: isDark
-                                    ? Colors.white.withValues(alpha: 0.08)
-                                    : const Color(0xFFD9E6EF),
-                              ),
-                            ),
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Container(
-                                  width: 40,
-                                  height: 40,
+              child:
+                  groups.isEmpty
+                      ? _emptyBody(
+                        context,
+                        users.isEmpty
+                            ? 'Add users first, then combine them into reusable groups.'
+                            : 'No groups have been created yet. Create groups from existing users for one-tap trackkar setup.',
+                      )
+                      : Column(
+                        children:
+                            groups.map((group) {
+                              return Padding(
+                                padding: const EdgeInsets.only(bottom: 10),
+                                child: Container(
+                                  padding: const EdgeInsets.all(14),
                                   decoration: BoxDecoration(
-                                    color: colorScheme.primary.withValues(
-                                      alpha: isDark ? 0.18 : 0.12,
+                                    color:
+                                        isDark
+                                            ? Colors.white.withValues(
+                                              alpha: 0.05,
+                                            )
+                                            : Colors.white.withValues(
+                                              alpha: 0.76,
+                                            ),
+                                    borderRadius: BorderRadius.circular(18),
+                                    border: Border.all(
+                                      color:
+                                          isDark
+                                              ? Colors.white.withValues(
+                                                alpha: 0.08,
+                                              )
+                                              : const Color(0xFFD9E6EF),
                                     ),
-                                    borderRadius: BorderRadius.circular(14),
                                   ),
-                                  child: Icon(
-                                    Icons.group_work_outlined,
-                                    color: colorScheme.primary,
-                                  ),
-                                ),
-                                const SizedBox(width: 12),
-                                Expanded(
-                                  child: Column(
+                                  child: Row(
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
-                                      Text(
-                                        group.name,
-                                        style: const TextStyle(
-                                          fontWeight: FontWeight.w700,
-                                          fontSize: 16,
+                                      Container(
+                                        width: 40,
+                                        height: 40,
+                                        decoration: BoxDecoration(
+                                          color: colorScheme.primary.withValues(
+                                            alpha: isDark ? 0.18 : 0.12,
+                                          ),
+                                          borderRadius: BorderRadius.circular(
+                                            14,
+                                          ),
+                                        ),
+                                        child: Icon(
+                                          Icons.group_work_outlined,
+                                          color: colorScheme.primary,
                                         ),
                                       ),
-                                      const SizedBox(height: 4),
-                                      Text(
-                                        '${group.members.length} member${group.members.length == 1 ? '' : 's'}',
-                                        style: theme.textTheme.bodySmall
-                                            ?.copyWith(
-                                              color: colorScheme.onSurface
-                                                  .withValues(alpha: 0.68),
+                                      const SizedBox(width: 12),
+                                      Expanded(
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              group.name,
+                                              style: const TextStyle(
+                                                fontWeight: FontWeight.w700,
+                                                fontSize: 16,
+                                              ),
                                             ),
+                                            const SizedBox(height: 4),
+                                            Text(
+                                              '${group.members.length} member${group.members.length == 1 ? '' : 's'}',
+                                              style: theme.textTheme.bodySmall
+                                                  ?.copyWith(
+                                                    color: colorScheme.onSurface
+                                                        .withValues(
+                                                          alpha: 0.68,
+                                                        ),
+                                                  ),
+                                            ),
+                                            const SizedBox(height: 8),
+                                            Wrap(
+                                              spacing: 8,
+                                              runSpacing: 8,
+                                              children:
+                                                  group.members
+                                                      .map(
+                                                        (member) => _miniTag(
+                                                          context,
+                                                          member,
+                                                        ),
+                                                      )
+                                                      .toList(),
+                                            ),
+                                          ],
+                                        ),
                                       ),
-                                      const SizedBox(height: 8),
-                                      Wrap(
-                                        spacing: 8,
-                                        runSpacing: 8,
-                                        children: group.members
-                                            .map(
-                                              (member) =>
-                                                  _miniTag(context, member),
-                                            )
-                                            .toList(),
+                                      PopupMenuButton<String>(
+                                        icon: Container(
+                                          width: 36,
+                                          height: 36,
+                                          decoration: BoxDecoration(
+                                            color:
+                                                isDark
+                                                    ? Colors.white.withValues(
+                                                      alpha: 0.06,
+                                                    )
+                                                    : const Color(0xFFF1F6FA),
+                                            borderRadius: BorderRadius.circular(
+                                              12,
+                                            ),
+                                            border: Border.all(
+                                              color:
+                                                  isDark
+                                                      ? Colors.white.withValues(
+                                                        alpha: 0.08,
+                                                      )
+                                                      : const Color(0xFFD9E6EF),
+                                            ),
+                                          ),
+                                          child: Icon(
+                                            Icons.more_horiz,
+                                            color: colorScheme.onSurface
+                                                .withValues(alpha: 0.76),
+                                          ),
+                                        ),
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(
+                                            16,
+                                          ),
+                                        ),
+                                        color:
+                                            isDark
+                                                ? const Color(0xFF142033)
+                                                : Colors.white,
+                                        onSelected: (value) {
+                                          if (value == 'delete') {
+                                            _deleteGroup(group.id, group.name);
+                                          } else if (value == 'edit') {
+                                            _showGroupSheet(group: group);
+                                          }
+                                        },
+                                        itemBuilder:
+                                            (context) => const [
+                                              PopupMenuItem<String>(
+                                                value: 'edit',
+                                                child: Text('Edit Group'),
+                                              ),
+                                              PopupMenuItem<String>(
+                                                value: 'delete',
+                                                child: Text('Delete Group'),
+                                              ),
+                                            ],
                                       ),
                                     ],
                                   ),
                                 ),
-                                PopupMenuButton<String>(
-                                  icon: Container(
-                                    width: 36,
-                                    height: 36,
-                                    decoration: BoxDecoration(
-                                      color: isDark
-                                          ? Colors.white.withValues(alpha: 0.06)
-                                          : const Color(0xFFF1F6FA),
-                                      borderRadius: BorderRadius.circular(12),
-                                      border: Border.all(
-                                        color: isDark
-                                            ? Colors.white.withValues(
-                                                alpha: 0.08,
-                                              )
-                                            : const Color(0xFFD9E6EF),
-                                      ),
-                                    ),
-                                    child: Icon(
-                                      Icons.more_horiz,
-                                      color: colorScheme.onSurface.withValues(
-                                        alpha: 0.76,
-                                      ),
-                                    ),
-                                  ),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(16),
-                                  ),
-                                  color: isDark
-                                      ? const Color(0xFF142033)
-                                      : Colors.white,
-                                  onSelected: (value) {
-                                    if (value == 'delete') {
-                                      _deleteGroup(group.id, group.name);
-                                    } else if (value == 'edit') {
-                                      _showGroupSheet(group: group);
-                                    }
-                                  },
-                                  itemBuilder: (context) => const [
-                                    PopupMenuItem<String>(
-                                      value: 'edit',
-                                      child: Text('Edit Group'),
-                                    ),
-                                    PopupMenuItem<String>(
-                                      value: 'delete',
-                                      child: Text('Delete Group'),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ),
-                        );
-                      }).toList(),
-                    ),
+                              );
+                            }).toList(),
+                      ),
             ),
             const SizedBox(height: 24),
           ],
@@ -279,9 +309,10 @@ class _UsersPageState extends ConsumerState<UsersPage> {
       child: Container(
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
-          color: Theme.of(context).brightness == Brightness.dark
-              ? Colors.white.withValues(alpha: 0.05)
-              : Colors.white.withValues(alpha: 0.76),
+          color:
+              Theme.of(context).brightness == Brightness.dark
+                  ? Colors.white.withValues(alpha: 0.05)
+                  : Colors.white.withValues(alpha: 0.76),
           borderRadius: BorderRadius.circular(16),
         ),
         child: Column(
@@ -319,14 +350,16 @@ class _UsersPageState extends ConsumerState<UsersPage> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: isDark
-            ? Colors.white.withValues(alpha: 0.065)
-            : Colors.white.withValues(alpha: 0.84),
+        color:
+            isDark
+                ? Colors.white.withValues(alpha: 0.065)
+                : Colors.white.withValues(alpha: 0.84),
         borderRadius: BorderRadius.circular(22),
         border: Border.all(
-          color: isDark
-              ? Colors.white.withValues(alpha: 0.10)
-              : const Color(0xFFD9E6EF),
+          color:
+              isDark
+                  ? Colors.white.withValues(alpha: 0.10)
+                  : const Color(0xFFD9E6EF),
         ),
       ),
       child: Column(
@@ -373,9 +406,10 @@ class _UsersPageState extends ConsumerState<UsersPage> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
-        color: isDark
-            ? Colors.white.withValues(alpha: 0.05)
-            : const Color(0xFFF0F5F9),
+        color:
+            isDark
+                ? Colors.white.withValues(alpha: 0.05)
+                : const Color(0xFFF0F5F9),
         borderRadius: BorderRadius.circular(999),
       ),
       child: Text(
@@ -391,44 +425,45 @@ class _UsersPageState extends ConsumerState<UsersPage> {
     await showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
-      builder: (context) => Padding(
-        padding: EdgeInsets.fromLTRB(
-          16,
-          16,
-          16,
-          MediaQuery.of(context).viewInsets.bottom + 16,
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Add User',
-              style: Theme.of(
-                context,
-              ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800),
+      builder:
+          (context) => Padding(
+            padding: EdgeInsets.fromLTRB(
+              16,
+              16,
+              16,
+              MediaQuery.of(context).viewInsets.bottom + 16,
             ),
-            const SizedBox(height: 12),
-            TextField(
-              controller: controller,
-              autofocus: true,
-              decoration: const InputDecoration(
-                labelText: 'User name',
-                prefixIcon: Icon(Icons.person_add_alt_1),
-              ),
-              onSubmitted: (_) => _saveUserFromSheet(controller),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Add User',
+                  style: Theme.of(
+                    context,
+                  ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800),
+                ),
+                const SizedBox(height: 12),
+                TextField(
+                  controller: controller,
+                  autofocus: true,
+                  decoration: const InputDecoration(
+                    labelText: 'User name',
+                    prefixIcon: Icon(Icons.person_add_alt_1),
+                  ),
+                  onSubmitted: (_) => _saveUserFromSheet(controller),
+                ),
+                const SizedBox(height: 16),
+                SizedBox(
+                  width: double.infinity,
+                  child: FilledButton(
+                    onPressed: () => _saveUserFromSheet(controller),
+                    child: const Text('Save User'),
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(height: 16),
-            SizedBox(
-              width: double.infinity,
-              child: FilledButton(
-                onPressed: () => _saveUserFromSheet(controller),
-                child: const Text('Save User'),
-              ),
-            ),
-          ],
-        ),
-      ),
+          ),
     );
   }
 
@@ -471,77 +506,81 @@ class _UsersPageState extends ConsumerState<UsersPage> {
     await showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
-      builder: (context) => StatefulBuilder(
-        builder: (context, setModalState) => Padding(
-          padding: EdgeInsets.fromLTRB(
-            16,
-            16,
-            16,
-            MediaQuery.of(context).viewInsets.bottom + 16,
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                group == null ? 'Create Group' : 'Edit Group',
-                style: Theme.of(
-                  context,
-                ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800),
-              ),
-              const SizedBox(height: 12),
-              TextField(
-                controller: nameCtrl,
-                decoration: const InputDecoration(
-                  labelText: 'Group name',
-                  prefixIcon: Icon(Icons.group_add_outlined),
-                ),
-              ),
-              const SizedBox(height: 14),
-              Text(
-                'Choose users',
-                style: Theme.of(
-                  context,
-                ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
-              ),
-              const SizedBox(height: 10),
-              Wrap(
-                spacing: 8,
-                runSpacing: 8,
-                children: savedUsers.map((user) {
-                  final selected = selectedUsers.contains(user);
-                  return FilterChip(
-                    label: Text(user),
-                    selected: selected,
-                    onSelected: (value) {
-                      setModalState(() {
-                        if (value) {
-                          selectedUsers.add(user);
-                        } else {
-                          selectedUsers.remove(user);
-                        }
-                      });
-                    },
-                  );
-                }).toList(),
-              ),
-              const SizedBox(height: 16),
-              SizedBox(
-                width: double.infinity,
-                child: FilledButton(
-                  onPressed: () => _saveGroupFromSheet(
-                    groupId: group?.id,
-                    groupName: nameCtrl.text,
-                    members: selectedUsers.toList(),
+      builder:
+          (context) => StatefulBuilder(
+            builder:
+                (context, setModalState) => Padding(
+                  padding: EdgeInsets.fromLTRB(
+                    16,
+                    16,
+                    16,
+                    MediaQuery.of(context).viewInsets.bottom + 16,
                   ),
-                  child:
-                      Text(group == null ? 'Create Group' : 'Save Changes'),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        group == null ? 'Create Group' : 'Edit Group',
+                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      TextField(
+                        controller: nameCtrl,
+                        decoration: const InputDecoration(
+                          labelText: 'Group name',
+                          prefixIcon: Icon(Icons.group_add_outlined),
+                        ),
+                      ),
+                      const SizedBox(height: 14),
+                      Text(
+                        'Choose users',
+                        style: Theme.of(context).textTheme.titleMedium
+                            ?.copyWith(fontWeight: FontWeight.w700),
+                      ),
+                      const SizedBox(height: 10),
+                      Wrap(
+                        spacing: 8,
+                        runSpacing: 8,
+                        children:
+                            savedUsers.map((user) {
+                              final selected = selectedUsers.contains(user);
+                              return FilterChip(
+                                label: Text(user),
+                                selected: selected,
+                                onSelected: (value) {
+                                  setModalState(() {
+                                    if (value) {
+                                      selectedUsers.add(user);
+                                    } else {
+                                      selectedUsers.remove(user);
+                                    }
+                                  });
+                                },
+                              );
+                            }).toList(),
+                      ),
+                      const SizedBox(height: 16),
+                      SizedBox(
+                        width: double.infinity,
+                        child: FilledButton(
+                          onPressed:
+                              () => _saveGroupFromSheet(
+                                groupId: group?.id,
+                                groupName: nameCtrl.text,
+                                members: selectedUsers.toList(),
+                              ),
+                          child: Text(
+                            group == null ? 'Create Group' : 'Save Changes',
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            ],
           ),
-        ),
-      ),
     );
   }
 
@@ -567,8 +606,7 @@ class _UsersPageState extends ConsumerState<UsersPage> {
     if (normalizedMembers.isEmpty) {
       showTrackerAlert(
         context,
-        message:
-            'Cannot create an empty group. Select at least one user.',
+        message: 'Cannot create an empty group. Select at least one user.',
         tone: TrackerAlertTone.info,
         icon: Icons.info_outline,
       );
@@ -577,15 +615,13 @@ class _UsersPageState extends ConsumerState<UsersPage> {
 
     final alreadyExists = groups.any(
       (group) =>
-          group.name.toLowerCase() == name.toLowerCase() &&
-          group.id != groupId,
+          group.name.toLowerCase() == name.toLowerCase() && group.id != groupId,
     );
 
     if (alreadyExists) {
       showTrackerAlert(
         context,
-        message:
-            '$name already exists as a group. Try using a different name.',
+        message: '$name already exists as a group. Try using a different name.',
         tone: TrackerAlertTone.info,
         icon: Icons.info_outline,
       );
@@ -594,27 +630,30 @@ class _UsersPageState extends ConsumerState<UsersPage> {
 
     final id = groupId ?? DateTime.now().millisecondsSinceEpoch.toString();
     final group = UserGroup(id: id, name: name, members: normalizedMembers);
-    final previousGroup = groupId == null
-        ? null
-        : groups.where((g) => g.id == groupId).firstOrNull;
-    final addedMembers = previousGroup == null
-        ? const <String>[]
-        : normalizedMembers
-              .where((member) => !previousGroup.members.contains(member))
-              .toList();
-    final matchingTrackers = previousGroup == null || addedMembers.isEmpty
-        ? const <Tracker>[]
-        : ref
-              .read(trackersProvider)
-              .where(
-                (tracker) =>
-                    !tracker.archived &&
-                    previousGroup.members.every(tracker.users.contains) &&
-                    addedMembers.any(
-                      (member) => !tracker.users.contains(member),
-                    ),
-              )
-              .toList();
+    final previousGroup =
+        groupId == null
+            ? null
+            : groups.where((g) => g.id == groupId).firstOrNull;
+    final addedMembers =
+        previousGroup == null
+            ? const <String>[]
+            : normalizedMembers
+                .where((member) => !previousGroup.members.contains(member))
+                .toList();
+    final matchingTrackers =
+        previousGroup == null || addedMembers.isEmpty
+            ? const <Tracker>[]
+            : ref
+                .read(trackersProvider)
+                .where(
+                  (tracker) =>
+                      !tracker.archived &&
+                      previousGroup.members.every(tracker.users.contains) &&
+                      addedMembers.any(
+                        (member) => !tracker.users.contains(member),
+                      ),
+                )
+                .toList();
 
     await ref.read(userGroupsProvider.notifier).save(group);
     if (!mounted) return;
@@ -624,24 +663,25 @@ class _UsersPageState extends ConsumerState<UsersPage> {
       final shouldUpdate =
           await showDialog<bool>(
             context: context,
-            builder: (context) => AlertDialog(
-              title: const Text('Update existing trackers?'),
-              content: Text(
-                '${addedMembers.join(', ')} ${addedMembers.length == 1 ? 'was' : 'were'} added to $name.\n\n'
-                'Add ${addedMembers.length == 1 ? 'this person' : 'these people'} to ${matchingTrackers.length} matching active tracker${matchingTrackers.length == 1 ? '' : 's'}?\n\n'
-                '${matchingTrackers.map((tracker) => tracker.title).join(', ')}',
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.pop(context, false),
-                  child: const Text('Not Now'),
+            builder:
+                (context) => AlertDialog(
+                  title: const Text('Update existing trackers?'),
+                  content: Text(
+                    '${addedMembers.join(', ')} ${addedMembers.length == 1 ? 'was' : 'were'} added to $name.\n\n'
+                    'Add ${addedMembers.length == 1 ? 'this person' : 'these people'} to ${matchingTrackers.length} matching active tracker${matchingTrackers.length == 1 ? '' : 's'}?\n\n'
+                    '${matchingTrackers.map((tracker) => tracker.title).join(', ')}',
+                  ),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(context, false),
+                      child: const Text('Not Now'),
+                    ),
+                    FilledButton(
+                      onPressed: () => Navigator.pop(context, true),
+                      child: const Text('Update Trackers'),
+                    ),
+                  ],
                 ),
-                FilledButton(
-                  onPressed: () => Navigator.pop(context, true),
-                  child: const Text('Update Trackers'),
-                ),
-              ],
-            ),
           ) ??
           false;
 
@@ -665,9 +705,8 @@ class _UsersPageState extends ConsumerState<UsersPage> {
     if (!mounted) return;
     showTrackerAlert(
       context,
-      message: groupId == null
-          ? '$name group created.'
-          : '$name group updated.',
+      message:
+          groupId == null ? '$name group created.' : '$name group updated.',
     );
   }
 
@@ -681,22 +720,23 @@ class _UsersPageState extends ConsumerState<UsersPage> {
     final shouldDelete =
         await showDialog<bool>(
           context: context,
-          builder: (context) => AlertDialog(
-            title: const Text('Remove user?'),
-            content: Text(
-              '$user will be removed from saved users and from any groups which they are in.',
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context, false),
-                child: const Text('Cancel'),
+          builder:
+              (context) => AlertDialog(
+                title: const Text('Remove user?'),
+                content: Text(
+                  '$user will be removed from saved users and from any groups which they are in.',
+                ),
+                actions: [
+                  TextButton(
+                    onPressed: () => Navigator.pop(context, false),
+                    child: const Text('Cancel'),
+                  ),
+                  FilledButton(
+                    onPressed: () => Navigator.pop(context, true),
+                    child: const Text('Remove'),
+                  ),
+                ],
               ),
-              FilledButton(
-                onPressed: () => Navigator.pop(context, true),
-                child: const Text('Remove'),
-              ),
-            ],
-          ),
         ) ??
         false;
 

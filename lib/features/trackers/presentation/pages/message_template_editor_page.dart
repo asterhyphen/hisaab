@@ -24,18 +24,15 @@ class MessageTemplateEditorPage extends StatefulWidget {
       _MessageTemplateEditorPageState();
 }
 
-class _MessageTemplateEditorPageState
-    extends State<MessageTemplateEditorPage> {
+class _MessageTemplateEditorPageState extends State<MessageTemplateEditorPage> {
   late final TextEditingController _templateCtrl;
   late final TextEditingController _allPaidCtrl;
 
   @override
   void initState() {
     super.initState();
-    _templateCtrl =
-        TextEditingController(text: widget.initialTemplate);
-    _allPaidCtrl =
-        TextEditingController(text: widget.initialAllPaidTemplate);
+    _templateCtrl = TextEditingController(text: widget.initialTemplate);
+    _allPaidCtrl = TextEditingController(text: widget.initialAllPaidTemplate);
   }
 
   @override
@@ -73,9 +70,10 @@ class _MessageTemplateEditorPageState
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: isDark
-                ? const [Color(0xFF10192B), Color(0xFF090F1B)]
-                : const [Color(0xFFF9FCFE), Color(0xFFEAF2F7)],
+            colors:
+                isDark
+                    ? const [Color(0xFF10192B), Color(0xFF090F1B)]
+                    : const [Color(0xFFF9FCFE), Color(0xFFEAF2F7)],
           ),
         ),
         child: ListView(
@@ -84,8 +82,7 @@ class _MessageTemplateEditorPageState
             _section(
               context,
               title: 'Pending Template',
-              subtitle:
-                  'Used when at least one person hasn\'t paid yet.',
+              subtitle: 'Used when at least one person hasn\'t paid yet.',
               child: TextField(
                 controller: _templateCtrl,
                 maxLines: null,
@@ -119,48 +116,51 @@ class _MessageTemplateEditorPageState
               child: Wrap(
                 spacing: 8,
                 runSpacing: 8,
-                children: const [
-                  '{title}',
-                  '{status}',
-                  '{dueDate}',
-                  '{daysRemaining}',
-                  '{total}',
-                  '{perHead}',
-                  '{paidCount}',
-                  '{paidAmount}',
-                  '{paidUsers}',
-                  '{pendingCount}',
-                  '{pendingAmount}',
-                  '{pendingUsers}',
-                ]
-                    .map(
-                      (v) => Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 10,
-                          vertical: 6,
-                        ),
-                        decoration: BoxDecoration(
-                          color: isDark
-                              ? Colors.white.withValues(alpha: 0.07)
-                              : const Color(0xFFF0F5F9),
-                          borderRadius: BorderRadius.circular(8),
-                          border: Border.all(
-                            color: isDark
-                                ? Colors.white.withValues(alpha: 0.10)
-                                : const Color(0xFFD9E6EF),
+                children:
+                    const [
+                          '{title}',
+                          '{status}',
+                          '{dueDate}',
+                          '{daysRemaining}',
+                          '{total}',
+                          '{perHead}',
+                          '{paidCount}',
+                          '{paidAmount}',
+                          '{paidUsers}',
+                          '{pendingCount}',
+                          '{pendingAmount}',
+                          '{pendingUsers}',
+                        ]
+                        .map(
+                          (v) => Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 10,
+                              vertical: 6,
+                            ),
+                            decoration: BoxDecoration(
+                              color:
+                                  isDark
+                                      ? Colors.white.withValues(alpha: 0.07)
+                                      : const Color(0xFFF0F5F9),
+                              borderRadius: BorderRadius.circular(8),
+                              border: Border.all(
+                                color:
+                                    isDark
+                                        ? Colors.white.withValues(alpha: 0.10)
+                                        : const Color(0xFFD9E6EF),
+                              ),
+                            ),
+                            child: Text(
+                              v,
+                              style: const TextStyle(
+                                fontFamily: 'monospace',
+                                fontSize: 12,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
                           ),
-                        ),
-                        child: Text(
-                          v,
-                          style: const TextStyle(
-                            fontFamily: 'monospace',
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
-                    )
-                    .toList(),
+                        )
+                        .toList(),
               ),
             ),
           ],
@@ -181,14 +181,16 @@ class _MessageTemplateEditorPageState
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: isDark
-            ? Colors.white.withValues(alpha: 0.065)
-            : Colors.white.withValues(alpha: 0.84),
+        color:
+            isDark
+                ? Colors.white.withValues(alpha: 0.065)
+                : Colors.white.withValues(alpha: 0.84),
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: isDark
-              ? Colors.white.withValues(alpha: 0.10)
-              : const Color(0xFFD9E6EF),
+          color:
+              isDark
+                  ? Colors.white.withValues(alpha: 0.10)
+                  : const Color(0xFFD9E6EF),
         ),
       ),
       child: Column(

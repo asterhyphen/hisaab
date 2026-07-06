@@ -47,15 +47,16 @@ class _AppShellState extends State<AppShell> {
             ),
           ],
         ),
-        actions: _currentIndex == 0
-            ? [
-                IconButton(
-                  tooltip: 'Archive',
-                  onPressed: _openArchive,
-                  icon: const Icon(Icons.archive_outlined),
-                ),
-              ]
-            : null,
+        actions:
+            _currentIndex == 0
+                ? [
+                  IconButton(
+                    tooltip: 'Archive',
+                    onPressed: _openArchive,
+                    icon: const Icon(Icons.archive_outlined),
+                  ),
+                ]
+                : null,
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(1),
           child: Container(
@@ -85,22 +86,24 @@ class _AppShellState extends State<AppShell> {
             },
             child: KeyedSubtree(
               key: ValueKey(_currentIndex),
-              child: const [
-                HomePage(),
-                UsersPage(),
-                SettingsPage(),
-              ][_currentIndex],
+              child:
+                  const [
+                    HomePage(),
+                    UsersPage(),
+                    SettingsPage(),
+                  ][_currentIndex],
             ),
           ),
         ],
       ),
-      floatingActionButton: _currentIndex == 0
-          ? FloatingActionButton.extended(
-              onPressed: _openCreateTracker,
-              icon: const Icon(Icons.add),
-              label: const Text('Add Tracker'),
-            )
-          : null,
+      floatingActionButton:
+          _currentIndex == 0
+              ? FloatingActionButton.extended(
+                onPressed: _openCreateTracker,
+                icon: const Icon(Icons.add),
+                label: const Text('Add Tracker'),
+              )
+              : null,
       bottomNavigationBar: NavigationBar(
         selectedIndex: _currentIndex,
         onDestinationSelected: (index) {

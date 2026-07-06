@@ -70,13 +70,11 @@ class UserGroupsNotifier extends Notifier<List<UserGroup>> {
     final updatedGroups = <String, dynamic>{};
     for (final entry in groupsMap.entries) {
       final group = UserGroup.fromMap(entry.value);
-      final remainingMembers = group.members
-          .where((member) => member != user)
-          .toList();
+      final remainingMembers =
+          group.members.where((member) => member != user).toList();
       if (remainingMembers.isEmpty) continue;
-      updatedGroups[entry.key] = group
-          .copyWith(members: normalizeNames(remainingMembers))
-          .toMap();
+      updatedGroups[entry.key] =
+          group.copyWith(members: normalizeNames(remainingMembers)).toMap();
     }
 
     await _box.put('userGroups', updatedGroups);

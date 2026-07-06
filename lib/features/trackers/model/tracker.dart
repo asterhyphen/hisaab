@@ -154,16 +154,17 @@ class Tracker {
 
   static Tracker fromMap(Map map) {
     final iconRaw = map['icon'];
-    final iconId = iconRaw is String
-        ? iconRaw
-        : (iconRaw is int
-              ? trackerIcons.entries
+    final iconId =
+        iconRaw is String
+            ? iconRaw
+            : (iconRaw is int
+                ? trackerIcons.entries
                     .firstWhere(
                       (entry) => entry.value.codePoint == iconRaw,
                       orElse: () => const MapEntry('Bill', Icons.receipt_long),
                     )
                     .key
-              : 'Bill');
+                : 'Bill');
 
     return Tracker(
       id: map['id'],

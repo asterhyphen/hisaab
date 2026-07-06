@@ -24,8 +24,7 @@ class _CyclePageState extends ConsumerState<CyclePage> {
   late TextEditingController totalController;
   bool editingTotal = false;
 
-  String get monthKey =>
-      '${DateTime.now().year}-${DateTime.now().month}';
+  String get monthKey => '${DateTime.now().year}-${DateTime.now().month}';
 
   int get perHead =>
       tracker.users.isEmpty ? 0 : (total / tracker.users.length).ceil();
@@ -98,129 +97,153 @@ class _CyclePageState extends ConsumerState<CyclePage> {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      builder: (_) => Padding(
-        padding: EdgeInsets.fromLTRB(
-          16,
-          16,
-          16,
-          MediaQuery.of(context).viewInsets.bottom + 16,
-        ),
-        child: StatefulBuilder(
-          builder: (context, setModal) => ListView(
-            shrinkWrap: true,
-            children: [
-              TextField(
-                controller: titleCtrl,
-                decoration: const InputDecoration(labelText: 'Tracker name'),
-              ),
-              if (tracker.amount == null)
-                TextField(
-                  controller: amountCtrl,
-                  keyboardType: TextInputType.number,
-                  decoration: const InputDecoration(labelText: 'Amount'),
-                ),
-              ListTile(
-                title: Text(
-                  'Due: ${newDue.day}/${newDue.month}/${newDue.year}',
-                ),
-                trailing: const Icon(Icons.event),
-                onTap: () async {
-                  final picked = await showDatePicker(
-                    context: context,
-                    initialDate: newDue,
-                    firstDate: DateTime(2000),
-                    lastDate: DateTime(2100),
-                  );
-                  if (picked != null) {
-                    setModal(() => newDue = picked);
-                  }
-                },
-              ),
-              const SizedBox(height: 8),
-              const Text('Users'),
-              Wrap(
-                spacing: 8,
-                children: users
-                    .map(
-                      (u) => Chip(
-                        label: Text(u),
-                        onDeleted: () {
-                          setModal(() => users.remove(u));
-                          paid.remove(u);
+      builder:
+          (_) => Padding(
+            padding: EdgeInsets.fromLTRB(
+              16,
+              16,
+              16,
+              MediaQuery.of(context).viewInsets.bottom + 16,
+            ),
+            child: StatefulBuilder(
+              builder:
+                  (context, setModal) => ListView(
+                    shrinkWrap: true,
+                    children: [
+                      TextField(
+                        controller: titleCtrl,
+                        decoration: const InputDecoration(
+                          labelText: 'Tracker name',
+                        ),
+                      ),
+                      if (tracker.amount == null)
+                        TextField(
+                          controller: amountCtrl,
+                          keyboardType: TextInputType.number,
+                          decoration: const InputDecoration(
+                            labelText: 'Amount',
+                          ),
+                        ),
+                      ListTile(
+                        title: Text(
+                          'Due: ${newDue.day}/${newDue.month}/${newDue.year}',
+                        ),
+                        trailing: const Icon(Icons.event),
+                        onTap: () async {
+                          final picked = await showDatePicker(
+                            context: context,
+                            initialDate: newDue,
+                            firstDate: DateTime(2000),
+                            lastDate: DateTime(2100),
+                          );
+                          if (picked != null) {
+                            setModal(() => newDue = picked);
+                          }
                         },
                       ),
-                    )
-                    .toList(),
-              ),
-              TextField(
-                decoration: const InputDecoration(labelText: 'Add user'),
-                onSubmitted: (v) {
-                  if (v.isNotEmpty && !users.contains(v)) {
-                    setModal(() {
-                      users.add(formatName(v));
-                      users.sort(
-                        (a, b) => a.toLowerCase().compareTo(b.toLowerCase()),
-                      );
-                    });
-                    paid[formatName(v)] = false;
-                  }
-                },
-              ),
-              const SizedBox(height: 12),
-              Wrap(
-                spacing: 12,
-                children: trackerIcons.entries.map((e) {
-                  final selected = iconId == e.key;
-                  return GestureDetector(
-                    onTap: () => setModal(() => iconId = e.key),
-                    child: CircleAvatar(
-                      radius: 22,
-                      backgroundColor: selected
-                          ? Theme.of(context).colorScheme.primary
-                          : Theme.of(
-                              context,
-                            ).colorScheme.surfaceContainerHighest,
-                      child: Icon(
-                        e.value,
-                        color: selected
-                            ? Theme.of(context).colorScheme.onPrimary
-                            : Theme.of(context).colorScheme.onSurface,
+                      const SizedBox(height: 8),
+                      const Text('Users'),
+                      Wrap(
+                        spacing: 8,
+                        children:
+                            users
+                                .map(
+                                  (u) => Chip(
+                                    label: Text(u),
+                                    onDeleted: () {
+                                      setModal(() => users.remove(u));
+                                      paid.remove(u);
+                                    },
+                                  ),
+                                )
+                                .toList(),
                       ),
-                    ),
-                  );
-                }).toList(),
-              ),
-              const SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: () async {
-                  setState(() {
-                    tracker = tracker.copyWith(
-                      title: titleCtrl.text,
-                      amount: int.tryParse(amountCtrl.text),
-                      dueDate: newDue,
-                      users: List<String>.from(users)
-                        ..sort(
-                          (a, b) =>
-                              a.toLowerCase().compareTo(b.toLowerCase()),
+                      TextField(
+                        decoration: const InputDecoration(
+                          labelText: 'Add user',
                         ),
-                      iconId: iconId,
-                    );
-                    due = recurringDueDateForMonth(newDue, DateTime.now());
-                    total = tracker.amount ?? total;
-                  });
+                        onSubmitted: (v) {
+                          if (v.isNotEmpty && !users.contains(v)) {
+                            setModal(() {
+                              users.add(formatName(v));
+                              users.sort(
+                                (a, b) =>
+                                    a.toLowerCase().compareTo(b.toLowerCase()),
+                              );
+                            });
+                            paid[formatName(v)] = false;
+                          }
+                        },
+                      ),
+                      const SizedBox(height: 12),
+                      Wrap(
+                        spacing: 12,
+                        children:
+                            trackerIcons.entries.map((e) {
+                              final selected = iconId == e.key;
+                              return GestureDetector(
+                                onTap: () => setModal(() => iconId = e.key),
+                                child: CircleAvatar(
+                                  radius: 22,
+                                  backgroundColor:
+                                      selected
+                                          ? Theme.of(
+                                            context,
+                                          ).colorScheme.primary
+                                          : Theme.of(
+                                            context,
+                                          ).colorScheme.surfaceContainerHighest,
+                                  child: Icon(
+                                    e.value,
+                                    color:
+                                        selected
+                                            ? Theme.of(
+                                              context,
+                                            ).colorScheme.onPrimary
+                                            : Theme.of(
+                                              context,
+                                            ).colorScheme.onSurface,
+                                  ),
+                                ),
+                              );
+                            }).toList(),
+                      ),
+                      const SizedBox(height: 20),
+                      ElevatedButton(
+                        onPressed: () async {
+                          setState(() {
+                            tracker = tracker.copyWith(
+                              title: titleCtrl.text,
+                              amount: int.tryParse(amountCtrl.text),
+                              dueDate: newDue,
+                              users: List<String>.from(users)..sort(
+                                (a, b) =>
+                                    a.toLowerCase().compareTo(b.toLowerCase()),
+                              ),
+                              iconId: iconId,
+                            );
+                            due = recurringDueDateForMonth(
+                              newDue,
+                              DateTime.now(),
+                            );
+                            total = tracker.amount ?? total;
+                          });
 
-                  await persist();
-                  await persistTracker();
-                  if (!context.mounted) return;
-                  showTrackerAlert(context, message: 'Tracker updated.');
-                  Navigator.pop(context);
-                },
-                child: const Text('Save changes'),
-              ),
-            ],
+                          await persist();
+                          await persistTracker();
+                          if (!context.mounted) return;
+                          showTrackerAlert(
+                            context,
+                            message: 'Tracker updated.',
+                          );
+                          Navigator.pop(context);
+                        },
+                        child: const Text('Save changes'),
+                      ),
+                    ],
+                  ),
+            ),
           ),
-        ),
-      ),
     );
   }
 
@@ -229,17 +252,16 @@ class _CyclePageState extends ConsumerState<CyclePage> {
     final per =
         tracker.users.isEmpty ? 0 : (total / tracker.users.length).ceil();
 
-    final paidUsers = tracker.users.where((u) => paid[u] == true).toList()
-      ..sort();
+    final paidUsers =
+        tracker.users.where((u) => paid[u] == true).toList()..sort();
     final pendingUsers =
         tracker.users.where((u) => paid[u] != true).toList()..sort();
     final allPaid =
         tracker.users.isNotEmpty && paidUsers.length == tracker.users.length;
 
     final now = DateTime.now();
-    final daysRemaining = due!
-        .difference(DateTime(now.year, now.month, now.day))
-        .inDays;
+    final daysRemaining =
+        due!.difference(DateTime(now.year, now.month, now.day)).inDays;
     final replacements = <String, String>{
       '{title}': tracker.title,
       '{status}': allPaid ? 'All paid' : 'Pending',
@@ -252,8 +274,7 @@ class _CyclePageState extends ConsumerState<CyclePage> {
       '{paidUsers}': paidUsers.isEmpty ? '-' : paidUsers.join('\n'),
       '{pendingCount}': '${pendingUsers.length}',
       '{pendingAmount}': '${pendingUsers.length * per}',
-      '{pendingUsers}':
-          pendingUsers.isEmpty ? '-' : pendingUsers.join('\n'),
+      '{pendingUsers}': pendingUsers.isEmpty ? '-' : pendingUsers.join('\n'),
     };
 
     var template =
@@ -291,14 +312,12 @@ class _CyclePageState extends ConsumerState<CyclePage> {
           ],
         ),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.edit),
-            onPressed: openEditTracker,
-          ),
+          IconButton(icon: const Icon(Icons.edit), onPressed: openEditTracker),
         ],
       ),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => SharePlus.instance.share(ShareParams(text: _buildMessage())),
+        onPressed:
+            () => SharePlus.instance.share(ShareParams(text: _buildMessage())),
         icon: const Icon(Icons.share),
         label: const Text('Share'),
       ),
@@ -307,9 +326,10 @@ class _CyclePageState extends ConsumerState<CyclePage> {
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: isDark
-                ? const [Color(0xFF111A2B), Color(0xFF090F1B)]
-                : const [Color(0xFFF9FCFE), Color(0xFFEAF2F7)],
+            colors:
+                isDark
+                    ? const [Color(0xFF111A2B), Color(0xFF090F1B)]
+                    : const [Color(0xFFF9FCFE), Color(0xFFEAF2F7)],
           ),
         ),
         child: Padding(
@@ -326,7 +346,9 @@ class _CyclePageState extends ConsumerState<CyclePage> {
                         Text(
                           'Total',
                           style: TextStyle(
-                            color: colorScheme.onSurface.withValues(alpha: 0.68),
+                            color: colorScheme.onSurface.withValues(
+                              alpha: 0.68,
+                            ),
                           ),
                         ),
                         const Spacer(),
@@ -345,7 +367,9 @@ class _CyclePageState extends ConsumerState<CyclePage> {
                         Text(
                           'Per Head',
                           style: TextStyle(
-                            color: colorScheme.onSurface.withValues(alpha: 0.68),
+                            color: colorScheme.onSurface.withValues(
+                              alpha: 0.68,
+                            ),
                           ),
                         ),
                         const Spacer(),
@@ -365,7 +389,9 @@ class _CyclePageState extends ConsumerState<CyclePage> {
                         Text(
                           'Progress',
                           style: TextStyle(
-                            color: colorScheme.onSurface.withValues(alpha: 0.68),
+                            color: colorScheme.onSurface.withValues(
+                              alpha: 0.68,
+                            ),
                           ),
                         ),
                         const Spacer(),
@@ -384,9 +410,8 @@ class _CyclePageState extends ConsumerState<CyclePage> {
                       child: LinearProgressIndicator(
                         minHeight: 10,
                         value: paidProgress,
-                        backgroundColor: isDark
-                            ? Colors.white12
-                            : const Color(0xFFD8E4EC),
+                        backgroundColor:
+                            isDark ? Colors.white12 : const Color(0xFFD8E4EC),
                         valueColor: const AlwaysStoppedAnimation<Color>(
                           Color(0xFF3ED9A6),
                         ),
@@ -402,13 +427,12 @@ class _CyclePageState extends ConsumerState<CyclePage> {
                           labelText: 'Update total',
                           prefixText: '₹ ',
                           suffixIcon: IconButton(
-                            icon: Icon(
-                              editingTotal ? Icons.check : Icons.edit,
-                            ),
+                            icon: Icon(editingTotal ? Icons.check : Icons.edit),
                             onPressed: () {
                               setState(() {
                                 if (editingTotal) {
-                                  total = int.tryParse(totalController.text) ??
+                                  total =
+                                      int.tryParse(totalController.text) ??
                                       total;
                                   persist();
                                 }
@@ -448,9 +472,10 @@ class _CyclePageState extends ConsumerState<CyclePage> {
                       title: 'Due',
                       value: _dueText(daysRemaining),
                       subValue: '${due!.day}/${due!.month}',
-                      tint: daysRemaining < 0
-                          ? const Color(0xFFFF6E6E)
-                          : const Color(0xFF8CCBFF),
+                      tint:
+                          daysRemaining < 0
+                              ? const Color(0xFFFF6E6E)
+                              : const Color(0xFF8CCBFF),
                     ),
                   ),
                 ],
@@ -488,9 +513,12 @@ class _CyclePageState extends ConsumerState<CyclePage> {
                           isPaid
                               ? Icons.check_circle
                               : Icons.radio_button_unchecked,
-                          color: isPaid
-                              ? const Color(0xFF3ED9A6)
-                              : colorScheme.onSurface.withValues(alpha: 0.56),
+                          color:
+                              isPaid
+                                  ? const Color(0xFF3ED9A6)
+                                  : colorScheme.onSurface.withValues(
+                                    alpha: 0.56,
+                                  ),
                         ),
                         const SizedBox(width: 14),
                         Expanded(
@@ -508,9 +536,10 @@ class _CyclePageState extends ConsumerState<CyclePage> {
                               Text(
                                 isPaid ? 'Paid' : 'Pending',
                                 style: TextStyle(
-                                  color: isPaid
-                                      ? const Color(0xFF3ED9A6)
-                                      : const Color(0xFFFFB85C),
+                                  color:
+                                      isPaid
+                                          ? const Color(0xFF3ED9A6)
+                                          : const Color(0xFFFFB85C),
                                 ),
                               ),
                             ],
@@ -548,9 +577,10 @@ class _CyclePageState extends ConsumerState<CyclePage> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
       decoration: BoxDecoration(
-        color: isDark
-            ? Colors.white.withValues(alpha: 0.08)
-            : Colors.white.withValues(alpha: 0.82),
+        color:
+            isDark
+                ? Colors.white.withValues(alpha: 0.08)
+                : Colors.white.withValues(alpha: 0.82),
         borderRadius: BorderRadius.circular(14),
         border: Border.all(color: tint.withValues(alpha: 0.55)),
       ),

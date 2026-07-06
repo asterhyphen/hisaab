@@ -106,10 +106,7 @@ class _FriendListPageState extends ConsumerState<FriendListPage>
     final people = List<String>.from(box.keys)
       ..sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
     if (people.isEmpty) {
-      GlassAlert.showInfo(
-        context,
-        'No users found. Add a user first.',
-      );
+      GlassAlert.showInfo(context, 'No users found. Add a user first.');
       return;
     }
 
@@ -280,10 +277,7 @@ class _FriendListPageState extends ConsumerState<FriendListPage>
         )..sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
       });
     } catch (e) {
-      GlassAlert.showError(
-        context,
-        'Error filtering: ${e.toString()}',
-      );
+      GlassAlert.showError(context, 'Error filtering: ${e.toString()}');
     }
   }
 
@@ -321,15 +315,9 @@ class _FriendListPageState extends ConsumerState<FriendListPage>
         displayedKeys = List<String>.from(box.keys)
           ..sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
       });
-      GlassAlert.showSuccess(
-        context,
-        'User $formattedName created',
-      );
+      GlassAlert.showSuccess(context, 'User $formattedName created');
     } catch (e) {
-      GlassAlert.showError(
-        context,
-        'Error creating user: ${e.toString()}',
-      );
+      GlassAlert.showError(context, 'Error creating user: ${e.toString()}');
     }
   }
 
@@ -390,15 +378,9 @@ class _FriendListPageState extends ConsumerState<FriendListPage>
           displayedKeys = List<String>.from(box.keys)
             ..sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
         });
-        GlassAlert.showSuccess(
-          context,
-          'User $name deleted',
-        );
+        GlassAlert.showSuccess(context, 'User $name deleted');
       } catch (e) {
-        GlassAlert.showError(
-          context,
-          'Error deleting user: ${e.toString()}',
-        );
+        GlassAlert.showError(context, 'Error deleting user: ${e.toString()}');
       }
     }
 
@@ -538,10 +520,7 @@ class _FriendListPageState extends ConsumerState<FriendListPage>
         'Exported all transactions to ${file.path} (path copied)',
       );
     } catch (e) {
-      GlassAlert.showError(
-        context,
-        'Export failed: $e',
-      );
+      GlassAlert.showError(context, 'Export failed: $e');
     }
   }
 
@@ -642,10 +621,7 @@ class _FriendListPageState extends ConsumerState<FriendListPage>
               .where((l) => l.trim().isNotEmpty)
               .toList();
       if (lines.isEmpty) {
-        GlassAlert.showInfo(
-          context,
-          'CSV is empty',
-        );
+        GlassAlert.showInfo(context, 'CSV is empty');
         return;
       }
       final header = lines.first.toLowerCase();
@@ -663,10 +639,7 @@ class _FriendListPageState extends ConsumerState<FriendListPage>
       for (var i = 1; i < lines.length; i++) {
         final cols = _splitCsvLine(lines[i]);
         if (cols.length < 5) {
-          GlassAlert.showError(
-            context,
-            'Invalid CSV format on line ${i + 1}',
-          );
+          GlassAlert.showError(context, 'Invalid CSV format on line ${i + 1}');
           return;
         }
         final user = cols[0];
@@ -676,10 +649,7 @@ class _FriendListPageState extends ConsumerState<FriendListPage>
             double.tryParse(cols[2]) ??
             double.tryParse(cols[2].replaceAll('"', ''));
         if (amount == null) {
-          GlassAlert.showError(
-            context,
-            'Invalid amount on line ${i + 1}',
-          );
+          GlassAlert.showError(context, 'Invalid amount on line ${i + 1}');
           return;
         }
         final note = cols[3];
@@ -704,15 +674,9 @@ class _FriendListPageState extends ConsumerState<FriendListPage>
         displayedKeys = List<String>.from(box.keys)
           ..sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
       });
-      GlassAlert.showSuccess(
-        context,
-        'Imported $imported transactions',
-      );
+      GlassAlert.showSuccess(context, 'Imported $imported transactions');
     } catch (e) {
-      GlassAlert.showError(
-        context,
-        'Import failed: $e',
-      );
+      GlassAlert.showError(context, 'Import failed: $e');
     }
   }
 
@@ -721,10 +685,7 @@ class _FriendListPageState extends ConsumerState<FriendListPage>
       'https://github.com/asterhyphen/hisaab',
     ); // replace
     if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
-      GlassAlert.showError(
-        context,
-        'Could not launch GitHub',
-      );
+      GlassAlert.showError(context, 'Could not launch GitHub');
     }
   }
 

@@ -121,9 +121,10 @@ class _MessageTemplateEditorPageState extends State<MessageTemplateEditorPage> {
             gradient: LinearGradient(
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
-              colors: isDark
-                  ? const [Color(0xFF10192B), Color(0xFF090F1B)]
-                  : const [Color(0xFFF9FCFE), Color(0xFFEAF2F7)],
+              colors:
+                  isDark
+                      ? const [Color(0xFF10192B), Color(0xFF090F1B)]
+                      : const [Color(0xFFF9FCFE), Color(0xFFEAF2F7)],
             ),
           ),
           child: SafeArea(
@@ -161,18 +162,24 @@ class _MessageTemplateEditorPageState extends State<MessageTemplateEditorPage> {
                 _InfoCard(
                   title: 'Placeholders',
                   child: Column(
-                    children: _placeholders
-                        .map((item) => _HelpRow(left: item.$1, right: item.$2))
-                        .toList(),
+                    children:
+                        _placeholders
+                            .map(
+                              (item) => _HelpRow(left: item.$1, right: item.$2),
+                            )
+                            .toList(),
                   ),
                 ),
                 const SizedBox(height: 12),
                 _InfoCard(
                   title: 'Formatting Rules',
                   child: Column(
-                    children: _formattingRules
-                        .map((item) => _HelpRow(left: item.$1, right: item.$2))
-                        .toList(),
+                    children:
+                        _formattingRules
+                            .map(
+                              (item) => _HelpRow(left: item.$1, right: item.$2),
+                            )
+                            .toList(),
                   ),
                 ),
                 const SizedBox(height: 12),
@@ -216,22 +223,23 @@ class _MessageTemplateEditorPageState extends State<MessageTemplateEditorPage> {
   Future<bool?> _confirmDiscardChanges() {
     return showDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Unsaved changes'),
-        content: const Text(
-          'Are you sure you want to go back? Your edits will be lost.',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text('Keep editing'),
+      builder:
+          (context) => AlertDialog(
+            title: const Text('Unsaved changes'),
+            content: const Text(
+              'Are you sure you want to go back? Your edits will be lost.',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, false),
+                child: const Text('Keep editing'),
+              ),
+              FilledButton(
+                onPressed: () => Navigator.pop(context, true),
+                child: const Text('Discard changes'),
+              ),
+            ],
           ),
-          FilledButton(
-            onPressed: () => Navigator.pop(context, true),
-            child: const Text('Discard changes'),
-          ),
-        ],
-      ),
     );
   }
 }
@@ -250,14 +258,16 @@ class _InfoCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: isDark
-            ? Colors.white.withValues(alpha: 0.065)
-            : Colors.white.withValues(alpha: 0.85),
+        color:
+            isDark
+                ? Colors.white.withValues(alpha: 0.065)
+                : Colors.white.withValues(alpha: 0.85),
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: isDark
-              ? Colors.white.withValues(alpha: 0.10)
-              : const Color(0xFFD9E6EF),
+          color:
+              isDark
+                  ? Colors.white.withValues(alpha: 0.10)
+                  : const Color(0xFFD9E6EF),
         ),
       ),
       child: Column(
