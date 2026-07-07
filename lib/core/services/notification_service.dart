@@ -1,5 +1,4 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:flutter_timezone/flutter_timezone.dart';
 import 'package:hive/hive.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
@@ -25,13 +24,6 @@ class NotificationService {
     if (_initialized) return;
 
     tz.initializeTimeZones();
-
-    try {
-      final timezone = await FlutterTimezone.getLocalTimezone();
-      tz.setLocalLocation(tz.getLocation(timezone));
-    } catch (_) {
-      tz.setLocalLocation(tz.getLocation('UTC'));
-    }
 
     const settings = InitializationSettings(
       android: AndroidInitializationSettings('@mipmap/ic_launcher'),
