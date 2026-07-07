@@ -13,9 +13,16 @@ import 'package:crop_your_image/crop_your_image.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 import '../../../../core/platform/widget_action_bridge.dart';
+import '../../../../core/services/notification_service.dart';
 import '../../../../core/theme/hisaab_typography.dart';
 import '../../../../core/widgets/glass_alert.dart';
 import '../../../settings/data/app_preferences_repository.dart';
+import '../../../trackers/data/trackers_providers.dart';
+import '../../../trackers/model/tracker_settings.dart';
+import '../../../trackers/presentation/pages/archive_page.dart';
+import '../../../trackers/presentation/pages/home_page.dart' as trackers_home;
+import '../../../trackers/presentation/pages/message_template_editor_page.dart';
+import '../../../trackers/presentation/pages/tracker_page.dart';
 import '../../data/ledger_repository.dart';
 import '../../model/ledger_transaction.dart';
 import 'friend_detail_page.dart';
@@ -714,6 +721,16 @@ class _FriendListPageState extends ConsumerState<FriendListPage>
           ),
         ),
         centerTitle: false,
+        actions:
+            _currentTab == 2
+                ? [
+                  IconButton(
+                    tooltip: 'Archive',
+                    onPressed: _openTrackersArchive,
+                    icon: const Icon(Icons.archive_outlined),
+                  ),
+                ]
+                : null,
       ),
       body: SafeArea(
         child: switch (_currentTab) {
@@ -723,7 +740,11 @@ class _FriendListPageState extends ConsumerState<FriendListPage>
           _ => _buildHomeBody(),
         },
       ),
-      floatingActionButton: _currentTab == 0 ? _buildAddUserFab() : null,
+      floatingActionButton: switch (_currentTab) {
+        0 => _buildAddUserFab(),
+        2 => _buildAddTrackerFab(),
+        _ => null,
+      },
       bottomNavigationBar: SafeArea(
         top: false,
         child: Padding(
@@ -788,5 +809,30 @@ class _FriendListPageState extends ConsumerState<FriendListPage>
         ),
       ),
     );
+  }
+
+  Widget _buildAddTrackerFab() {
+    return FloatingActionButton.extended(
+      onPressed: _openCreateTracker,
+      icon: const Icon(Icons.add),
+      label: Text(
+        'Add Tracker',
+        style: TextStyle(fontFamily: context.hisaabFontFamily),
+      ),
+    );
+  }
+
+  Future<void> _openCreateTracker() async {
+    await Navigator.of(
+      context,
+    ).push(MaterialPageRoute(builder: (_) => const TrackerPage()));
+    _refreshView();
+  }
+
+  Future<void> _openTrackersArchive() async {
+    await Navigator.of(
+      context,
+    ).push(MaterialPageRoute(builder: (_) => const ArchivePage()));
+    _refreshView();
   }
 }

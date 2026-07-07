@@ -47,7 +47,7 @@ class NotificationService {
       ),
     );
 
-    await _plugin.initialize(settings: settings);
+    await _plugin.initialize(settings);
 
     const channel = AndroidNotificationChannel(
       _channelId,
@@ -131,12 +131,11 @@ class NotificationService {
       if (scheduledAt.isBefore(now)) continue;
 
       await _plugin.zonedSchedule(
-        id: _notificationId(tracker.id, dueDate.year, dueDate.month),
-        title: '${tracker.title} due soon',
-        body:
-            'Due on ${dueDate.day}/${dueDate.month}/${dueDate.year} in $reminderDaysBefore day${reminderDaysBefore == 1 ? '' : 's'}.',
-        scheduledDate: scheduledAt,
-        notificationDetails: NotificationDetails(
+        _notificationId(tracker.id, dueDate.year, dueDate.month),
+        '${tracker.title} due soon',
+        'Due on ${dueDate.day}/${dueDate.month}/${dueDate.year} in $reminderDaysBefore day${reminderDaysBefore == 1 ? '' : 's'}.',
+        scheduledAt,
+        NotificationDetails(
           android: AndroidNotificationDetails(
             _channelId,
             _channelName,
@@ -147,6 +146,8 @@ class NotificationService {
           iOS: const DarwinNotificationDetails(),
           macOS: const DarwinNotificationDetails(),
         ),
+        uiLocalNotificationDateInterpretation:
+            UILocalNotificationDateInterpretation.absoluteTime,
         androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
       );
     }

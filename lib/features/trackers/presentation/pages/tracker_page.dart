@@ -4,8 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../features/trackers/data/trackers_providers.dart';
 import '../../../../features/trackers/model/tracker.dart';
 import '../../../../features/users/data/users_provider.dart';
+import '../../../../features/users/presentation/pages/users_page.dart';
 import '../widgets/tracker_alert.dart';
-import 'users_page.dart';
 
 class TrackerPage extends ConsumerStatefulWidget {
   const TrackerPage({super.key});
