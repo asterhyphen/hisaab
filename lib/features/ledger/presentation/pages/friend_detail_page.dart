@@ -36,6 +36,7 @@ class _FriendDetailPageState extends ConsumerState<FriendDetailPage>
   get metaBox => _ledgerRepository.userMetaBox;
   late AnimationController _slideController;
   late Animation<Offset> _slideAnimation;
+  bool _deleteTransactionDialogOpen = false;
 
   Future<void> _markPaidAll(double total) async {
     if (total == 0) return;
@@ -151,6 +152,8 @@ class _FriendDetailPageState extends ConsumerState<FriendDetailPage>
 
   Future<void> _deleteTransaction(int index) async {
     final txns = box.get(widget.name) as List;
+    if (index < 0 || index >= txns.length) return;
+
     final tx = txns[index];
 
     final shouldAffectBalance = await showDialog<bool?>(
@@ -200,6 +203,19 @@ class _FriendDetailPageState extends ConsumerState<FriendDetailPage>
         GlassAlert.showError(context, 'Error deleting: ${e.toString()}');
       }
     }
+  }
+
+  Future<bool> _confirmDeleteTransactionDismiss(int index) async {
+    if (_deleteTransactionDialogOpen) return false;
+
+    _deleteTransactionDialogOpen = true;
+    try {
+      await _deleteTransaction(index);
+    } finally {
+      _deleteTransactionDialogOpen = false;
+    }
+
+    return false;
   }
 
   @override
@@ -1138,6 +1154,7 @@ class _FriendDetailPageState extends ConsumerState<FriendDetailPage>
                       itemCount: transactions.length,
                       itemBuilder: (_, index) {
                         final tx = transactions[index];
+                        final sourceIndex = transactions.length - 1 - index;
                         final isAdd = tx['type'] == 'add';
                         final dateStr = _normalizeDate(tx['date']);
 
@@ -1145,8 +1162,13 @@ class _FriendDetailPageState extends ConsumerState<FriendDetailPage>
                           offset: Offset(0, 0),
                           duration: Duration(milliseconds: 200),
                           child: Dismissible(
-                            key: ValueKey('tx_$index'),
+                            key: ValueKey(
+                              'tx_${tx['type']}_${tx['amount']}_${tx['date']}_$sourceIndex',
+                            ),
                             direction: DismissDirection.endToStart,
+                            dismissThresholds: const {
+                              DismissDirection.endToStart: 0.75,
+                            },
                             background: Container(
                               margin: EdgeInsets.symmetric(
                                 horizontal: 8,
@@ -1163,12 +1185,10 @@ class _FriendDetailPageState extends ConsumerState<FriendDetailPage>
                                 color: Colors.white,
                               ),
                             ),
-                            confirmDismiss: (_) => Future.value(false),
-                            onUpdate: (details) {
-                              if (details.progress > 0.3) {
-                                _deleteTransaction(index);
-                              }
-                            },
+                            confirmDismiss:
+                                (_) => _confirmDeleteTransactionDismiss(
+                                  sourceIndex,
+                                ),
                             child: Container(
                               margin: EdgeInsets.symmetric(
                                 horizontal: 8,
@@ -1184,7 +1204,7 @@ class _FriendDetailPageState extends ConsumerState<FriendDetailPage>
                               ),
                               child: InkWell(
                                 borderRadius: BorderRadius.circular(8),
-                                onTap: () => _editTransaction(index),
+                                onTap: () => _editTransaction(sourceIndex),
                                 child: ListTile(
                                   contentPadding: EdgeInsets.symmetric(
                                     horizontal: 16,
