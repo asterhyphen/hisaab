@@ -116,17 +116,25 @@ class _UsersPageState extends ConsumerState<UsersPage> {
                         'No users have been saved yet. Add people here so trackkar creation is easier and faster later.',
                       )
                       : Wrap(
-                        spacing: 10,
-                        runSpacing: 10,
-                        children:
-                            users.map((user) {
-                              return Chip(
-                                label: Text(user),
+                          spacing: 10,
+                          runSpacing: 10,
+                          children: users.map((user) {
+                            return SizedBox(
+                              width: 115,
+                              child: Chip(
+                                label: Text(
+                                  user,
+                                  overflow: TextOverflow.ellipsis,
+                                  maxLines: 1,
+                                ),
                                 onDeleted: () => _confirmDeleteUser(user),
-                                deleteIcon: const Icon(Icons.close, size: 18),
-                              );
-                            }).toList(),
-                      ),
+                                deleteIcon: const Icon(Icons.close, size: 16),
+                                labelPadding: const EdgeInsets.only(left: 4, right: 4),
+                                padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
+                              ),
+                            );
+                          }).toList(),
+                        ),
             ),
             const SizedBox(height: 12),
             _sectionCard(
