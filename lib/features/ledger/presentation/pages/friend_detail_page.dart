@@ -37,6 +37,12 @@ class _FriendDetailPageState extends ConsumerState<FriendDetailPage>
   late AnimationController _slideController;
   late Animation<Offset> _slideAnimation;
   bool _deleteTransactionDialogOpen = false;
+  late String _currentName;
+
+  Future<void> _updateWidgetBalance() async {
+    final total = _ledgerRepository.overallBalance;
+    await WidgetActionBridge.updateWidgetBalance(total);
+  }
 
   Future<void> _markPaidAll(double total) async {
     if (total == 0) return;
@@ -65,7 +71,7 @@ class _FriendDetailPageState extends ConsumerState<FriendDetailPage>
     if (confirm != true) return;
 
     try {
-      final txns = List.from(box.get(widget.name) as List);
+      final txns = List.from(box.get(_currentName) as List);
 
       txns.add({
         'type': total > 0 ? 'subtract' : 'add',
@@ -74,7 +80,8 @@ class _FriendDetailPageState extends ConsumerState<FriendDetailPage>
         'date': DateFormat('dd-MM-yyyy hh:mm a').format(DateTime.now()),
       });
 
-      box.put(widget.name, txns);
+      box.put(_currentName, txns);
+      await _updateWidgetBalance();
       setState(() {});
       GlassAlert.showSuccess(context, 'Balance cleared');
     } catch (e) {
@@ -83,7 +90,7 @@ class _FriendDetailPageState extends ConsumerState<FriendDetailPage>
   }
 
   Future<void> _editTransaction(int index) async {
-    final txns = box.get(widget.name) as List;
+    final txns = box.get(_currentName) as List;
     final tx = txns[index];
 
     final amountCtrl = TextEditingController(text: tx['amount'].toString());
@@ -119,7 +126,14 @@ class _FriendDetailPageState extends ConsumerState<FriendDetailPage>
                 child: const Text('Cancel'),
               ),
               ElevatedButton(
-                onPressed: () => Navigator.pop(context, true),
+                onPressed: () {
+                  final newAmt = double.tryParse(amountCtrl.text) ?? 0;
+                  if (newAmt <= 0) return;
+                  tx['amount'] = newAmt;
+                  tx['note'] = noteCtrl.text.trim();
+                  tx['date'] = DateFormat('dd-MM-yyyy hh:mm a').format(DateTime.now());
+                  Navigator.pop(context, true);
+                },
                 child: const Text('Save'),
               ),
             ],
@@ -127,31 +141,18 @@ class _FriendDetailPageState extends ConsumerState<FriendDetailPage>
     );
 
     if (result == true) {
-      try {
-        final newAmount = double.tryParse(amountCtrl.text.trim());
-        if (newAmount != null && newAmount > 0) {
-          txns[index] = {
-            'type': tx['type'],
-            'amount': newAmount,
-            'note': noteCtrl.text.trim(),
-            'date': tx['date'],
-          };
-          box.put(widget.name, txns);
-          setState(() {});
-          GlassAlert.showSuccess(context, 'Transaction updated');
-        } else {
-          GlassAlert.showError(context, 'Invalid amount');
-        }
-      } catch (e) {
-        GlassAlert.showError(context, 'Error updating: ${e.toString()}');
-      }
+      txns[index] = tx;
+      await box.put(_currentName, txns);
+      await _updateWidgetBalance();
+      setState(() {});
+      GlassAlert.showSuccess(context, 'Transaction updated');
     }
     amountCtrl.dispose();
     noteCtrl.dispose();
   }
 
   Future<void> _deleteTransaction(int index) async {
-    final txns = box.get(widget.name) as List;
+    final txns = box.get(_currentName) as List;
     if (index < 0 || index >= txns.length) return;
 
     final tx = txns[index];
@@ -186,7 +187,7 @@ class _FriendDetailPageState extends ConsumerState<FriendDetailPage>
         txns.removeAt(index);
 
         if (shouldAffectBalance) {
-          box.put(widget.name, txns);
+          await box.put(_currentName, txns);
         } else {
           txns.add({
             'type': tx['type'] == 'add' ? 'subtract' : 'add',
@@ -194,9 +195,10 @@ class _FriendDetailPageState extends ConsumerState<FriendDetailPage>
             'note': '[Reversed] ${tx['note']}',
             'date': DateFormat('dd-MM-yyyy hh:mm a').format(DateTime.now()),
           });
-          box.put(widget.name, txns);
+          await box.put(_currentName, txns);
         }
 
+        await _updateWidgetBalance();
         setState(() {});
         GlassAlert.showSuccess(context, 'Transaction deleted');
       } catch (e) {
@@ -262,7 +264,7 @@ class _FriendDetailPageState extends ConsumerState<FriendDetailPage>
   }
 
   Future<File?> _exportCsvFile() async {
-    final txns = box.get(widget.name) as List;
+    final txns = box.get(_currentName) as List;
     if (txns.isEmpty) return null;
 
     final header = 'type,amount,note,date\n';
@@ -279,7 +281,7 @@ class _FriendDetailPageState extends ConsumerState<FriendDetailPage>
     final csv = header + csvLines;
     final dir = await _getDownloadsDirectory();
     final fname =
-        '${widget.name}_transactions_${DateFormat('yyyyMMdd_HHmm').format(DateTime.now())}.csv';
+        '${_currentName}_transactions_${DateFormat('yyyyMMdd_HHmm').format(DateTime.now())}.csv';
     final file = File('${dir.path}/$fname');
     await file.writeAsString(csv);
     return file;
@@ -332,13 +334,13 @@ class _FriendDetailPageState extends ConsumerState<FriendDetailPage>
 
   Future<void> _setUserUpi() async {
     final controller = TextEditingController(
-      text: metaBox.get('${widget.name}_upi') as String? ?? '',
+      text: metaBox.get('${_currentName}_upi') as String? ?? '',
     );
     final ok = await showDialog<bool?>(
       context: context,
       builder:
           (_) => AlertDialog(
-            title: Text('Set ${widget.name} UPI id'),
+            title: Text('Set $_currentName UPI id'),
             content: TextField(
               controller: controller,
               decoration: InputDecoration(hintText: 'friend@upi'),
@@ -356,8 +358,8 @@ class _FriendDetailPageState extends ConsumerState<FriendDetailPage>
           ),
     );
     if (ok == true) {
-      metaBox.put('${widget.name}_upi', controller.text.trim());
-      GlassAlert.showSuccess(context, 'Saved ${widget.name} UPI');
+      await metaBox.put('${_currentName}_upi', controller.text.trim());
+      GlassAlert.showSuccess(context, 'Saved $_currentName UPI');
     }
   }
 
@@ -395,12 +397,23 @@ class _FriendDetailPageState extends ConsumerState<FriendDetailPage>
       context: context,
       builder:
           (_) => AlertDialog(
-            title: Text('Share UPI QR'),
+            title: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text('Share UPI QR'),
+                IconButton(
+                  icon: const Icon(Icons.close),
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(),
+                  onPressed: () => Navigator.pop(context, null),
+                ),
+              ],
+            ),
             content: SingleChildScrollView(
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  SizedBox(height: 8),
+                  const SizedBox(height: 8),
                   Builder(
                     builder: (context) {
                       try {
@@ -419,8 +432,8 @@ class _FriendDetailPageState extends ConsumerState<FriendDetailPage>
                           ),
                         );
                       } catch (e) {
-                        return Padding(
-                          padding: const EdgeInsets.all(16.0),
+                        return const Padding(
+                          padding: EdgeInsets.all(16.0),
                           child: Text(
                             'QR data too long to encode. Please shorten the UPI details.',
                             style: TextStyle(color: Colors.red),
@@ -430,15 +443,21 @@ class _FriendDetailPageState extends ConsumerState<FriendDetailPage>
                       }
                     },
                   ),
-                  SizedBox(height: 8),
-                  SelectableText(qrData, style: TextStyle(fontSize: 12)),
+                  const SizedBox(height: 8),
+                  SelectableText(qrData, style: const TextStyle(fontSize: 12)),
                 ],
               ),
             ),
             actions: [
               TextButton(
-                onPressed: () => Navigator.pop(context, false),
-                child: Text('Close'),
+                onPressed: () async {
+                  await Clipboard.setData(ClipboardData(text: uri));
+                  if (context.mounted) {
+                    GlassAlert.showInfo(context, 'UPI URI copied to clipboard');
+                    Navigator.pop(context, null);
+                  }
+                },
+                child: const Text('Copy URI'),
               ),
               TextButton(
                 onPressed: () async {
@@ -472,11 +491,11 @@ class _FriendDetailPageState extends ConsumerState<FriendDetailPage>
                     GlassAlert.showError(context, 'Share failed');
                   }
                 },
-                child: Text('Share'),
+                child: const Text('Share'),
               ),
               ElevatedButton(
                 onPressed: () => Navigator.pop(context, true),
-                child: Text('Save QR'),
+                child: const Text('Save QR'),
               ),
             ],
           ),
@@ -520,21 +539,18 @@ class _FriendDetailPageState extends ConsumerState<FriendDetailPage>
       } catch (e) {
         GlassAlert.showError(context, 'Save failed: $e');
       }
-    } else {
-      await Clipboard.setData(ClipboardData(text: uri));
-      GlassAlert.showInfo(context, 'UPI URI copied to clipboard');
     }
   }
 
   Future<void> _payNow(double amount) async {
-    final friendUpi = (metaBox.get('${widget.name}_upi') as String?)?.trim();
+    final friendUpi = (metaBox.get('${_currentName}_upi') as String?)?.trim();
     if (friendUpi == null || friendUpi.isEmpty) {
       final setNow = await showDialog<bool?>(
         context: context,
         builder:
             (_) => AlertDialog(
-              title: Text('Set ${widget.name} UPI id'),
-              content: Text('You need ${widget.name} UPI id to pay them.'),
+              title: Text('Set $_currentName UPI id'),
+              content: Text('You need $_currentName UPI id to pay them.'),
               actions: [
                 TextButton(
                   onPressed: () => Navigator.pop(context, false),
@@ -553,7 +569,7 @@ class _FriendDetailPageState extends ConsumerState<FriendDetailPage>
     final uri = _buildUpiUri(
       friendUpi,
       amount,
-      pn: widget.name,
+      pn: _currentName,
       tn: 'Settlement',
     );
     try {
@@ -708,7 +724,7 @@ class _FriendDetailPageState extends ConsumerState<FriendDetailPage>
         );
         return;
       }
-      final list = List.from(box.get(widget.name) as List);
+      final list = List.from(box.get(_currentName) as List? ?? []);
       for (var i = 1; i < lines.length; i++) {
         final row = lines[i];
         final cols = _splitCsvLine(row);
@@ -735,7 +751,8 @@ class _FriendDetailPageState extends ConsumerState<FriendDetailPage>
         };
         list.add(txn);
       }
-      box.put(widget.name, list);
+      await box.put(_currentName, list);
+      await _updateWidgetBalance();
       setState(() {});
       GlassAlert.showSuccess(
         context,
@@ -746,139 +763,188 @@ class _FriendDetailPageState extends ConsumerState<FriendDetailPage>
     }
   }
 
-  Future<void> _pickIcon() async {
-    String current = metaBox.get(widget.name) as String? ?? 'terminal';
+  Future<void> _showEditProfileDialog() async {
+    final nameCtrl = TextEditingController(text: _currentName);
+    String selectedIcon = metaBox.get(_currentName) as String? ?? 'terminal';
+
     await showDialog(
       context: context,
-      builder:
-          (_) => StatefulBuilder(
-            builder:
-                (context, setDialogState) => Dialog(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+      builder: (_) => StatefulBuilder(
+        builder: (context, setDialogState) => Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          backgroundColor: Theme.of(context).colorScheme.surface,
+          child: Container(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'edit_profile()',
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.primary,
+                    fontFamily: context.hisaabFontFamily,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
                   ),
-                  backgroundColor: Theme.of(context).colorScheme.surface,
-                  child: Container(
-                    padding: EdgeInsets.all(16),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          'choose_icon()',
-                          style: TextStyle(
-                            color: Theme.of(context).colorScheme.primary,
-                            fontFamily: context.hisaabFontFamily,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        SizedBox(height: 12),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            _iconTile('terminal', Icons.terminal, current, (
-                              id,
-                            ) {
-                              current = id;
-                              setDialogState(() {});
-                            }),
-                            SizedBox(width: 8),
-                            _iconTile('code', Icons.code, current, (id) {
-                              current = id;
-                              setDialogState(() {});
-                            }),
-                            SizedBox(width: 8),
-                            _iconTile('robot', Icons.smart_toy, current, (id) {
-                              current = id;
-                              setDialogState(() {});
-                            }),
-                            SizedBox(width: 8),
-                            _iconTile('user', Icons.person, current, (id) {
-                              current = id;
-                              setDialogState(() {});
-                            }),
-                            SizedBox(width: 8),
-                            _iconTile('smile', Icons.emoji_emotions, current, (
-                              id,
-                            ) {
-                              current = id;
-                              setDialogState(() {});
-                            }),
-                            SizedBox(width: 8),
-                            // custom image picker
-                            GestureDetector(
-                              onTap: () async {
-                                final saved = await _pickCropAndSaveImage();
-                                if (saved != null) {
-                                  current = saved;
-                                  setDialogState(() {});
-                                }
-                              },
-                              child: Container(
-                                padding: EdgeInsets.all(6),
-                                decoration: BoxDecoration(
-                                  color:
-                                      current.startsWith('/') ||
-                                              current.startsWith('file://')
-                                          ? Theme.of(
-                                            context,
-                                          ).scaffoldBackgroundColor
-                                          : Theme.of(
-                                            context,
-                                          ).colorScheme.surface,
-                                  border: Border.all(
-                                    color:
-                                        current.startsWith('/') ||
-                                                current.startsWith('file://')
-                                            ? Theme.of(
-                                              context,
-                                            ).colorScheme.primary
-                                            : Theme.of(
-                                              context,
-                                            ).colorScheme.outline,
-                                    width:
-                                        current.startsWith('/') ||
-                                                current.startsWith('file://')
-                                            ? 2
-                                            : 1,
-                                  ),
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                child: Icon(
-                                  Icons.image,
-                                  color:
-                                      Theme.of(context).colorScheme.secondary,
-                                  size: 20,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        SizedBox(height: 12),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            TextButton(
-                              onPressed: () => Navigator.pop(context),
-                              child: Text('cancel'),
-                            ),
-                            SizedBox(width: 8),
-                            ElevatedButton(
-                              onPressed: () {
-                                try {
-                                  metaBox.put(widget.name, current);
-                                } catch (_) {}
-                                setState(() {});
-                                Navigator.pop(context);
-                              },
-                              child: Text('save'),
-                            ),
-                          ],
-                        ),
-                      ],
+                ),
+                const SizedBox(height: 16),
+                TextField(
+                  controller: nameCtrl,
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.onSurface,
+                    fontFamily: context.hisaabFontFamily,
+                  ),
+                  decoration: InputDecoration(
+                    labelText: 'User Name',
+                    labelStyle: TextStyle(
+                      fontFamily: context.hisaabFontFamily,
+                    ),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
                     ),
                   ),
                 ),
+                const SizedBox(height: 16),
+                Text(
+                  'choose_icon()',
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.secondary,
+                    fontFamily: context.hisaabFontFamily,
+                    fontSize: 14,
+                  ),
+                ),
+                const SizedBox(height: 10),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    _iconTile('terminal', Icons.terminal, selectedIcon, (id) {
+                      selectedIcon = id;
+                      setDialogState(() {});
+                    }),
+                    const SizedBox(width: 8),
+                    _iconTile('code', Icons.code, selectedIcon, (id) {
+                      selectedIcon = id;
+                      setDialogState(() {});
+                    }),
+                    const SizedBox(width: 8),
+                    _iconTile('robot', Icons.smart_toy, selectedIcon, (id) {
+                      selectedIcon = id;
+                      setDialogState(() {});
+                    }),
+                    const SizedBox(width: 8),
+                    _iconTile('user', Icons.person, selectedIcon, (id) {
+                      selectedIcon = id;
+                      setDialogState(() {});
+                    }),
+                    const SizedBox(width: 8),
+                    _iconTile('smile', Icons.emoji_emotions, selectedIcon, (id) {
+                      selectedIcon = id;
+                      setDialogState(() {});
+                    }),
+                    const SizedBox(width: 8),
+                    GestureDetector(
+                      onTap: () async {
+                        final saved = await _pickCropAndSaveImage();
+                        if (saved != null) {
+                          selectedIcon = saved;
+                          setDialogState(() {});
+                        }
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.all(6),
+                        decoration: BoxDecoration(
+                          color: selectedIcon.startsWith('/') || selectedIcon.startsWith('file://')
+                              ? Theme.of(context).scaffoldBackgroundColor
+                              : Theme.of(context).colorScheme.surface,
+                          border: Border.all(
+                            color: selectedIcon.startsWith('/') || selectedIcon.startsWith('file://')
+                                ? Theme.of(context).colorScheme.primary
+                                : Theme.of(context).colorScheme.outline,
+                            width: selectedIcon.startsWith('/') || selectedIcon.startsWith('file://') ? 2 : 1,
+                          ),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Icon(
+                          Icons.image,
+                          color: Theme.of(context).colorScheme.secondary,
+                          size: 20,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 24),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: const Text('Cancel'),
+                    ),
+                    const SizedBox(width: 8),
+                    ElevatedButton(
+                      onPressed: () async {
+                        final newName = nameCtrl.text.trim();
+                        if (newName.isEmpty) {
+                          GlassAlert.showError(context, 'Name cannot be empty');
+                          return;
+                        }
+
+                        final oldName = _currentName;
+                        if (newName != oldName) {
+                          if (box.containsKey(newName)) {
+                            GlassAlert.showError(context, 'A user named "$newName" already exists');
+                            return;
+                          }
+
+                          // Rename logic!
+                          try {
+                            final txs = box.get(oldName);
+                            await box.put(newName, txs);
+                            await box.delete(oldName);
+
+                            // Move avatar icon metadata
+                            final icon = metaBox.get(oldName);
+                            if (icon != null) {
+                              await metaBox.put(newName, icon);
+                              await metaBox.delete(oldName);
+                            }
+
+                            // Move UPI metadata
+                            final upi = metaBox.get('${oldName}_upi');
+                            if (upi != null) {
+                              await metaBox.put('${newName}_upi', upi);
+                              await metaBox.delete('${oldName}_upi');
+                            }
+
+                            _currentName = newName;
+                          } catch (e) {
+                            GlassAlert.showError(context, 'Error renaming user: $e');
+                            return;
+                          }
+                        }
+
+                        // Save the icon
+                        try {
+                          await metaBox.put(_currentName, selectedIcon);
+                        } catch (_) {}
+
+                        setState(() {});
+                        Navigator.pop(context);
+                        GlassAlert.showSuccess(context, 'Profile updated');
+                      },
+                      child: const Text('Save'),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
+        ),
+      ),
     );
   }
 
@@ -916,7 +982,7 @@ class _FriendDetailPageState extends ConsumerState<FriendDetailPage>
     );
   }
 
-  void addTransaction(String type) {
+  void addTransaction(String type) async {
     final amount = double.tryParse(amountController.text.trim()) ?? 0;
     if (amount <= 0) return;
 
@@ -927,9 +993,10 @@ class _FriendDetailPageState extends ConsumerState<FriendDetailPage>
       'date': DateFormat('dd-MM-yyyy hh:mm a').format(DateTime.now()),
     };
 
-    final list = box.get(widget.name) as List;
+    final list = box.get(_currentName) as List;
     list.add(transaction);
-    box.put(widget.name, list);
+    await box.put(_currentName, list);
+    await _updateWidgetBalance();
     amountController.clear();
     noteController.clear();
     Navigator.pop(context);
@@ -944,9 +1011,51 @@ class _FriendDetailPageState extends ConsumerState<FriendDetailPage>
     );
   }
 
+  Future<void> _deleteUserAction() async {
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder:
+          (_) => AlertDialog(
+            backgroundColor: Theme.of(context).colorScheme.surface,
+            title: Text(
+              'Delete user?',
+              style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
+            ),
+            content: Text(
+              'Delete $_currentName and all transactions?',
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, false),
+                child: const Text('Cancel'),
+              ),
+              ElevatedButton(
+                onPressed: () => Navigator.pop(context, true),
+                child: const Text('Delete'),
+              ),
+            ],
+          ),
+    );
+    if (confirm == true) {
+      box.delete(_currentName);
+      try {
+        metaBox.delete(_currentName);
+      } catch (_) {}
+      try {
+        metaBox.delete('${_currentName}_upi');
+      } catch (_) {}
+      await _updateWidgetBalance();
+      if (!mounted) return;
+      Navigator.pop(context);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    final transactions = (box.get(widget.name) as List).reversed.toList();
+    final transactions = (box.get(_currentName) as List? ?? []).reversed.toList();
     final total = getTotal(transactions);
 
     return Scaffold(
@@ -955,7 +1064,7 @@ class _FriendDetailPageState extends ConsumerState<FriendDetailPage>
         foregroundColor: Theme.of(context).colorScheme.primary,
         elevation: 0,
         title: Text(
-          '> ${widget.name}',
+          '> $_currentName',
           style: TextStyle(
             fontFamily: context.hisaabFontFamily,
             fontSize: 18,
@@ -965,336 +1074,320 @@ class _FriendDetailPageState extends ConsumerState<FriendDetailPage>
           ),
         ),
         actions: [
-          IconButton(
-            tooltip: 'Export CSV',
-            icon: Icon(Icons.download_rounded),
-            onPressed: _exportCsv,
-          ),
-          IconButton(
-            tooltip: 'Import CSV',
-            icon: Icon(Icons.upload_file),
-            onPressed: _importCsv,
-          ),
-          IconButton(
-            tooltip: 'Edit icon',
-            icon: Icon(Icons.edit),
-            onPressed: _pickIcon,
-          ),
-          IconButton(
-            tooltip: 'Delete user',
-            icon: Icon(Icons.delete_outline),
-            onPressed: () async {
-              final confirm = await showDialog<bool>(
-                context: context,
-                builder:
-                    (_) => AlertDialog(
-                      backgroundColor: Theme.of(context).colorScheme.surface,
-                      title: Text(
-                        'Delete user?',
-                        style: TextStyle(
-                          color: Theme.of(context).colorScheme.onSurface,
-                        ),
-                      ),
-                      content: Text(
-                        'Delete ${widget.name} and all transactions?',
-                        style: TextStyle(
-                          color: Theme.of(context).colorScheme.onSurfaceVariant,
-                        ),
-                      ),
-                      actions: [
-                        TextButton(
-                          onPressed: () => Navigator.pop(context, false),
-                          child: Text('Cancel'),
-                        ),
-                        ElevatedButton(
-                          onPressed: () => Navigator.pop(context, true),
-                          child: Text('Delete'),
-                        ),
-                      ],
-                    ),
-              );
-              if (confirm == true) {
-                box.delete(widget.name);
-                try {
-                  metaBox.delete(widget.name);
-                } catch (_) {}
-                Navigator.pop(context);
+          PopupMenuButton<String>(
+            icon: const Icon(Icons.more_vert),
+            onSelected: (value) {
+              switch (value) {
+                case 'edit':
+                  _showEditProfileDialog();
+                  break;
+                case 'export':
+                  _exportCsv();
+                  break;
+                case 'import':
+                  _importCsv();
+                  break;
+                case 'delete':
+                  _deleteUserAction();
+                  break;
               }
             },
+            itemBuilder: (context) => [
+              PopupMenuItem(
+                value: 'edit',
+                child: Row(
+                  children: [
+                    Icon(Icons.edit_outlined, color: Theme.of(context).colorScheme.primary),
+                    const SizedBox(width: 8),
+                    const Text('Edit Profile'),
+                  ],
+                ),
+              ),
+              PopupMenuItem(
+                value: 'export',
+                child: Row(
+                  children: [
+                    Icon(Icons.download_rounded, color: Theme.of(context).colorScheme.primary),
+                    const SizedBox(width: 8),
+                    const Text('Export CSV'),
+                  ],
+                ),
+              ),
+              PopupMenuItem(
+                value: 'import',
+                child: Row(
+                  children: [
+                    Icon(Icons.upload_file, color: Theme.of(context).colorScheme.primary),
+                    const SizedBox(width: 8),
+                    const Text('Import CSV'),
+                  ],
+                ),
+              ),
+              PopupMenuItem(
+                value: 'delete',
+                child: Row(
+                  children: [
+                    Icon(Icons.delete_outline, color: Theme.of(context).colorScheme.error),
+                    const SizedBox(width: 8),
+                    Text('Delete User', style: TextStyle(color: Theme.of(context).colorScheme.error)),
+                  ],
+                ),
+              ),
+            ],
           ),
         ],
       ),
-      body: Column(
-        children: [
+      body: CustomScrollView(
+        physics: const BouncingScrollPhysics(
+          parent: AlwaysScrollableScrollPhysics(),
+        ),
+        slivers: [
           // Total Balance
-          SlideTransition(
-            position: _slideAnimation,
-            child: Container(
-              width: double.infinity,
-              padding: EdgeInsets.all(16),
-              margin: EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.surface,
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(
-                  color: Theme.of(context).colorScheme.outline,
-                  width: 1,
+          SliverToBoxAdapter(
+            child: SlideTransition(
+              position: _slideAnimation,
+              child: Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(16),
+                margin: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.surface,
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(
+                    color: Theme.of(context).colorScheme.outline,
+                    width: 1,
+                  ),
                 ),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'total_balance',
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Theme.of(context).colorScheme.onSurfaceVariant,
-                      fontFamily: context.hisaabFontFamily,
-                      letterSpacing: 0.3,
-                    ),
-                  ),
-                  SizedBox(height: 8),
-                  Text(
-                    '₹${total.toStringAsFixed(2)}',
-                    style: TextStyle(
-                      fontSize: 28,
-                      fontWeight: FontWeight.bold,
-                      fontFamily: context.hisaabFontFamily,
-                      color:
-                          total >= 0
-                              ? Theme.of(context).colorScheme.tertiary
-                              : Theme.of(context).colorScheme.error,
-                      letterSpacing: 0.5,
-                    ),
-                  ),
-                  SizedBox(height: 12),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          if (total >= 0)
-                            ElevatedButton.icon(
-                              onPressed: () => _showRequestPayment(total),
-                              icon: Icon(Icons.qr_code),
-                              label: Text(
-                                'Request ₹${total.toStringAsFixed(2)}',
-                              ),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor:
-                                    Theme.of(context).colorScheme.tertiary,
-                                foregroundColor:
-                                    Theme.of(context).scaffoldBackgroundColor,
-                              ),
-                            )
-                          else
-                            ElevatedButton.icon(
-                              onPressed: () => _payNow(total.abs()),
-                              icon: Icon(Icons.payment),
-                              label: Text(
-                                'Pay ₹${total.abs().toStringAsFixed(2)}',
-                              ),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor:
-                                    Theme.of(context).colorScheme.error,
-                                foregroundColor:
-                                    Theme.of(context).scaffoldBackgroundColor,
-                              ),
-                            ),
-                          if (total < 0) ...[
-                            SizedBox(width: 8),
-                            TextButton(
-                              onPressed: () async {
-                                await _setUserUpi();
-                              },
-                              child: Text('Set ${widget.name} UPI'),
-                            ),
-                          ],
-                        ],
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'total_balance',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        fontFamily: context.hisaabFontFamily,
+                        letterSpacing: 0.3,
                       ),
-                      if (total != 0) ...[
-                        SizedBox(height: 8),
-                        OutlinedButton(
-                          onPressed: () => _markPaidAll(total),
-                          child: Text('Paid all'),
-                          style: OutlinedButton.styleFrom(
-                            foregroundColor:
-                                Theme.of(context).colorScheme.onSurfaceVariant,
-                            side: BorderSide(
-                              color: Theme.of(context).colorScheme.outline,
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      '₹${total.toStringAsFixed(2)}',
+                      style: TextStyle(
+                        fontSize: 28,
+                        fontWeight: FontWeight.bold,
+                        fontFamily: context.hisaabFontFamily,
+                        color: total >= 0
+                            ? Theme.of(context).colorScheme.tertiary
+                            : Theme.of(context).colorScheme.error,
+                        letterSpacing: 0.5,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            if (total >= 0)
+                              ElevatedButton.icon(
+                                onPressed: () => _showRequestPayment(total),
+                                icon: const Icon(Icons.qr_code),
+                                label: Text(
+                                  'Request ₹${total.toStringAsFixed(2)}',
+                                ),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Theme.of(context).colorScheme.tertiary,
+                                  foregroundColor: Theme.of(context).scaffoldBackgroundColor,
+                                ),
+                              )
+                            else
+                              ElevatedButton.icon(
+                                onPressed: () => _payNow(total.abs()),
+                                icon: const Icon(Icons.payment),
+                                label: Text(
+                                  'Pay ₹${total.abs().toStringAsFixed(2)}',
+                                ),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Theme.of(context).colorScheme.error,
+                                  foregroundColor: Theme.of(context).scaffoldBackgroundColor,
+                                ),
+                              ),
+                            if (total < 0) ...[
+                              const SizedBox(width: 8),
+                              TextButton(
+                                onPressed: () async {
+                                  await _setUserUpi();
+                                },
+                                child: Text('Set $_currentName UPI'),
+                              ),
+                            ],
+                          ],
+                        ),
+                        if (total != 0) ...[
+                          const SizedBox(height: 8),
+                          OutlinedButton(
+                            onPressed: () => _markPaidAll(total),
+                            child: const Text('Paid all'),
+                            style: OutlinedButton.styleFrom(
+                              foregroundColor: Theme.of(context).colorScheme.onSurfaceVariant,
+                              side: BorderSide(
+                                color: Theme.of(context).colorScheme.outline,
+                              ),
                             ),
                           ),
-                        ),
+                        ],
                       ],
-                    ],
-                  ),
-                ],
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
-          Divider(color: Theme.of(context).colorScheme.outline, height: 0),
+          SliverToBoxAdapter(
+            child: Divider(color: Theme.of(context).colorScheme.outline, height: 0),
+          ),
           // Transactions List
-          Expanded(
-            child:
-                transactions.isEmpty
-                    ? Center(
-                      child: Text(
-                        'transactions_empty()',
-                        style: TextStyle(
-                          color: Theme.of(context).colorScheme.onSurfaceVariant,
-                          fontSize: 14,
-                          fontFamily: context.hisaabFontFamily,
-                        ),
-                      ),
-                    )
-                    : ListView.builder(
-                      physics: BouncingScrollPhysics(
-                        parent: AlwaysScrollableScrollPhysics(),
-                      ),
-                      itemCount: transactions.length,
-                      itemBuilder: (_, index) {
-                        final tx = transactions[index];
-                        final sourceIndex = transactions.length - 1 - index;
-                        final isAdd = tx['type'] == 'add';
-                        final dateStr = _normalizeDate(tx['date']);
+          if (transactions.isEmpty)
+            SliverFillRemaining(
+              hasScrollBody: false,
+              child: Center(
+                child: Text(
+                  'transactions_empty()',
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    fontSize: 14,
+                    fontFamily: context.hisaabFontFamily,
+                  ),
+                ),
+              ),
+            )
+          else
+            SliverPadding(
+              padding: const EdgeInsets.only(bottom: 100),
+              sliver: SliverList(
+                delegate: SliverChildBuilderDelegate(
+                  (context, index) {
+                    final tx = transactions[index];
+                    final sourceIndex = transactions.length - 1 - index;
+                    final isAdd = tx['type'] == 'add';
+                    final dateStr = _normalizeDate(tx['date']);
 
-                        return AnimatedSlide(
-                          offset: Offset(0, 0),
-                          duration: Duration(milliseconds: 200),
-                          child: Dismissible(
-                            key: ValueKey(
-                              'tx_${tx['type']}_${tx['amount']}_${tx['date']}_$sourceIndex',
+                    return AnimatedSlide(
+                      offset: Offset.zero,
+                      duration: const Duration(milliseconds: 200),
+                      child: Dismissible(
+                        key: ValueKey(
+                          'tx_${tx['type']}_${tx['amount']}_${tx['date']}_$sourceIndex',
+                        ),
+                        direction: DismissDirection.endToStart,
+                        dismissThresholds: const {
+                          DismissDirection.endToStart: 0.75,
+                        },
+                        background: Container(
+                          margin: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 4,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Theme.of(context).colorScheme.error,
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          alignment: Alignment.centerRight,
+                          padding: const EdgeInsets.only(right: 24),
+                          child: const Icon(
+                            Icons.delete_rounded,
+                            color: Colors.white,
+                          ),
+                        ),
+                        confirmDismiss: (_) => _confirmDeleteTransactionDismiss(
+                          sourceIndex,
+                        ),
+                        child: Container(
+                          margin: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 4,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Theme.of(context).colorScheme.surface,
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(
+                              color: Theme.of(context).colorScheme.outline,
+                              width: 1,
                             ),
-                            direction: DismissDirection.endToStart,
-                            dismissThresholds: const {
-                              DismissDirection.endToStart: 0.75,
-                            },
-                            background: Container(
-                              margin: EdgeInsets.symmetric(
-                                horizontal: 8,
-                                vertical: 4,
+                          ),
+                          child: InkWell(
+                            borderRadius: BorderRadius.circular(8),
+                            onTap: () => _editTransaction(sourceIndex),
+                            child: ListTile(
+                              contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 8,
                               ),
-                              decoration: BoxDecoration(
-                                color: Theme.of(context).colorScheme.error,
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              alignment: Alignment.centerRight,
-                              padding: EdgeInsets.only(right: 24),
-                              child: Icon(
-                                Icons.delete_rounded,
-                                color: Colors.white,
-                              ),
-                            ),
-                            confirmDismiss:
-                                (_) => _confirmDeleteTransactionDismiss(
-                                  sourceIndex,
+                              leading: Container(
+                                width: 40,
+                                height: 40,
+                                decoration: BoxDecoration(
+                                  color: isAdd
+                                      ? Theme.of(context).colorScheme.tertiary.withOpacity(0.2)
+                                      : Theme.of(context).colorScheme.error.withOpacity(0.2),
+                                  borderRadius: BorderRadius.circular(6),
                                 ),
-                            child: Container(
-                              margin: EdgeInsets.symmetric(
-                                horizontal: 8,
-                                vertical: 4,
-                              ),
-                              decoration: BoxDecoration(
-                                color: Theme.of(context).colorScheme.surface,
-                                borderRadius: BorderRadius.circular(8),
-                                border: Border.all(
-                                  color: Theme.of(context).colorScheme.outline,
-                                  width: 1,
+                                child: Icon(
+                                  isAdd ? Icons.add : Icons.remove,
+                                  color: isAdd
+                                      ? Theme.of(context).colorScheme.tertiary
+                                      : Theme.of(context).colorScheme.error,
+                                  size: 20,
                                 ),
                               ),
-                              child: InkWell(
-                                borderRadius: BorderRadius.circular(8),
-                                onTap: () => _editTransaction(sourceIndex),
-                                child: ListTile(
-                                  contentPadding: EdgeInsets.symmetric(
-                                    horizontal: 16,
-                                    vertical: 8,
-                                  ),
-                                  leading: Container(
-                                    width: 40,
-                                    height: 40,
-                                    decoration: BoxDecoration(
-                                      color:
-                                          isAdd
-                                              ? Theme.of(context)
-                                                  .colorScheme
-                                                  .tertiary
-                                                  .withOpacity(0.2)
-                                              : Theme.of(context)
-                                                  .colorScheme
-                                                  .error
-                                                  .withOpacity(0.2),
-                                      borderRadius: BorderRadius.circular(6),
-                                    ),
-                                    child: Icon(
-                                      isAdd ? Icons.add : Icons.remove,
-                                      color:
-                                          isAdd
-                                              ? Theme.of(
-                                                context,
-                                              ).colorScheme.tertiary
-                                              : Theme.of(
-                                                context,
-                                              ).colorScheme.error,
-                                      size: 20,
-                                    ),
-                                  ),
-                                  title: Text(
-                                    '${isAdd ? "+" : "-"} ₹${tx['amount']}',
+                              title: Text(
+                                '${isAdd ? "+" : "-"} ₹${tx['amount']}',
+                                style: TextStyle(
+                                  fontFamily: context.hisaabFontFamily,
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w600,
+                                  color: Theme.of(context).colorScheme.onSurface,
+                                ),
+                              ),
+                              subtitle: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    dateStr,
                                     style: TextStyle(
+                                      fontSize: 12,
+                                      color: Theme.of(context).colorScheme.onSurfaceVariant,
                                       fontFamily: context.hisaabFontFamily,
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.w600,
-                                      color:
-                                          Theme.of(
-                                            context,
-                                          ).colorScheme.onSurface,
                                     ),
                                   ),
-                                  subtitle: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      SizedBox(height: 4),
-                                      if (tx['note'].isNotEmpty)
-                                        Text(
-                                          tx['note'],
-                                          style: TextStyle(
-                                            fontSize: 12,
-                                            color:
-                                                Theme.of(
-                                                  context,
-                                                ).colorScheme.onSurfaceVariant,
-                                            fontFamily:
-                                                context.hisaabFontFamily,
-                                          ),
-                                        ),
-                                      SizedBox(
-                                        height: tx['note'].isNotEmpty ? 4 : 0,
+                                  if (tx['note'] != null && tx['note'].toString().trim().isNotEmpty) ...[
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      tx['note'].toString(),
+                                      style: TextStyle(
+                                        fontSize: 13,
+                                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                        fontFamily: context.hisaabFontFamily,
                                       ),
-                                      Text(
-                                        dateStr,
-                                        style: TextStyle(
-                                          fontSize: 11,
-                                          color:
-                                              Theme.of(
-                                                context,
-                                              ).colorScheme.onSurfaceVariant,
-                                          fontFamily: context.hisaabFontFamily,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
+                                    ),
+                                  ],
+                                ],
                               ),
                             ),
                           ),
-                        );
-                      },
-                    ),
-          ),
+                        ),
+                      ),
+                    );
+                  },
+                  childCount: transactions.length,
+                ),
+              ),
+            ),
         ],
       ),
+
       floatingActionButton: Column(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
