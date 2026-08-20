@@ -774,38 +774,62 @@ class _FriendListPageState extends ConsumerState<FriendListPage>
                     ),
                   ],
                 ),
-                child: BottomNavigationBar(
-                  currentIndex: _currentTab,
-                  onTap: (index) => setState(() => _currentTab = index),
-                  backgroundColor: Colors.transparent,
-                  selectedItemColor: Theme.of(context).colorScheme.primary,
-                  unselectedItemColor: Theme.of(
-                    context,
-                  ).textTheme.bodySmall?.color?.withValues(alpha: 0.5),
-                  elevation: 0,
-                  type: BottomNavigationBarType.fixed,
-                  items: const [
-                    BottomNavigationBarItem(
-                      icon: Icon(Icons.home_rounded),
-                      label: 'Home',
-                    ),
-                    BottomNavigationBarItem(
-                      icon: Icon(Icons.bar_chart_rounded),
-                      label: 'Stats',
-                    ),
-                    BottomNavigationBarItem(
-                      icon: Icon(Icons.track_changes_rounded),
-                      label: 'TrackKars',
-                    ),
-                    BottomNavigationBarItem(
-                      icon: Icon(Icons.settings_rounded),
-                      label: 'Settings',
-                    ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    _buildTabItem(0, Icons.home_rounded, 'Home'),
+                    _buildTabItem(1, Icons.bar_chart_rounded, 'Stats'),
+                    _buildTabItem(2, Icons.track_changes_rounded, 'TrackKars'),
+                    _buildTabItem(3, Icons.settings_rounded, 'Settings'),
                   ],
                 ),
               ),
             ),
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTabItem(int index, IconData icon, String label) {
+    final isSelected = _currentTab == index;
+    final colorScheme = Theme.of(context).colorScheme;
+    final unselectedColor = Theme.of(context).textTheme.bodySmall?.color?.withValues(alpha: 0.5) ?? Colors.grey;
+
+    return Expanded(
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: () => setState(() => _currentTab = index),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            AnimatedContainer(
+              duration: const Duration(milliseconds: 200),
+              padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 16),
+              decoration: BoxDecoration(
+                color: isSelected
+                    ? colorScheme.primary.withValues(alpha: 0.12)
+                    : Colors.transparent,
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Icon(
+                icon,
+                color: isSelected ? colorScheme.primary : unselectedColor,
+                size: 24,
+              ),
+            ),
+            const SizedBox(height: 3),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 10,
+                fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                color: isSelected ? colorScheme.primary : unselectedColor,
+                fontFamily: context.hisaabFontFamily,
+              ),
+            ),
+          ],
         ),
       ),
     );
