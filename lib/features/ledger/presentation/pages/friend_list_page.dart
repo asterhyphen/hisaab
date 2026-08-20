@@ -705,8 +705,17 @@ class _FriendListPageState extends ConsumerState<FriendListPage>
       _ => '> hisaab',
     };
 
-    return Scaffold(
-      appBar: AppBar(
+    return PopScope(
+      canPop: _currentTab != 0 || searchController.text.isEmpty,
+      onPopInvokedWithResult: (didPop, result) {
+        if (didPop) return;
+        if (_currentTab == 0 && searchController.text.isNotEmpty) {
+          searchController.clear();
+          FocusScope.of(context).unfocus();
+        }
+      },
+      child: Scaffold(
+        appBar: AppBar(
         backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
         foregroundColor: Theme.of(context).appBarTheme.foregroundColor,
         elevation: 0,
@@ -788,8 +797,9 @@ class _FriendListPageState extends ConsumerState<FriendListPage>
           ),
         ),
       ),
-    );
-  }
+    ),
+  );
+}
 
   Widget _buildTabItem(int index, IconData icon, String label) {
     final isSelected = _currentTab == index;
