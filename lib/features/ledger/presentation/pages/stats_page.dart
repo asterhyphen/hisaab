@@ -448,7 +448,7 @@ extension _StatsPageTab on _FriendListPageState {
       }
     }
 
-    final net = added - removed;
+
     final totalUsers = box.keys.length;
     final avgTxnPerUser =
         activeUsers == 0 ? 0.0 : totalTransactions / activeUsers;
@@ -464,8 +464,7 @@ extension _StatsPageTab on _FriendListPageState {
 
     final topCount = rankedByCount.isEmpty ? null : rankedByCount.first;
     final topVolume = rankedByVolume.isEmpty ? null : rankedByVolume.first;
-    final maxCount = rankedByCount.isEmpty ? 1 : rankedByCount.first.value;
-    final maxVolume = rankedByVolume.isEmpty ? 1.0 : rankedByVolume.first.value;
+
 
     return ListView(
       padding: const EdgeInsets.symmetric(vertical: 10),
