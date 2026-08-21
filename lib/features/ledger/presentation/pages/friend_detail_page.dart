@@ -16,6 +16,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../../../settings/data/app_preferences_repository.dart';
 import '../../data/ledger_repository.dart';
+import '../../../../core/platform/widget_action_bridge.dart';
 
 class FriendDetailPage extends ConsumerStatefulWidget {
   final String name;
