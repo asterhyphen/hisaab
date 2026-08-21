@@ -13,6 +13,7 @@ Future<void> main() async {
     Hive.openBox(HiveBoxes.friends),
     Hive.openBox(HiveBoxes.userMeta),
     Hive.openBox(HiveBoxes.appMeta),
+    Hive.openBox(HiveBoxes.trackers),
   ]);
   await WidgetActionBridge.initialize();
 

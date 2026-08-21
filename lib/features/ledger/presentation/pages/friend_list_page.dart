@@ -13,9 +13,16 @@ import 'package:crop_your_image/crop_your_image.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 import '../../../../core/platform/widget_action_bridge.dart';
+import '../../../../core/services/notification_service.dart';
 import '../../../../core/theme/hisaab_typography.dart';
 import '../../../../core/widgets/glass_alert.dart';
 import '../../../settings/data/app_preferences_repository.dart';
+import '../../../trackers/data/trackers_providers.dart';
+import '../../../trackers/model/tracker_settings.dart';
+import '../../../trackers/presentation/pages/archive_page.dart';
+import '../../../trackers/presentation/pages/home_page.dart' as trackers_home;
+import '../../../trackers/presentation/pages/message_template_editor_page.dart';
+import '../../../trackers/presentation/pages/tracker_page.dart';
 import '../../data/ledger_repository.dart';
 import '../../model/ledger_transaction.dart';
 import 'friend_detail_page.dart';
@@ -106,10 +113,7 @@ class _FriendListPageState extends ConsumerState<FriendListPage>
     final people = List<String>.from(box.keys)
       ..sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
     if (people.isEmpty) {
-      GlassAlert.showInfo(
-        context,
-        'No users found. Add a user first.',
-      );
+      GlassAlert.showInfo(context, 'No users found. Add a user first.');
       return;
     }
 
@@ -280,10 +284,7 @@ class _FriendListPageState extends ConsumerState<FriendListPage>
         )..sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
       });
     } catch (e) {
-      GlassAlert.showError(
-        context,
-        'Error filtering: ${e.toString()}',
-      );
+      GlassAlert.showError(context, 'Error filtering: ${e.toString()}');
     }
   }
 
@@ -321,15 +322,9 @@ class _FriendListPageState extends ConsumerState<FriendListPage>
         displayedKeys = List<String>.from(box.keys)
           ..sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
       });
-      GlassAlert.showSuccess(
-        context,
-        'User $formattedName created',
-      );
+      GlassAlert.showSuccess(context, 'User $formattedName created');
     } catch (e) {
-      GlassAlert.showError(
-        context,
-        'Error creating user: ${e.toString()}',
-      );
+      GlassAlert.showError(context, 'Error creating user: ${e.toString()}');
     }
   }
 
@@ -390,15 +385,9 @@ class _FriendListPageState extends ConsumerState<FriendListPage>
           displayedKeys = List<String>.from(box.keys)
             ..sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
         });
-        GlassAlert.showSuccess(
-          context,
-          'User $name deleted',
-        );
+        GlassAlert.showSuccess(context, 'User $name deleted');
       } catch (e) {
-        GlassAlert.showError(
-          context,
-          'Error deleting user: ${e.toString()}',
-        );
+        GlassAlert.showError(context, 'Error deleting user: ${e.toString()}');
       }
     }
 
@@ -538,10 +527,7 @@ class _FriendListPageState extends ConsumerState<FriendListPage>
         'Exported all transactions to ${file.path} (path copied)',
       );
     } catch (e) {
-      GlassAlert.showError(
-        context,
-        'Export failed: $e',
-      );
+      GlassAlert.showError(context, 'Export failed: $e');
     }
   }
 
@@ -642,10 +628,7 @@ class _FriendListPageState extends ConsumerState<FriendListPage>
               .where((l) => l.trim().isNotEmpty)
               .toList();
       if (lines.isEmpty) {
-        GlassAlert.showInfo(
-          context,
-          'CSV is empty',
-        );
+        GlassAlert.showInfo(context, 'CSV is empty');
         return;
       }
       final header = lines.first.toLowerCase();
@@ -663,10 +646,7 @@ class _FriendListPageState extends ConsumerState<FriendListPage>
       for (var i = 1; i < lines.length; i++) {
         final cols = _splitCsvLine(lines[i]);
         if (cols.length < 5) {
-          GlassAlert.showError(
-            context,
-            'Invalid CSV format on line ${i + 1}',
-          );
+          GlassAlert.showError(context, 'Invalid CSV format on line ${i + 1}');
           return;
         }
         final user = cols[0];
@@ -676,10 +656,7 @@ class _FriendListPageState extends ConsumerState<FriendListPage>
             double.tryParse(cols[2]) ??
             double.tryParse(cols[2].replaceAll('"', ''));
         if (amount == null) {
-          GlassAlert.showError(
-            context,
-            'Invalid amount on line ${i + 1}',
-          );
+          GlassAlert.showError(context, 'Invalid amount on line ${i + 1}');
           return;
         }
         final note = cols[3];
@@ -704,15 +681,9 @@ class _FriendListPageState extends ConsumerState<FriendListPage>
         displayedKeys = List<String>.from(box.keys)
           ..sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
       });
-      GlassAlert.showSuccess(
-        context,
-        'Imported $imported transactions',
-      );
+      GlassAlert.showSuccess(context, 'Imported $imported transactions');
     } catch (e) {
-      GlassAlert.showError(
-        context,
-        'Import failed: $e',
-      );
+      GlassAlert.showError(context, 'Import failed: $e');
     }
   }
 
@@ -721,10 +692,7 @@ class _FriendListPageState extends ConsumerState<FriendListPage>
       'https://github.com/asterhyphen/hisaab',
     ); // replace
     if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
-      GlassAlert.showError(
-        context,
-        'Could not launch GitHub',
-      );
+      GlassAlert.showError(context, 'Could not launch GitHub');
     }
   }
 
@@ -737,8 +705,17 @@ class _FriendListPageState extends ConsumerState<FriendListPage>
       _ => '> hisaab',
     };
 
-    return Scaffold(
-      appBar: AppBar(
+    return PopScope(
+      canPop: _currentTab != 0 || searchController.text.isEmpty,
+      onPopInvokedWithResult: (didPop, result) {
+        if (didPop) return;
+        if (_currentTab == 0 && searchController.text.isNotEmpty) {
+          searchController.clear();
+          FocusScope.of(context).unfocus();
+        }
+      },
+      child: Scaffold(
+        appBar: AppBar(
         backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
         foregroundColor: Theme.of(context).appBarTheme.foregroundColor,
         elevation: 0,
@@ -753,6 +730,16 @@ class _FriendListPageState extends ConsumerState<FriendListPage>
           ),
         ),
         centerTitle: false,
+        actions:
+            _currentTab == 2
+                ? [
+                  IconButton(
+                    tooltip: 'Archive',
+                    onPressed: _openTrackersArchive,
+                    icon: const Icon(Icons.archive_outlined),
+                  ),
+                ]
+                : null,
       ),
       body: SafeArea(
         child: switch (_currentTab) {
@@ -762,7 +749,11 @@ class _FriendListPageState extends ConsumerState<FriendListPage>
           _ => _buildHomeBody(),
         },
       ),
-      floatingActionButton: _currentTab == 0 ? _buildAddUserFab() : null,
+      floatingActionButton: switch (_currentTab) {
+        0 => _buildAddUserFab(),
+        2 => _buildAddTrackerFab(),
+        _ => null,
+      },
       bottomNavigationBar: SafeArea(
         top: false,
         child: Padding(
@@ -792,33 +783,13 @@ class _FriendListPageState extends ConsumerState<FriendListPage>
                     ),
                   ],
                 ),
-                child: BottomNavigationBar(
-                  currentIndex: _currentTab,
-                  onTap: (index) => setState(() => _currentTab = index),
-                  backgroundColor: Colors.transparent,
-                  selectedItemColor: Theme.of(context).colorScheme.primary,
-                  unselectedItemColor: Theme.of(
-                    context,
-                  ).textTheme.bodySmall?.color?.withValues(alpha: 0.5),
-                  elevation: 0,
-                  type: BottomNavigationBarType.fixed,
-                  items: const [
-                    BottomNavigationBarItem(
-                      icon: Icon(Icons.home_rounded),
-                      label: 'Home',
-                    ),
-                    BottomNavigationBarItem(
-                      icon: Icon(Icons.bar_chart_rounded),
-                      label: 'Stats',
-                    ),
-                    BottomNavigationBarItem(
-                      icon: Icon(Icons.track_changes_rounded),
-                      label: 'TrackKars',
-                    ),
-                    BottomNavigationBarItem(
-                      icon: Icon(Icons.settings_rounded),
-                      label: 'Settings',
-                    ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    _buildTabItem(0, Icons.home_rounded, 'Home'),
+                    _buildTabItem(1, Icons.bar_chart_rounded, 'Stats'),
+                    _buildTabItem(2, Icons.track_changes_rounded, 'TrackKars'),
+                    _buildTabItem(3, Icons.settings_rounded, 'Settings'),
                   ],
                 ),
               ),
@@ -826,6 +797,76 @@ class _FriendListPageState extends ConsumerState<FriendListPage>
           ),
         ),
       ),
+    ),
+  );
+}
+
+  Widget _buildTabItem(int index, IconData icon, String label) {
+    final isSelected = _currentTab == index;
+    final colorScheme = Theme.of(context).colorScheme;
+    final unselectedColor = Theme.of(context).textTheme.bodySmall?.color?.withValues(alpha: 0.5) ?? Colors.grey;
+
+    return Expanded(
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: () => setState(() => _currentTab = index),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            AnimatedContainer(
+              duration: const Duration(milliseconds: 200),
+              padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 16),
+              decoration: BoxDecoration(
+                color: isSelected
+                    ? colorScheme.primary.withValues(alpha: 0.12)
+                    : Colors.transparent,
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Icon(
+                icon,
+                color: isSelected ? colorScheme.primary : unselectedColor,
+                size: 24,
+              ),
+            ),
+            const SizedBox(height: 3),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 10,
+                fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                color: isSelected ? colorScheme.primary : unselectedColor,
+                fontFamily: context.hisaabFontFamily,
+              ),
+            ),
+          ],
+        ),
+      ),
     );
+  }
+
+  Widget _buildAddTrackerFab() {
+    return FloatingActionButton.extended(
+      onPressed: _openCreateTracker,
+      icon: const Icon(Icons.add),
+      label: Text(
+        'Add Tracker',
+        style: TextStyle(fontFamily: context.hisaabFontFamily),
+      ),
+    );
+  }
+
+  Future<void> _openCreateTracker() async {
+    await Navigator.of(
+      context,
+    ).push(MaterialPageRoute(builder: (_) => const TrackerPage()));
+    _refreshView();
+  }
+
+  Future<void> _openTrackersArchive() async {
+    await Navigator.of(
+      context,
+    ).push(MaterialPageRoute(builder: (_) => const ArchivePage()));
+    _refreshView();
   }
 }

@@ -18,10 +18,12 @@ dependencies:
   qr_flutter: ^4.0.0
   cupertino_icons: ^1.0.8
   url_launcher: ^6.3.2
-  font_awesome_flutter: ^10.9.1
+  font_awesome_flutter: ^11.0.0
   share_plus: ^12.0.1
   syncfusion_flutter_datepicker: ^27.2.5
   flutter_riverpod: ^3.3.2
+  flutter_local_notifications: ^18.0.1
+  timezone: ^0.10.1
 
 dev_dependencies:
   flutter_launcher_icons: ^0.13.1

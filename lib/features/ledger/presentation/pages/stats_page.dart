@@ -213,46 +213,7 @@ extension _StatsPageTab on _FriendListPageState {
     );
   }
 
-  Widget _buildStatCard(String label, String value, Color color) {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface,
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: Theme.of(context).colorScheme.outline),
-      ),
-      child: Row(
-        children: [
-          Expanded(
-            child: Text(
-              label,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: TextStyle(
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
-                fontFamily: context.hisaabFontFamily,
-              ),
-            ),
-          ),
-          const SizedBox(width: 12),
-          Flexible(
-            child: Text(
-              value,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              textAlign: TextAlign.right,
-              style: TextStyle(
-                color: color,
-                fontWeight: FontWeight.bold,
-                fontFamily: context.hisaabFontFamily,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+
 
   Widget _buildSectionTitle(String title) {
     return Padding(
@@ -269,67 +230,7 @@ extension _StatsPageTab on _FriendListPageState {
     );
   }
 
-  Widget _buildRankBar({
-    required String name,
-    required String subtitle,
-    required double ratio,
-    required Color color,
-  }) {
-    final safeRatio = ratio.isNaN ? 0.0 : ratio.clamp(0.0, 1.0);
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface,
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: Theme.of(context).colorScheme.outline),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Expanded(
-                child: Text(
-                  name,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    color: Theme.of(context).colorScheme.onSurface,
-                    fontWeight: FontWeight.w600,
-                    fontFamily: context.hisaabFontFamily,
-                  ),
-                ),
-              ),
-              const SizedBox(width: 8),
-              Flexible(
-                child: Text(
-                  subtitle,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  textAlign: TextAlign.right,
-                  style: TextStyle(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
-                    fontFamily: context.hisaabFontFamily,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          ClipRRect(
-            borderRadius: BorderRadius.circular(999),
-            child: LinearProgressIndicator(
-              value: safeRatio,
-              minHeight: 8,
-              backgroundColor: Theme.of(context).colorScheme.outline,
-              valueColor: AlwaysStoppedAnimation<Color>(color),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+
 
   Widget _buildMonthlyTransactionsChart(Map<String, int> monthCounts) {
     final keys = monthCounts.keys.toList();
@@ -448,7 +349,7 @@ extension _StatsPageTab on _FriendListPageState {
       }
     }
 
-    final net = added - removed;
+
     final totalUsers = box.keys.length;
     final avgTxnPerUser =
         activeUsers == 0 ? 0.0 : totalTransactions / activeUsers;
@@ -464,111 +365,467 @@ extension _StatsPageTab on _FriendListPageState {
 
     final topCount = rankedByCount.isEmpty ? null : rankedByCount.first;
     final topVolume = rankedByVolume.isEmpty ? null : rankedByVolume.first;
-    final maxCount = rankedByCount.isEmpty ? 1 : rankedByCount.first.value;
-    final maxVolume = rankedByVolume.isEmpty ? 1.0 : rankedByVolume.first.value;
+
 
     return ListView(
       padding: const EdgeInsets.symmetric(vertical: 10),
       children: [
         _buildStatsFilterBar(),
         _buildSectionTitle('overview (${_statsFilterLabel()})'),
-        _buildStatCard(
-          'total_users',
-          totalUsers.toString(),
-          Theme.of(context).colorScheme.secondary,
-        ),
-        _buildStatCard(
-          'active_users',
-          activeUsers.toString(),
-          Theme.of(context).colorScheme.secondary,
-        ),
-        _buildStatCard(
-          'total_transactions',
-          totalTransactions.toString(),
-          Theme.of(context).colorScheme.secondary,
-        ),
-        _buildStatCard(
-          'avg_txn_per_active_user',
-          avgTxnPerUser.toStringAsFixed(2),
-          Theme.of(context).colorScheme.secondary,
-        ),
-        _buildStatCard(
-          'avg_txn_amount',
-          '₹${avgTxnAmount.toStringAsFixed(2)}',
-          Theme.of(context).colorScheme.secondary,
-        ),
-        _buildStatCard(
-          'largest_single_transaction',
-          '₹${biggestTxn.toStringAsFixed(2)}',
-          Theme.of(context).colorScheme.secondary,
-        ),
-        _buildStatCard(
-          'total_added',
-          '₹${added.toStringAsFixed(2)}',
-          Theme.of(context).colorScheme.tertiary,
-        ),
-        _buildStatCard(
-          'total_removed',
-          '₹${removed.toStringAsFixed(2)}',
-          Theme.of(context).colorScheme.error,
-        ),
-        _buildStatCard(
-          'net_balance',
-          '₹${net.toStringAsFixed(2)}',
-          net >= 0
-              ? Theme.of(context).colorScheme.tertiary
-              : Theme.of(context).colorScheme.error,
-        ),
-        _buildSectionTitle('insights'),
-        _buildStatCard(
-          'most_transactions_with',
-          topCount == null ? '--' : '${topCount.key} (${topCount.value})',
-          Theme.of(context).colorScheme.secondary,
-        ),
-        _buildStatCard(
-          'highest_transaction_volume',
-          topVolume == null
-              ? '--'
-              : '${topVolume.key} (₹${topVolume.value.toStringAsFixed(2)})',
-          Theme.of(context).colorScheme.secondary,
-        ),
-        _buildSectionTitle('top_users_by_transactions'),
-        if (rankedByCount.isEmpty)
-          _buildStatCard(
-            'top_users',
-            'No data in selected range',
-            Theme.of(context).colorScheme.onSurfaceVariant,
-          ),
-        ...rankedByCount
-            .take(5)
-            .map(
-              (entry) => _buildRankBar(
-                name: entry.key,
-                subtitle: '${entry.value} txns',
-                ratio: entry.value / maxCount,
-                color: Theme.of(context).colorScheme.tertiary,
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12.0),
+          child: GridView.count(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            crossAxisCount: 2,
+            childAspectRatio: 1.35,
+            crossAxisSpacing: 10,
+            mainAxisSpacing: 10,
+            children: [
+              _buildStatBox(
+                title: 'USERS',
+                children: [
+                  _buildStatRow('Total', totalUsers.toString(), Theme.of(context).colorScheme.onSurface),
+                  _buildStatRow('Active', activeUsers.toString(), Theme.of(context).colorScheme.secondary),
+                ],
               ),
-            ),
-        _buildSectionTitle('top_users_by_volume'),
-        if (rankedByVolume.isEmpty)
-          _buildStatCard(
-            'top_volume',
-            'No data in selected range',
-            Theme.of(context).colorScheme.onSurfaceVariant,
-          ),
-        ...rankedByVolume
-            .take(5)
-            .map(
-              (entry) => _buildRankBar(
-                name: entry.key,
-                subtitle: '₹${entry.value.toStringAsFixed(2)}',
-                ratio: entry.value / maxVolume,
-                color: Theme.of(context).colorScheme.secondary,
+              _buildStatBox(
+                title: 'TRANSACTIONS',
+                children: [
+                  _buildStatRow('Total', totalTransactions.toString(), Theme.of(context).colorScheme.onSurface),
+                  _buildStatRow('Avg/Active', avgTxnPerUser.toStringAsFixed(1), Theme.of(context).colorScheme.secondary),
+                ],
               ),
-            ),
+              _buildStatBox(
+                title: 'VALUES',
+                children: [
+                  _buildStatRow('Avg Txn', '₹${avgTxnAmount.toStringAsFixed(0)}', Theme.of(context).colorScheme.onSurface),
+                  _buildStatRow('Largest', '₹${biggestTxn.toStringAsFixed(0)}', Theme.of(context).colorScheme.secondary),
+                ],
+              ),
+              _buildStatBox(
+                title: 'INSIGHTS',
+                children: [
+                  _buildStatRow('Top Contact', topCount == null ? '--' : topCount.key, Theme.of(context).colorScheme.onSurface),
+                  _buildStatRow('Top Volume', topVolume == null ? '--' : topVolume.key, Theme.of(context).colorScheme.secondary),
+                ],
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 12),
+        _buildCashFlowComparisonChart(added, removed),
+        _buildTopUsersDonutChart(
+          title: 'top_users_by_transactions',
+          data: rankedByCount.take(5).map((e) => MapEntry(e.key, e.value.toDouble())).toList(),
+          palette: [
+            Theme.of(context).colorScheme.primary,
+            Theme.of(context).colorScheme.secondary,
+            Theme.of(context).colorScheme.tertiary,
+            Theme.of(context).colorScheme.error,
+            Theme.of(context).colorScheme.outline,
+          ],
+          formatValue: (val) => '${val.toInt()} txns',
+        ),
+        _buildTopUsersDonutChart(
+          title: 'top_users_by_volume',
+          data: rankedByVolume.take(5).toList(),
+          palette: [
+            Theme.of(context).colorScheme.secondary,
+            Theme.of(context).colorScheme.tertiary,
+            Theme.of(context).colorScheme.primary,
+            Theme.of(context).colorScheme.error,
+            Theme.of(context).colorScheme.outline,
+          ],
+          formatValue: (val) => '₹${val.toStringAsFixed(0)}',
+        ),
         _buildSectionTitle('last_6_months_transactions'),
         _buildMonthlyTransactionsChart(monthCounts),
       ],
     );
   }
+
+  Widget _buildStatBox({
+    required String title,
+    required List<Widget> children,
+  }) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surface,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: Theme.of(context).colorScheme.outline,
+          width: 1,
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            title,
+            style: TextStyle(
+              fontSize: 11,
+              fontWeight: FontWeight.bold,
+              color: Theme.of(context).colorScheme.primary,
+              fontFamily: context.hisaabFontFamily,
+              letterSpacing: 0.5,
+            ),
+          ),
+          const SizedBox(height: 8),
+          ...children,
+        ],
+      ),
+    );
+  }
+
+  Widget _buildStatRow(String label, String value, Color color) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 2.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Expanded(
+            child: Text(
+              label,
+              style: TextStyle(
+                fontSize: 12,
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+                fontFamily: context.hisaabFontFamily,
+              ),
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+          Text(
+            value,
+            style: TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.bold,
+              color: color,
+              fontFamily: context.hisaabFontFamily,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCashFlowComparisonChart(double given, double received) {
+    final maxVal = given > received ? (given > 0 ? given : 1.0) : (received > 0 ? received : 1.0);
+    final givenRatio = given / maxVal;
+    final receivedRatio = received / maxVal;
+
+    return Container(
+      margin: const EdgeInsets.all(12),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surface,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: Theme.of(context).colorScheme.outline,
+          width: 1,
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'money_flow_comparison()',
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.bold,
+              color: Theme.of(context).colorScheme.primary,
+              fontFamily: context.hisaabFontFamily,
+              letterSpacing: 0.5,
+            ),
+          ),
+          const SizedBox(height: 20),
+          SizedBox(
+            height: 160,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Text(
+                      '₹${given.toStringAsFixed(0)}',
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).colorScheme.tertiary,
+                        fontFamily: context.hisaabFontFamily,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    AnimatedContainer(
+                      duration: const Duration(milliseconds: 500),
+                      width: 45,
+                      height: 100 * givenRatio,
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.bottomCenter,
+                          end: Alignment.topCenter,
+                          colors: [
+                            Theme.of(context).colorScheme.tertiary.withOpacity(0.6),
+                            Theme.of(context).colorScheme.tertiary,
+                          ],
+                        ),
+                        borderRadius: const BorderRadius.only(
+                          topLeft: Radius.circular(6),
+                          topRight: Radius.circular(6),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Given',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        fontFamily: context.hisaabFontFamily,
+                      ),
+                    ),
+                  ],
+                ),
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Text(
+                      '₹${received.toStringAsFixed(0)}',
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).colorScheme.error,
+                        fontFamily: context.hisaabFontFamily,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    AnimatedContainer(
+                      duration: const Duration(milliseconds: 500),
+                      width: 45,
+                      height: 100 * receivedRatio,
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.bottomCenter,
+                          end: Alignment.topCenter,
+                          colors: [
+                            Theme.of(context).colorScheme.error.withOpacity(0.6),
+                            Theme.of(context).colorScheme.error,
+                          ],
+                        ),
+                        borderRadius: const BorderRadius.only(
+                          topLeft: Radius.circular(6),
+                          topRight: Radius.circular(6),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Received',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        fontFamily: context.hisaabFontFamily,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 16),
+          const Divider(height: 1),
+          const SizedBox(height: 12),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Net Balance:',
+                style: TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.bold,
+                  fontFamily: context.hisaabFontFamily,
+                  color: Theme.of(context).colorScheme.onSurface,
+                ),
+              ),
+              Text(
+                '₹${(given - received).toStringAsFixed(2)}',
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                  fontFamily: context.hisaabFontFamily,
+                  color: (given - received) >= 0
+                      ? Theme.of(context).colorScheme.tertiary
+                      : Theme.of(context).colorScheme.error,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTopUsersDonutChart({
+    required String title,
+    required List<MapEntry<String, double>> data,
+    required List<Color> palette,
+    required String Function(double) formatValue,
+  }) {
+    if (data.isEmpty) {
+      return Container(
+        margin: const EdgeInsets.all(12),
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.surface,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: Theme.of(context).colorScheme.outline),
+        ),
+        child: Center(
+          child: Text(
+            'No data available',
+            style: TextStyle(
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+              fontFamily: context.hisaabFontFamily,
+            ),
+          ),
+        ),
+      );
+    }
+
+    final double totalVal = data.fold(0, (sum, item) => sum + item.value);
+
+    return Container(
+      margin: const EdgeInsets.all(12),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surface,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: Theme.of(context).colorScheme.outline,
+          width: 1,
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            title,
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.bold,
+              color: Theme.of(context).colorScheme.primary,
+              fontFamily: context.hisaabFontFamily,
+              letterSpacing: 0.5,
+            ),
+          ),
+          const SizedBox(height: 20),
+          Row(
+            children: [
+              SizedBox(
+                width: 90,
+                height: 90,
+                child: CustomPaint(
+                  painter: DonutChartPainter(
+                    values: data.map((e) => e.value).toList(),
+                    colors: palette,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: List.generate(data.length, (index) {
+                    final item = data[index];
+                    final color = palette[index % palette.length];
+                    final pct = totalVal == 0 ? 0.0 : (item.value / totalVal) * 100;
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 3.0),
+                      child: Row(
+                        children: [
+                          Container(
+                            width: 10,
+                            height: 10,
+                            decoration: BoxDecoration(
+                              color: color,
+                              shape: BoxShape.circle,
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              item.key,
+                              style: TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w600,
+                                color: Theme.of(context).colorScheme.onSurface,
+                                fontFamily: context.hisaabFontFamily,
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                          Text(
+                            '${formatValue(item.value)} (${pct.toStringAsFixed(0)}%)',
+                            style: TextStyle(
+                              fontSize: 11,
+                              color: Theme.of(context).colorScheme.onSurfaceVariant,
+                              fontFamily: context.hisaabFontFamily,
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  }),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class DonutChartPainter extends CustomPainter {
+  final List<double> values;
+  final List<Color> colors;
+
+  DonutChartPainter({required this.values, required this.colors});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final double total = values.fold(0, (sum, val) => sum + val);
+    if (total == 0) return;
+
+    final center = Offset(size.width / 2, size.height / 2);
+    final radius = size.width / 2;
+    final strokeWidth = radius * 0.35;
+
+    final paint = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = strokeWidth
+      ..strokeCap = StrokeCap.butt;
+
+    double startAngle = -3.1415926535 / 2;
+
+    for (int i = 0; i < values.length; i++) {
+      if (values[i] == 0) continue;
+      final sweepAngle = (values[i] / total) * 3.1415926535 * 2;
+      paint.color = colors[i % colors.length];
+      canvas.drawArc(
+        Rect.fromCircle(center: center, radius: radius - strokeWidth / 2),
+        startAngle,
+        sweepAngle,
+        false,
+        paint,
+      );
+      startAngle += sweepAngle;
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
 }

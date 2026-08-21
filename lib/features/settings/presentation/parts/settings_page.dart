@@ -5,6 +5,7 @@ extension _SettingsPageTab on _FriendListPageState {
     final name = _profileName();
     final themeKey = _currentThemeKey();
     final upi = _profileUpi();
+    final trackerSettings = ref.watch(trackerSettingsProvider);
     return ListView(
       padding: const EdgeInsets.all(12),
       children: [
@@ -150,6 +151,109 @@ extension _SettingsPageTab on _FriendListPageState {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Text(
+                'trackkars',
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.primary,
+                  fontWeight: FontWeight.w700,
+                  fontFamily: context.hisaabFontFamily,
+                ),
+              ),
+              const SizedBox(height: 8),
+              SwitchListTile(
+                contentPadding: EdgeInsets.zero,
+                value: trackerSettings.confirmDelete,
+                title: Text(
+                  'Confirm before deleting tracker',
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.onSurface,
+                  ),
+                ),
+                onChanged:
+                    (value) => _saveTrackerSettings(
+                      trackerSettings.copyWith(confirmDelete: value),
+                    ),
+              ),
+              ListTile(
+                contentPadding: EdgeInsets.zero,
+                leading: Icon(
+                  Icons.message_outlined,
+                  color: Theme.of(context).colorScheme.secondary,
+                ),
+                title: Text(
+                  'Message templates',
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.onSurface,
+                  ),
+                ),
+                trailing: Icon(
+                  Icons.chevron_right,
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
+                onTap: () => _editTrackerMessageTemplates(trackerSettings),
+              ),
+              SwitchListTile(
+                contentPadding: EdgeInsets.zero,
+                value: trackerSettings.notificationsEnabled,
+                title: Text(
+                  'Due reminders',
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.onSurface,
+                  ),
+                ),
+                subtitle: Text(
+                  'Notify ${trackerSettings.reminderDaysBefore} day${trackerSettings.reminderDaysBefore == 1 ? '' : 's'} before due date.',
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
+                ),
+                onChanged: (value) {
+                  _setTrackerNotifications(trackerSettings, value);
+                },
+              ),
+              AnimatedSwitcher(
+                duration: const Duration(milliseconds: 180),
+                child:
+                    trackerSettings.notificationsEnabled
+                        ? Column(
+                          key: const ValueKey('tracker_reminder_days'),
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            Slider(
+                              min: 1,
+                              max: 7,
+                              divisions: 6,
+                              label: '${trackerSettings.reminderDaysBefore}',
+                              value:
+                                  trackerSettings.reminderDaysBefore.toDouble(),
+                              onChanged: (value) {
+                                _saveTrackerSettings(
+                                  trackerSettings.copyWith(
+                                    reminderDaysBefore: value.round(),
+                                  ),
+                                );
+                              },
+                            ),
+                          ],
+                        )
+                        : const SizedBox.shrink(
+                          key: ValueKey('tracker_reminder_days_empty'),
+                        ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 12),
+        Container(
+          padding: const EdgeInsets.all(14),
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.surface,
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(color: Theme.of(context).colorScheme.outline),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text(
                 'data_management',
                 style: TextStyle(
                   color: Theme.of(context).colorScheme.primary,
@@ -266,5 +370,57 @@ extension _SettingsPageTab on _FriendListPageState {
         ),
       ],
     );
+  }
+
+  Future<void> _saveTrackerSettings(TrackerSettings settings) async {
+    await ref.read(trackerSettingsProvider.notifier).save(settings);
+  }
+
+  Future<void> _editTrackerMessageTemplates(TrackerSettings settings) async {
+    final result = await Navigator.of(context).push<MessageTemplateEditResult>(
+      MaterialPageRoute(
+        builder:
+            (_) => MessageTemplateEditorPage(
+              initialTemplate: settings.messageTemplate,
+              initialAllPaidTemplate: settings.allPaidMessageTemplate,
+            ),
+      ),
+    );
+
+    if (result == null) return;
+    await _saveTrackerSettings(
+      settings.copyWith(
+        messageTemplate: result.messageTemplate,
+        allPaidMessageTemplate: result.allPaidMessageTemplate,
+      ),
+    );
+    if (!mounted) return;
+    GlassAlert.showSuccess(context, 'Message templates updated');
+  }
+
+  Future<void> _setTrackerNotifications(
+    TrackerSettings settings,
+    bool enabled,
+  ) async {
+    if (!enabled) {
+      await _saveTrackerSettings(
+        settings.copyWith(notificationsEnabled: false),
+      );
+      return;
+    }
+
+    final granted = await NotificationService.instance.requestPermission();
+    if (!mounted) return;
+    if (!granted) {
+      GlassAlert.showError(
+        context,
+        'Notification permission was denied. Enable it from system settings to use due reminders.',
+      );
+      return;
+    }
+
+    await _saveTrackerSettings(settings.copyWith(notificationsEnabled: true));
+    if (!mounted) return;
+    GlassAlert.showSuccess(context, 'Due reminders turned on');
   }
 }
