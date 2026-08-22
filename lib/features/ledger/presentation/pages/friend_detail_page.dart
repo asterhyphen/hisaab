@@ -132,7 +132,9 @@ class _FriendDetailPageState extends ConsumerState<FriendDetailPage>
                   if (newAmt <= 0) return;
                   tx['amount'] = newAmt;
                   tx['note'] = noteCtrl.text.trim();
-                  tx['date'] = DateFormat('dd-MM-yyyy hh:mm a').format(DateTime.now());
+                  tx['date'] = DateFormat(
+                    'dd-MM-yyyy hh:mm a',
+                  ).format(DateTime.now());
                   Navigator.pop(context, true);
                 },
                 child: const Text('Save'),
@@ -770,182 +772,229 @@ class _FriendDetailPageState extends ConsumerState<FriendDetailPage>
 
     await showDialog(
       context: context,
-      builder: (_) => StatefulBuilder(
-        builder: (context, setDialogState) => Dialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-          backgroundColor: Theme.of(context).colorScheme.surface,
-          child: Container(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'edit_profile()',
-                  style: TextStyle(
-                    color: Theme.of(context).colorScheme.primary,
-                    fontFamily: context.hisaabFontFamily,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
+      builder:
+          (_) => StatefulBuilder(
+            builder:
+                (context, setDialogState) => Dialog(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
                   ),
-                ),
-                const SizedBox(height: 16),
-                TextField(
-                  controller: nameCtrl,
-                  style: TextStyle(
-                    color: Theme.of(context).colorScheme.onSurface,
-                    fontFamily: context.hisaabFontFamily,
-                  ),
-                  decoration: InputDecoration(
-                    labelText: 'User Name',
-                    labelStyle: TextStyle(
-                      fontFamily: context.hisaabFontFamily,
-                    ),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  'choose_icon()',
-                  style: TextStyle(
-                    color: Theme.of(context).colorScheme.secondary,
-                    fontFamily: context.hisaabFontFamily,
-                    fontSize: 14,
-                  ),
-                ),
-                const SizedBox(height: 10),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    _iconTile('terminal', Icons.terminal, selectedIcon, (id) {
-                      selectedIcon = id;
-                      setDialogState(() {});
-                    }),
-                    const SizedBox(width: 8),
-                    _iconTile('code', Icons.code, selectedIcon, (id) {
-                      selectedIcon = id;
-                      setDialogState(() {});
-                    }),
-                    const SizedBox(width: 8),
-                    _iconTile('robot', Icons.smart_toy, selectedIcon, (id) {
-                      selectedIcon = id;
-                      setDialogState(() {});
-                    }),
-                    const SizedBox(width: 8),
-                    _iconTile('user', Icons.person, selectedIcon, (id) {
-                      selectedIcon = id;
-                      setDialogState(() {});
-                    }),
-                    const SizedBox(width: 8),
-                    _iconTile('smile', Icons.emoji_emotions, selectedIcon, (id) {
-                      selectedIcon = id;
-                      setDialogState(() {});
-                    }),
-                    const SizedBox(width: 8),
-                    GestureDetector(
-                      onTap: () async {
-                        final saved = await _pickCropAndSaveImage();
-                        if (saved != null) {
-                          selectedIcon = saved;
-                          setDialogState(() {});
-                        }
-                      },
-                      child: Container(
-                        padding: const EdgeInsets.all(6),
-                        decoration: BoxDecoration(
-                          color: selectedIcon.startsWith('/') || selectedIcon.startsWith('file://')
-                              ? Theme.of(context).scaffoldBackgroundColor
-                              : Theme.of(context).colorScheme.surface,
-                          border: Border.all(
-                            color: selectedIcon.startsWith('/') || selectedIcon.startsWith('file://')
-                                ? Theme.of(context).colorScheme.primary
-                                : Theme.of(context).colorScheme.outline,
-                            width: selectedIcon.startsWith('/') || selectedIcon.startsWith('file://') ? 2 : 1,
+                  backgroundColor: Theme.of(context).colorScheme.surface,
+                  child: Container(
+                    padding: const EdgeInsets.all(20),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'edit_profile()',
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.primary,
+                            fontFamily: context.hisaabFontFamily,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
                           ),
-                          borderRadius: BorderRadius.circular(8),
                         ),
-                        child: Icon(
-                          Icons.image,
-                          color: Theme.of(context).colorScheme.secondary,
-                          size: 20,
+                        const SizedBox(height: 16),
+                        TextField(
+                          controller: nameCtrl,
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.onSurface,
+                            fontFamily: context.hisaabFontFamily,
+                          ),
+                          decoration: InputDecoration(
+                            labelText: 'User Name',
+                            labelStyle: TextStyle(
+                              fontFamily: context.hisaabFontFamily,
+                            ),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
                         ),
-                      ),
+                        const SizedBox(height: 16),
+                        Text(
+                          'choose_icon()',
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.secondary,
+                            fontFamily: context.hisaabFontFamily,
+                            fontSize: 14,
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            _iconTile(
+                              'terminal',
+                              Icons.terminal,
+                              selectedIcon,
+                              (id) {
+                                selectedIcon = id;
+                                setDialogState(() {});
+                              },
+                            ),
+                            const SizedBox(width: 8),
+                            _iconTile('code', Icons.code, selectedIcon, (id) {
+                              selectedIcon = id;
+                              setDialogState(() {});
+                            }),
+                            const SizedBox(width: 8),
+                            _iconTile('robot', Icons.smart_toy, selectedIcon, (
+                              id,
+                            ) {
+                              selectedIcon = id;
+                              setDialogState(() {});
+                            }),
+                            const SizedBox(width: 8),
+                            _iconTile('user', Icons.person, selectedIcon, (id) {
+                              selectedIcon = id;
+                              setDialogState(() {});
+                            }),
+                            const SizedBox(width: 8),
+                            _iconTile(
+                              'smile',
+                              Icons.emoji_emotions,
+                              selectedIcon,
+                              (id) {
+                                selectedIcon = id;
+                                setDialogState(() {});
+                              },
+                            ),
+                            const SizedBox(width: 8),
+                            GestureDetector(
+                              onTap: () async {
+                                final saved = await _pickCropAndSaveImage();
+                                if (saved != null) {
+                                  selectedIcon = saved;
+                                  setDialogState(() {});
+                                }
+                              },
+                              child: Container(
+                                padding: const EdgeInsets.all(6),
+                                decoration: BoxDecoration(
+                                  color:
+                                      selectedIcon.startsWith('/') ||
+                                              selectedIcon.startsWith('file://')
+                                          ? Theme.of(
+                                            context,
+                                          ).scaffoldBackgroundColor
+                                          : Theme.of(
+                                            context,
+                                          ).colorScheme.surface,
+                                  border: Border.all(
+                                    color:
+                                        selectedIcon.startsWith('/') ||
+                                                selectedIcon.startsWith(
+                                                  'file://',
+                                                )
+                                            ? Theme.of(
+                                              context,
+                                            ).colorScheme.primary
+                                            : Theme.of(
+                                              context,
+                                            ).colorScheme.outline,
+                                    width:
+                                        selectedIcon.startsWith('/') ||
+                                                selectedIcon.startsWith(
+                                                  'file://',
+                                                )
+                                            ? 2
+                                            : 1,
+                                  ),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Icon(
+                                  Icons.image,
+                                  color:
+                                      Theme.of(context).colorScheme.secondary,
+                                  size: 20,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 24),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            TextButton(
+                              onPressed: () => Navigator.pop(context),
+                              child: const Text('Cancel'),
+                            ),
+                            const SizedBox(width: 8),
+                            ElevatedButton(
+                              onPressed: () async {
+                                final newName = nameCtrl.text.trim();
+                                if (newName.isEmpty) {
+                                  GlassAlert.showError(
+                                    context,
+                                    'Name cannot be empty',
+                                  );
+                                  return;
+                                }
+
+                                final oldName = _currentName;
+                                if (newName != oldName) {
+                                  if (box.containsKey(newName)) {
+                                    GlassAlert.showError(
+                                      context,
+                                      'A user named "$newName" already exists',
+                                    );
+                                    return;
+                                  }
+
+                                  // Rename logic!
+                                  try {
+                                    final txs = box.get(oldName);
+                                    await box.put(newName, txs);
+                                    await box.delete(oldName);
+
+                                    // Move avatar icon metadata
+                                    final icon = metaBox.get(oldName);
+                                    if (icon != null) {
+                                      await metaBox.put(newName, icon);
+                                      await metaBox.delete(oldName);
+                                    }
+
+                                    // Move UPI metadata
+                                    final upi = metaBox.get('${oldName}_upi');
+                                    if (upi != null) {
+                                      await metaBox.put('${newName}_upi', upi);
+                                      await metaBox.delete('${oldName}_upi');
+                                    }
+
+                                    _currentName = newName;
+                                  } catch (e) {
+                                    GlassAlert.showError(
+                                      context,
+                                      'Error renaming user: $e',
+                                    );
+                                    return;
+                                  }
+                                }
+
+                                // Save the icon
+                                try {
+                                  await metaBox.put(_currentName, selectedIcon);
+                                } catch (_) {}
+
+                                setState(() {});
+                                Navigator.pop(context);
+                                GlassAlert.showSuccess(
+                                  context,
+                                  'Profile updated',
+                                );
+                              },
+                              child: const Text('Save'),
+                            ),
+                          ],
+                        ),
+                      ],
                     ),
-                  ],
+                  ),
                 ),
-                const SizedBox(height: 24),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    TextButton(
-                      onPressed: () => Navigator.pop(context),
-                      child: const Text('Cancel'),
-                    ),
-                    const SizedBox(width: 8),
-                    ElevatedButton(
-                      onPressed: () async {
-                        final newName = nameCtrl.text.trim();
-                        if (newName.isEmpty) {
-                          GlassAlert.showError(context, 'Name cannot be empty');
-                          return;
-                        }
-
-                        final oldName = _currentName;
-                        if (newName != oldName) {
-                          if (box.containsKey(newName)) {
-                            GlassAlert.showError(context, 'A user named "$newName" already exists');
-                            return;
-                          }
-
-                          // Rename logic!
-                          try {
-                            final txs = box.get(oldName);
-                            await box.put(newName, txs);
-                            await box.delete(oldName);
-
-                            // Move avatar icon metadata
-                            final icon = metaBox.get(oldName);
-                            if (icon != null) {
-                              await metaBox.put(newName, icon);
-                              await metaBox.delete(oldName);
-                            }
-
-                            // Move UPI metadata
-                            final upi = metaBox.get('${oldName}_upi');
-                            if (upi != null) {
-                              await metaBox.put('${newName}_upi', upi);
-                              await metaBox.delete('${oldName}_upi');
-                            }
-
-                            _currentName = newName;
-                          } catch (e) {
-                            GlassAlert.showError(context, 'Error renaming user: $e');
-                            return;
-                          }
-                        }
-
-                        // Save the icon
-                        try {
-                          await metaBox.put(_currentName, selectedIcon);
-                        } catch (_) {}
-
-                        setState(() {});
-                        Navigator.pop(context);
-                        GlassAlert.showSuccess(context, 'Profile updated');
-                      },
-                      child: const Text('Save'),
-                    ),
-                  ],
-                ),
-              ],
-            ),
           ),
-        ),
-      ),
     );
   }
 
@@ -1056,7 +1105,8 @@ class _FriendDetailPageState extends ConsumerState<FriendDetailPage>
 
   @override
   Widget build(BuildContext context) {
-    final transactions = (box.get(_currentName) as List? ?? []).reversed.toList();
+    final transactions =
+        (box.get(_currentName) as List? ?? []).reversed.toList();
     final total = getTotal(transactions);
 
     return Scaffold(
@@ -1093,48 +1143,66 @@ class _FriendDetailPageState extends ConsumerState<FriendDetailPage>
                   break;
               }
             },
-            itemBuilder: (context) => [
-              PopupMenuItem(
-                value: 'edit',
-                child: Row(
-                  children: [
-                    Icon(Icons.edit_outlined, color: Theme.of(context).colorScheme.primary),
-                    const SizedBox(width: 8),
-                    const Text('Edit Profile'),
-                  ],
-                ),
-              ),
-              PopupMenuItem(
-                value: 'export',
-                child: Row(
-                  children: [
-                    Icon(Icons.download_rounded, color: Theme.of(context).colorScheme.primary),
-                    const SizedBox(width: 8),
-                    const Text('Export CSV'),
-                  ],
-                ),
-              ),
-              PopupMenuItem(
-                value: 'import',
-                child: Row(
-                  children: [
-                    Icon(Icons.upload_file, color: Theme.of(context).colorScheme.primary),
-                    const SizedBox(width: 8),
-                    const Text('Import CSV'),
-                  ],
-                ),
-              ),
-              PopupMenuItem(
-                value: 'delete',
-                child: Row(
-                  children: [
-                    Icon(Icons.delete_outline, color: Theme.of(context).colorScheme.error),
-                    const SizedBox(width: 8),
-                    Text('Delete User', style: TextStyle(color: Theme.of(context).colorScheme.error)),
-                  ],
-                ),
-              ),
-            ],
+            itemBuilder:
+                (context) => [
+                  PopupMenuItem(
+                    value: 'edit',
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.edit_outlined,
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
+                        const SizedBox(width: 8),
+                        const Text('Edit Profile'),
+                      ],
+                    ),
+                  ),
+                  PopupMenuItem(
+                    value: 'export',
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.download_rounded,
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
+                        const SizedBox(width: 8),
+                        const Text('Export CSV'),
+                      ],
+                    ),
+                  ),
+                  PopupMenuItem(
+                    value: 'import',
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.upload_file,
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
+                        const SizedBox(width: 8),
+                        const Text('Import CSV'),
+                      ],
+                    ),
+                  ),
+                  PopupMenuItem(
+                    value: 'delete',
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.delete_outline,
+                          color: Theme.of(context).colorScheme.error,
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          'Delete User',
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.error,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
           ),
         ],
       ),
@@ -1178,9 +1246,10 @@ class _FriendDetailPageState extends ConsumerState<FriendDetailPage>
                         fontSize: 28,
                         fontWeight: FontWeight.bold,
                         fontFamily: context.hisaabFontFamily,
-                        color: total >= 0
-                            ? Theme.of(context).colorScheme.tertiary
-                            : Theme.of(context).colorScheme.error,
+                        color:
+                            total >= 0
+                                ? Theme.of(context).colorScheme.tertiary
+                                : Theme.of(context).colorScheme.error,
                         letterSpacing: 0.5,
                       ),
                     ),
@@ -1198,8 +1267,10 @@ class _FriendDetailPageState extends ConsumerState<FriendDetailPage>
                                   'Request ₹${total.toStringAsFixed(2)}',
                                 ),
                                 style: ElevatedButton.styleFrom(
-                                  backgroundColor: Theme.of(context).colorScheme.tertiary,
-                                  foregroundColor: Theme.of(context).scaffoldBackgroundColor,
+                                  backgroundColor:
+                                      Theme.of(context).colorScheme.tertiary,
+                                  foregroundColor:
+                                      Theme.of(context).scaffoldBackgroundColor,
                                 ),
                               )
                             else
@@ -1210,8 +1281,10 @@ class _FriendDetailPageState extends ConsumerState<FriendDetailPage>
                                   'Pay ₹${total.abs().toStringAsFixed(2)}',
                                 ),
                                 style: ElevatedButton.styleFrom(
-                                  backgroundColor: Theme.of(context).colorScheme.error,
-                                  foregroundColor: Theme.of(context).scaffoldBackgroundColor,
+                                  backgroundColor:
+                                      Theme.of(context).colorScheme.error,
+                                  foregroundColor:
+                                      Theme.of(context).scaffoldBackgroundColor,
                                 ),
                               ),
                             if (total < 0) ...[
@@ -1231,7 +1304,10 @@ class _FriendDetailPageState extends ConsumerState<FriendDetailPage>
                             onPressed: () => _markPaidAll(total),
                             child: const Text('Paid all'),
                             style: OutlinedButton.styleFrom(
-                              foregroundColor: Theme.of(context).colorScheme.onSurfaceVariant,
+                              foregroundColor:
+                                  Theme.of(
+                                    context,
+                                  ).colorScheme.onSurfaceVariant,
                               side: BorderSide(
                                 color: Theme.of(context).colorScheme.outline,
                               ),
@@ -1246,7 +1322,10 @@ class _FriendDetailPageState extends ConsumerState<FriendDetailPage>
             ),
           ),
           SliverToBoxAdapter(
-            child: Divider(color: Theme.of(context).colorScheme.outline, height: 0),
+            child: Divider(
+              color: Theme.of(context).colorScheme.outline,
+              height: 0,
+            ),
           ),
           // Transactions List
           if (transactions.isEmpty)
@@ -1267,123 +1346,135 @@ class _FriendDetailPageState extends ConsumerState<FriendDetailPage>
             SliverPadding(
               padding: const EdgeInsets.only(bottom: 100),
               sliver: SliverList(
-                delegate: SliverChildBuilderDelegate(
-                  (context, index) {
-                    final tx = transactions[index];
-                    final sourceIndex = transactions.length - 1 - index;
-                    final isAdd = tx['type'] == 'add';
-                    final dateStr = _normalizeDate(tx['date']);
+                delegate: SliverChildBuilderDelegate((context, index) {
+                  final tx = transactions[index];
+                  final sourceIndex = transactions.length - 1 - index;
+                  final isAdd = tx['type'] == 'add';
+                  final dateStr = _normalizeDate(tx['date']);
 
-                    return AnimatedSlide(
-                      offset: Offset.zero,
-                      duration: const Duration(milliseconds: 200),
-                      child: Dismissible(
-                        key: ValueKey(
-                          'tx_${tx['type']}_${tx['amount']}_${tx['date']}_$sourceIndex',
+                  return AnimatedSlide(
+                    offset: Offset.zero,
+                    duration: const Duration(milliseconds: 200),
+                    child: Dismissible(
+                      key: ValueKey(
+                        'tx_${tx['type']}_${tx['amount']}_${tx['date']}_$sourceIndex',
+                      ),
+                      direction: DismissDirection.endToStart,
+                      dismissThresholds: const {
+                        DismissDirection.endToStart: 0.75,
+                      },
+                      background: Container(
+                        margin: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 4,
                         ),
-                        direction: DismissDirection.endToStart,
-                        dismissThresholds: const {
-                          DismissDirection.endToStart: 0.75,
-                        },
-                        background: Container(
-                          margin: const EdgeInsets.symmetric(
-                            horizontal: 8,
-                            vertical: 4,
-                          ),
-                          decoration: BoxDecoration(
-                            color: Theme.of(context).colorScheme.error,
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          alignment: Alignment.centerRight,
-                          padding: const EdgeInsets.only(right: 24),
-                          child: const Icon(
-                            Icons.delete_rounded,
-                            color: Colors.white,
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).colorScheme.error,
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        alignment: Alignment.centerRight,
+                        padding: const EdgeInsets.only(right: 24),
+                        child: const Icon(
+                          Icons.delete_rounded,
+                          color: Colors.white,
+                        ),
+                      ),
+                      confirmDismiss:
+                          (_) => _confirmDeleteTransactionDismiss(sourceIndex),
+                      child: Container(
+                        margin: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 4,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).colorScheme.surface,
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(
+                            color: Theme.of(context).colorScheme.outline,
+                            width: 1,
                           ),
                         ),
-                        confirmDismiss: (_) => _confirmDeleteTransactionDismiss(
-                          sourceIndex,
-                        ),
-                        child: Container(
-                          margin: const EdgeInsets.symmetric(
-                            horizontal: 8,
-                            vertical: 4,
-                          ),
-                          decoration: BoxDecoration(
-                            color: Theme.of(context).colorScheme.surface,
-                            borderRadius: BorderRadius.circular(8),
-                            border: Border.all(
-                              color: Theme.of(context).colorScheme.outline,
-                              width: 1,
+                        child: InkWell(
+                          borderRadius: BorderRadius.circular(8),
+                          onTap: () => _editTransaction(sourceIndex),
+                          child: ListTile(
+                            contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 8,
                             ),
-                          ),
-                          child: InkWell(
-                            borderRadius: BorderRadius.circular(8),
-                            onTap: () => _editTransaction(sourceIndex),
-                            child: ListTile(
-                              contentPadding: const EdgeInsets.symmetric(
-                                horizontal: 16,
-                                vertical: 8,
+                            leading: Container(
+                              width: 40,
+                              height: 40,
+                              decoration: BoxDecoration(
+                                color:
+                                    isAdd
+                                        ? Theme.of(
+                                          context,
+                                        ).colorScheme.tertiary.withOpacity(0.2)
+                                        : Theme.of(
+                                          context,
+                                        ).colorScheme.error.withOpacity(0.2),
+                                borderRadius: BorderRadius.circular(6),
                               ),
-                              leading: Container(
-                                width: 40,
-                                height: 40,
-                                decoration: BoxDecoration(
-                                  color: isAdd
-                                      ? Theme.of(context).colorScheme.tertiary.withOpacity(0.2)
-                                      : Theme.of(context).colorScheme.error.withOpacity(0.2),
-                                  borderRadius: BorderRadius.circular(6),
-                                ),
-                                child: Icon(
-                                  isAdd ? Icons.add : Icons.remove,
-                                  color: isAdd
-                                      ? Theme.of(context).colorScheme.tertiary
-                                      : Theme.of(context).colorScheme.error,
-                                  size: 20,
-                                ),
+                              child: Icon(
+                                isAdd ? Icons.add : Icons.remove,
+                                color:
+                                    isAdd
+                                        ? Theme.of(context).colorScheme.tertiary
+                                        : Theme.of(context).colorScheme.error,
+                                size: 20,
                               ),
-                              title: Text(
-                                '${isAdd ? "+" : "-"} ₹${tx['amount']}',
-                                style: TextStyle(
-                                  fontFamily: context.hisaabFontFamily,
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.w600,
-                                  color: Theme.of(context).colorScheme.onSurface,
-                                ),
+                            ),
+                            title: Text(
+                              '${isAdd ? "+" : "-"} ₹${tx['amount']}',
+                              style: TextStyle(
+                                fontFamily: context.hisaabFontFamily,
+                                fontSize: 15,
+                                fontWeight: FontWeight.w600,
+                                color: Theme.of(context).colorScheme.onSurface,
                               ),
-                              subtitle: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
+                            ),
+                            subtitle: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const SizedBox(height: 4),
+                                Text(
+                                  dateStr,
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color:
+                                        Theme.of(
+                                          context,
+                                        ).colorScheme.onSurfaceVariant,
+                                    fontFamily: context.hisaabFontFamily,
+                                  ),
+                                ),
+                                if (tx['note'] != null &&
+                                    tx['note']
+                                        .toString()
+                                        .trim()
+                                        .isNotEmpty) ...[
                                   const SizedBox(height: 4),
                                   Text(
-                                    dateStr,
+                                    tx['note'].toString(),
                                     style: TextStyle(
-                                      fontSize: 12,
-                                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                      fontSize: 13,
+                                      color:
+                                          Theme.of(
+                                            context,
+                                          ).colorScheme.onSurfaceVariant,
                                       fontFamily: context.hisaabFontFamily,
                                     ),
                                   ),
-                                  if (tx['note'] != null && tx['note'].toString().trim().isNotEmpty) ...[
-                                    const SizedBox(height: 4),
-                                    Text(
-                                      tx['note'].toString(),
-                                      style: TextStyle(
-                                        fontSize: 13,
-                                        color: Theme.of(context).colorScheme.onSurfaceVariant,
-                                        fontFamily: context.hisaabFontFamily,
-                                      ),
-                                    ),
-                                  ],
                                 ],
-                              ),
+                              ],
                             ),
                           ),
                         ),
                       ),
-                    );
-                  },
-                  childCount: transactions.length,
-                ),
+                    ),
+                  );
+                }, childCount: transactions.length),
               ),
             ),
         ],

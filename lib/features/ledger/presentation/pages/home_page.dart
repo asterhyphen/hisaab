@@ -29,15 +29,16 @@ extension _HomePageTab on _FriendListPageState {
                   Icons.search,
                   color: Theme.of(context).colorScheme.secondary,
                 ),
-                suffixIcon: searchController.text.isNotEmpty
-                    ? IconButton(
-                        icon: const Icon(Icons.clear),
-                        onPressed: () {
-                          searchController.clear();
-                          FocusScope.of(context).unfocus();
-                        },
-                      )
-                    : null,
+                suffixIcon:
+                    searchController.text.isNotEmpty
+                        ? IconButton(
+                          icon: const Icon(Icons.clear),
+                          onPressed: () {
+                            searchController.clear();
+                            FocusScope.of(context).unfocus();
+                          },
+                        )
+                        : null,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
                   borderSide: BorderSide(
@@ -70,7 +71,10 @@ extension _HomePageTab on _FriendListPageState {
               padding: const EdgeInsets.symmetric(vertical: 12),
               child: Center(
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
+                  ),
                   decoration: BoxDecoration(
                     border: Border.all(
                       color: Theme.of(context).colorScheme.outline,
@@ -121,9 +125,7 @@ extension _HomePageTab on _FriendListPageState {
                       },
                       child: Text(
                         'Create "${searchController.text}"',
-                        style: TextStyle(
-                          fontFamily: context.hisaabFontFamily,
-                        ),
+                        style: TextStyle(fontFamily: context.hisaabFontFamily),
                       ),
                     ),
                   ] else ...[
@@ -146,241 +148,300 @@ extension _HomePageTab on _FriendListPageState {
           SliverPadding(
             padding: const EdgeInsets.only(bottom: 100),
             sliver: SliverList(
-              delegate: SliverChildBuilderDelegate(
-                (context, index) {
-                  final key = displayedKeys.elementAt(index);
-                  final transactions = box.get(key) as List;
-                  final total = calculateTotal(transactions);
-                  bool pressed = false;
+              delegate: SliverChildBuilderDelegate((context, index) {
+                final key = displayedKeys.elementAt(index);
+                final transactions = box.get(key) as List;
+                final total = calculateTotal(transactions);
+                bool pressed = false;
 
-                  return StatefulBuilder(
-                    builder: (context, setInnerState) {
-                      return AnimatedBuilder(
-                        animation: _fadeAnimation,
-                        builder: (context, child) {
-                          return Transform.translate(
-                            offset: Offset(_fadeAnimation.value * 10, 0),
-                            child: Opacity(
-                              opacity: _fadeAnimation.value,
-                              child: child,
+                return StatefulBuilder(
+                  builder: (context, setInnerState) {
+                    return AnimatedBuilder(
+                      animation: _fadeAnimation,
+                      builder: (context, child) {
+                        return Transform.translate(
+                          offset: Offset(_fadeAnimation.value * 10, 0),
+                          child: Opacity(
+                            opacity: _fadeAnimation.value,
+                            child: child,
+                          ),
+                        );
+                      },
+                      child: Stack(
+                        children: [
+                          Container(
+                            constraints: const BoxConstraints(minHeight: 70),
+                            margin: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 6,
                             ),
-                          );
-                        },
-                        child: Stack(
-                          children: [
-                            Container(
-                              constraints: const BoxConstraints(
-                                minHeight: 70,
-                              ),
+                            decoration: BoxDecoration(
+                              color: Colors.red,
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            alignment: Alignment.centerRight,
+                            padding: const EdgeInsets.only(right: 24),
+                            child: const Icon(
+                              Icons.delete,
+                              color: Colors.white,
+                            ),
+                          ),
+                          Dismissible(
+                            key: ValueKey(key),
+                            direction: DismissDirection.endToStart,
+                            confirmDismiss: (_) => deleteFriend(key),
+                            background: Container(
+                              constraints: const BoxConstraints(minHeight: 70),
                               margin: const EdgeInsets.symmetric(
                                 horizontal: 12,
                                 vertical: 6,
                               ),
+                              alignment: Alignment.centerRight,
+                              padding: const EdgeInsets.only(right: 24),
                               decoration: BoxDecoration(
                                 color: Colors.red,
                                 borderRadius: BorderRadius.circular(8),
                               ),
-                              alignment: Alignment.centerRight,
-                              padding: const EdgeInsets.only(right: 24),
                               child: const Icon(
                                 Icons.delete,
                                 color: Colors.white,
                               ),
                             ),
-                            Dismissible(
-                              key: ValueKey(key),
-                              direction: DismissDirection.endToStart,
-                              confirmDismiss: (_) => deleteFriend(key),
-                              background: Container(
-                                constraints: const BoxConstraints(
-                                  minHeight: 70,
-                                ),
-                                margin: const EdgeInsets.symmetric(
-                                  horizontal: 12,
-                                  vertical: 6,
-                                ),
-                                alignment: Alignment.centerRight,
-                                padding: const EdgeInsets.only(right: 24),
-                                decoration: BoxDecoration(
-                                  color: Colors.red,
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                child: const Icon(
-                                  Icons.delete,
-                                  color: Colors.white,
-                                ),
-                              ),
-                              child: InkWell(
-                                borderRadius: BorderRadius.circular(8),
-                                onTapDown: (_) => setInnerState(() => pressed = true),
-                                onTapUp: (_) => setInnerState(() => pressed = false),
-                                onTapCancel: () => setInnerState(() => pressed = false),
-                                onTap: () => Navigator.of(context)
-                                    .push(
-                                      PageRouteBuilder(
-                                        pageBuilder: (_, animation, __) => FriendDetailPage(
-                                          name: key,
+                            child: InkWell(
+                              borderRadius: BorderRadius.circular(8),
+                              onTapDown:
+                                  (_) => setInnerState(() => pressed = true),
+                              onTapUp:
+                                  (_) => setInnerState(() => pressed = false),
+                              onTapCancel:
+                                  () => setInnerState(() => pressed = false),
+                              onTap:
+                                  () => Navigator.of(context)
+                                      .push(
+                                        PageRouteBuilder(
+                                          pageBuilder:
+                                              (_, animation, __) =>
+                                                  FriendDetailPage(name: key),
+                                          transitionsBuilder: (
+                                            _,
+                                            animation,
+                                            __,
+                                            child,
+                                          ) {
+                                            final tween = Tween(
+                                              begin: const Offset(1, 0),
+                                              end: Offset.zero,
+                                            ).chain(
+                                              CurveTween(
+                                                curve: Curves.easeInOutCubic,
+                                              ),
+                                            );
+                                            return SlideTransition(
+                                              position: animation.drive(tween),
+                                              child: child,
+                                            );
+                                          },
+                                          transitionDuration: const Duration(
+                                            milliseconds: 500,
+                                          ),
                                         ),
-                                        transitionsBuilder: (_, animation, __, child) {
-                                          final tween = Tween(
-                                            begin: const Offset(1, 0),
-                                            end: Offset.zero,
-                                          ).chain(
-                                            CurveTween(
-                                              curve: Curves.easeInOutCubic,
-                                            ),
-                                          );
-                                          return SlideTransition(
-                                            position: animation.drive(tween),
-                                            child: child,
-                                          );
-                                        },
-                                        transitionDuration: const Duration(milliseconds: 500),
-                                      ),
-                                    )
-                                    .then((_) {
-                                      displayedKeys = box.keys.cast<String>().toList();
-                                      _refreshView();
-                                    }),
-                                child: AnimatedScale(
-                                  scale: pressed ? 0.97 : 1.0,
-                                  duration: const Duration(milliseconds: 150),
-                                  curve: Curves.easeInOutCubic,
-                                  child: Container(
-                                    constraints: const BoxConstraints(
-                                      minHeight: 70,
+                                      )
+                                      .then((_) {
+                                        displayedKeys =
+                                            box.keys.cast<String>().toList();
+                                        _refreshView();
+                                      }),
+                              child: AnimatedScale(
+                                scale: pressed ? 0.97 : 1.0,
+                                duration: const Duration(milliseconds: 150),
+                                curve: Curves.easeInOutCubic,
+                                child: Container(
+                                  constraints: const BoxConstraints(
+                                    minHeight: 70,
+                                  ),
+                                  margin: const EdgeInsets.symmetric(
+                                    horizontal: 12,
+                                    vertical: 6,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color:
+                                        Theme.of(context).colorScheme.surface,
+                                    borderRadius: BorderRadius.circular(8),
+                                    border: Border.all(
+                                      color:
+                                          pressed
+                                              ? Theme.of(
+                                                context,
+                                              ).colorScheme.primary
+                                              : Theme.of(
+                                                context,
+                                              ).colorScheme.outline,
+                                      width: pressed ? 2 : 1,
                                     ),
-                                    margin: const EdgeInsets.symmetric(
-                                      horizontal: 12,
-                                      vertical: 6,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      color: Theme.of(context).colorScheme.surface,
-                                      borderRadius: BorderRadius.circular(8),
-                                      border: Border.all(
-                                        color: pressed
-                                            ? Theme.of(context).colorScheme.primary
-                                            : Theme.of(context).colorScheme.outline,
-                                        width: pressed ? 2 : 1,
-                                      ),
-                                      boxShadow: pressed
-                                          ? [
+                                    boxShadow:
+                                        pressed
+                                            ? [
                                               BoxShadow(
-                                                color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
+                                                color: Theme.of(context)
+                                                    .colorScheme
+                                                    .primary
+                                                    .withOpacity(0.3),
                                                 blurRadius: 8,
                                               ),
                                             ]
-                                          : [],
-                                    ),
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 16,
-                                      vertical: 12,
-                                    ),
-                                    child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Row(
-                                          children: [
-                                            CircleAvatar(
-                                              radius: 20,
-                                              backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-                                              child: Builder(
-                                                builder: (c) {
-                                                  final iconKey = metaBox.get(key) as String? ?? 'terminal';
-                                                  try {
-                                                    if (iconKey.startsWith('/') || iconKey.startsWith('file://')) {
-                                                      final path = iconKey.replaceFirst('file://', '');
-                                                      final f = File(path);
-                                                      if (f.existsSync()) {
-                                                        return ClipRRect(
-                                                          borderRadius: BorderRadius.circular(20),
-                                                          child: Image.file(
-                                                            f,
-                                                            width: 36,
-                                                            height: 36,
-                                                            fit: BoxFit.cover,
-                                                          ),
+                                            : [],
+                                  ),
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                    vertical: 12,
+                                  ),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Row(
+                                        children: [
+                                          CircleAvatar(
+                                            radius: 20,
+                                            backgroundColor:
+                                                Theme.of(
+                                                  context,
+                                                ).scaffoldBackgroundColor,
+                                            child: Builder(
+                                              builder: (c) {
+                                                final iconKey =
+                                                    metaBox.get(key)
+                                                        as String? ??
+                                                    'terminal';
+                                                try {
+                                                  if (iconKey.startsWith('/') ||
+                                                      iconKey.startsWith(
+                                                        'file://',
+                                                      )) {
+                                                    final path = iconKey
+                                                        .replaceFirst(
+                                                          'file://',
+                                                          '',
                                                         );
-                                                      }
+                                                    final f = File(path);
+                                                    if (f.existsSync()) {
+                                                      return ClipRRect(
+                                                        borderRadius:
+                                                            BorderRadius.circular(
+                                                              20,
+                                                            ),
+                                                        child: Image.file(
+                                                          f,
+                                                          width: 36,
+                                                          height: 36,
+                                                          fit: BoxFit.cover,
+                                                        ),
+                                                      );
                                                     }
-                                                  } catch (_) {}
-                                                  switch (iconKey) {
-                                                    case 'code':
-                                                      return Icon(
-                                                        Icons.code,
-                                                        color: Theme.of(context).colorScheme.secondary,
-                                                      );
-                                                    case 'robot':
-                                                      return Icon(
-                                                        Icons.smart_toy,
-                                                        color: Theme.of(context).colorScheme.secondary,
-                                                      );
-                                                    case 'user':
-                                                      return Icon(
-                                                        Icons.person,
-                                                        color: Theme.of(context).colorScheme.secondary,
-                                                      );
-                                                    case 'smile':
-                                                      return Icon(
-                                                        Icons.emoji_emotions,
-                                                        color: Theme.of(context).colorScheme.secondary,
-                                                      );
-                                                    default:
-                                                      return Icon(
-                                                        Icons.terminal,
-                                                        color: Theme.of(context).colorScheme.secondary,
-                                                      );
                                                   }
-                                                },
+                                                } catch (_) {}
+                                                switch (iconKey) {
+                                                  case 'code':
+                                                    return Icon(
+                                                      Icons.code,
+                                                      color:
+                                                          Theme.of(context)
+                                                              .colorScheme
+                                                              .secondary,
+                                                    );
+                                                  case 'robot':
+                                                    return Icon(
+                                                      Icons.smart_toy,
+                                                      color:
+                                                          Theme.of(context)
+                                                              .colorScheme
+                                                              .secondary,
+                                                    );
+                                                  case 'user':
+                                                    return Icon(
+                                                      Icons.person,
+                                                      color:
+                                                          Theme.of(context)
+                                                              .colorScheme
+                                                              .secondary,
+                                                    );
+                                                  case 'smile':
+                                                    return Icon(
+                                                      Icons.emoji_emotions,
+                                                      color:
+                                                          Theme.of(context)
+                                                              .colorScheme
+                                                              .secondary,
+                                                    );
+                                                  default:
+                                                    return Icon(
+                                                      Icons.terminal,
+                                                      color:
+                                                          Theme.of(context)
+                                                              .colorScheme
+                                                              .secondary,
+                                                    );
+                                                }
+                                              },
+                                            ),
+                                          ),
+                                          const SizedBox(width: 12),
+                                          Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                key,
+                                                style: TextStyle(
+                                                  fontSize: 16,
+                                                  fontWeight: FontWeight.w600,
+                                                  color:
+                                                      Theme.of(
+                                                        context,
+                                                      ).colorScheme.onSurface,
+                                                  fontFamily: 'Courier New',
+                                                ),
                                               ),
-                                            ),
-                                            const SizedBox(width: 12),
-                                            Column(
-                                              crossAxisAlignment: CrossAxisAlignment.start,
-                                              children: [
-                                                Text(
-                                                  key,
-                                                  style: TextStyle(
-                                                    fontSize: 16,
-                                                    fontWeight: FontWeight.w600,
-                                                    color: Theme.of(context).colorScheme.onSurface,
-                                                    fontFamily: 'Courier New',
-                                                  ),
+                                              const SizedBox(height: 6),
+                                              Text(
+                                                'balance: ₹${total.toStringAsFixed(2)}',
+                                                style: TextStyle(
+                                                  fontSize: 13,
+                                                  fontFamily: 'Courier New',
+                                                  color:
+                                                      total >= 0
+                                                          ? Theme.of(
+                                                            context,
+                                                          ).colorScheme.tertiary
+                                                          : Theme.of(
+                                                            context,
+                                                          ).colorScheme.error,
+                                                  fontWeight: FontWeight.w500,
                                                 ),
-                                                const SizedBox(height: 6),
-                                                Text(
-                                                  'balance: ₹${total.toStringAsFixed(2)}',
-                                                  style: TextStyle(
-                                                    fontSize: 13,
-                                                    fontFamily: 'Courier New',
-                                                    color: total >= 0
-                                                        ? Theme.of(context).colorScheme.tertiary
-                                                        : Theme.of(context).colorScheme.error,
-                                                    fontWeight: FontWeight.w500,
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ],
-                                        ),
-                                        Icon(
-                                          Icons.chevron_right,
-                                          color: Theme.of(context).colorScheme.onSurfaceVariant,
-                                        ),
-                                      ],
-                                    ),
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                      Icon(
+                                        Icons.chevron_right,
+                                        color:
+                                            Theme.of(
+                                              context,
+                                            ).colorScheme.onSurfaceVariant,
+                                      ),
+                                    ],
                                   ),
                                 ),
                               ),
                             ),
-                          ],
-                        ),
-                      );
-                    },
-                  );
-                },
-                childCount: displayedKeys.length,
-              ),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                );
+              }, childCount: displayedKeys.length),
             ),
           ),
       ],

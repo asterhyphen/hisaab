@@ -213,8 +213,6 @@ extension _StatsPageTab on _FriendListPageState {
     );
   }
 
-
-
   Widget _buildSectionTitle(String title) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(12, 14, 12, 4),
@@ -229,8 +227,6 @@ extension _StatsPageTab on _FriendListPageState {
       ),
     );
   }
-
-
 
   Widget _buildMonthlyTransactionsChart(Map<String, int> monthCounts) {
     final keys = monthCounts.keys.toList();
@@ -349,7 +345,6 @@ extension _StatsPageTab on _FriendListPageState {
       }
     }
 
-
     final totalUsers = box.keys.length;
     final avgTxnPerUser =
         activeUsers == 0 ? 0.0 : totalTransactions / activeUsers;
@@ -365,7 +360,6 @@ extension _StatsPageTab on _FriendListPageState {
 
     final topCount = rankedByCount.isEmpty ? null : rankedByCount.first;
     final topVolume = rankedByVolume.isEmpty ? null : rankedByVolume.first;
-
 
     return ListView(
       padding: const EdgeInsets.symmetric(vertical: 10),
@@ -385,29 +379,61 @@ extension _StatsPageTab on _FriendListPageState {
               _buildStatBox(
                 title: 'USERS',
                 children: [
-                  _buildStatRow('Total', totalUsers.toString(), Theme.of(context).colorScheme.onSurface),
-                  _buildStatRow('Active', activeUsers.toString(), Theme.of(context).colorScheme.secondary),
+                  _buildStatRow(
+                    'Total',
+                    totalUsers.toString(),
+                    Theme.of(context).colorScheme.onSurface,
+                  ),
+                  _buildStatRow(
+                    'Active',
+                    activeUsers.toString(),
+                    Theme.of(context).colorScheme.secondary,
+                  ),
                 ],
               ),
               _buildStatBox(
                 title: 'TRANSACTIONS',
                 children: [
-                  _buildStatRow('Total', totalTransactions.toString(), Theme.of(context).colorScheme.onSurface),
-                  _buildStatRow('Avg/Active', avgTxnPerUser.toStringAsFixed(1), Theme.of(context).colorScheme.secondary),
+                  _buildStatRow(
+                    'Total',
+                    totalTransactions.toString(),
+                    Theme.of(context).colorScheme.onSurface,
+                  ),
+                  _buildStatRow(
+                    'Avg/Active',
+                    avgTxnPerUser.toStringAsFixed(1),
+                    Theme.of(context).colorScheme.secondary,
+                  ),
                 ],
               ),
               _buildStatBox(
                 title: 'VALUES',
                 children: [
-                  _buildStatRow('Avg Txn', '₹${avgTxnAmount.toStringAsFixed(0)}', Theme.of(context).colorScheme.onSurface),
-                  _buildStatRow('Largest', '₹${biggestTxn.toStringAsFixed(0)}', Theme.of(context).colorScheme.secondary),
+                  _buildStatRow(
+                    'Avg Txn',
+                    '₹${avgTxnAmount.toStringAsFixed(0)}',
+                    Theme.of(context).colorScheme.onSurface,
+                  ),
+                  _buildStatRow(
+                    'Largest',
+                    '₹${biggestTxn.toStringAsFixed(0)}',
+                    Theme.of(context).colorScheme.secondary,
+                  ),
                 ],
               ),
               _buildStatBox(
                 title: 'INSIGHTS',
                 children: [
-                  _buildStatRow('Top Contact', topCount == null ? '--' : topCount.key, Theme.of(context).colorScheme.onSurface),
-                  _buildStatRow('Top Volume', topVolume == null ? '--' : topVolume.key, Theme.of(context).colorScheme.secondary),
+                  _buildStatRow(
+                    'Top Contact',
+                    topCount == null ? '--' : topCount.key,
+                    Theme.of(context).colorScheme.onSurface,
+                  ),
+                  _buildStatRow(
+                    'Top Volume',
+                    topVolume == null ? '--' : topVolume.key,
+                    Theme.of(context).colorScheme.secondary,
+                  ),
                 ],
               ),
             ],
@@ -417,7 +443,11 @@ extension _StatsPageTab on _FriendListPageState {
         _buildCashFlowComparisonChart(added, removed),
         _buildTopUsersDonutChart(
           title: 'top_users_by_transactions',
-          data: rankedByCount.take(5).map((e) => MapEntry(e.key, e.value.toDouble())).toList(),
+          data:
+              rankedByCount
+                  .take(5)
+                  .map((e) => MapEntry(e.key, e.value.toDouble()))
+                  .toList(),
           palette: [
             Theme.of(context).colorScheme.primary,
             Theme.of(context).colorScheme.secondary,
@@ -511,7 +541,10 @@ extension _StatsPageTab on _FriendListPageState {
   }
 
   Widget _buildCashFlowComparisonChart(double given, double received) {
-    final maxVal = given > received ? (given > 0 ? given : 1.0) : (received > 0 ? received : 1.0);
+    final maxVal =
+        given > received
+            ? (given > 0 ? given : 1.0)
+            : (received > 0 ? received : 1.0);
     final givenRatio = given / maxVal;
     final receivedRatio = received / maxVal;
 
@@ -568,7 +601,9 @@ extension _StatsPageTab on _FriendListPageState {
                           begin: Alignment.bottomCenter,
                           end: Alignment.topCenter,
                           colors: [
-                            Theme.of(context).colorScheme.tertiary.withOpacity(0.6),
+                            Theme.of(
+                              context,
+                            ).colorScheme.tertiary.withOpacity(0.6),
                             Theme.of(context).colorScheme.tertiary,
                           ],
                         ),
@@ -611,7 +646,9 @@ extension _StatsPageTab on _FriendListPageState {
                           begin: Alignment.bottomCenter,
                           end: Alignment.topCenter,
                           colors: [
-                            Theme.of(context).colorScheme.error.withOpacity(0.6),
+                            Theme.of(
+                              context,
+                            ).colorScheme.error.withOpacity(0.6),
                             Theme.of(context).colorScheme.error,
                           ],
                         ),
@@ -656,9 +693,10 @@ extension _StatsPageTab on _FriendListPageState {
                   fontSize: 14,
                   fontWeight: FontWeight.bold,
                   fontFamily: context.hisaabFontFamily,
-                  color: (given - received) >= 0
-                      ? Theme.of(context).colorScheme.tertiary
-                      : Theme.of(context).colorScheme.error,
+                  color:
+                      (given - received) >= 0
+                          ? Theme.of(context).colorScheme.tertiary
+                          : Theme.of(context).colorScheme.error,
                 ),
               ),
             ],
@@ -741,7 +779,8 @@ extension _StatsPageTab on _FriendListPageState {
                   children: List.generate(data.length, (index) {
                     final item = data[index];
                     final color = palette[index % palette.length];
-                    final pct = totalVal == 0 ? 0.0 : (item.value / totalVal) * 100;
+                    final pct =
+                        totalVal == 0 ? 0.0 : (item.value / totalVal) * 100;
                     return Padding(
                       padding: const EdgeInsets.symmetric(vertical: 3.0),
                       child: Row(
@@ -771,7 +810,10 @@ extension _StatsPageTab on _FriendListPageState {
                             '${formatValue(item.value)} (${pct.toStringAsFixed(0)}%)',
                             style: TextStyle(
                               fontSize: 11,
-                              color: Theme.of(context).colorScheme.onSurfaceVariant,
+                              color:
+                                  Theme.of(
+                                    context,
+                                  ).colorScheme.onSurfaceVariant,
                               fontFamily: context.hisaabFontFamily,
                             ),
                           ),
@@ -804,10 +846,11 @@ class DonutChartPainter extends CustomPainter {
     final radius = size.width / 2;
     final strokeWidth = radius * 0.35;
 
-    final paint = Paint()
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = strokeWidth
-      ..strokeCap = StrokeCap.butt;
+    final paint =
+        Paint()
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = strokeWidth
+          ..strokeCap = StrokeCap.butt;
 
     double startAngle = -3.1415926535 / 2;
 

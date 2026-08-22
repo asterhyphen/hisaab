@@ -716,95 +716,101 @@ class _FriendListPageState extends ConsumerState<FriendListPage>
       },
       child: Scaffold(
         appBar: AppBar(
-        backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
-        foregroundColor: Theme.of(context).appBarTheme.foregroundColor,
-        elevation: 0,
-        title: Text(
-          title,
-          style: TextStyle(
-            fontFamily: Theme.of(context).textTheme.titleLarge?.fontFamily,
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-            letterSpacing: 1.2,
-            color: Theme.of(context).appBarTheme.foregroundColor,
+          backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
+          foregroundColor: Theme.of(context).appBarTheme.foregroundColor,
+          elevation: 0,
+          title: Text(
+            title,
+            style: TextStyle(
+              fontFamily: Theme.of(context).textTheme.titleLarge?.fontFamily,
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              letterSpacing: 1.2,
+              color: Theme.of(context).appBarTheme.foregroundColor,
+            ),
           ),
+          centerTitle: false,
+          actions:
+              _currentTab == 2
+                  ? [
+                    IconButton(
+                      tooltip: 'Archive',
+                      onPressed: _openTrackersArchive,
+                      icon: const Icon(Icons.archive_outlined),
+                    ),
+                  ]
+                  : null,
         ),
-        centerTitle: false,
-        actions:
-            _currentTab == 2
-                ? [
-                  IconButton(
-                    tooltip: 'Archive',
-                    onPressed: _openTrackersArchive,
-                    icon: const Icon(Icons.archive_outlined),
-                  ),
-                ]
-                : null,
-      ),
-      body: SafeArea(
-        child: switch (_currentTab) {
-          1 => _buildStatisticsBody(),
-          2 => _buildTrackKarsBody(),
-          3 => _buildSettingsBody(),
-          _ => _buildHomeBody(),
+        body: SafeArea(
+          child: switch (_currentTab) {
+            1 => _buildStatisticsBody(),
+            2 => _buildTrackKarsBody(),
+            3 => _buildSettingsBody(),
+            _ => _buildHomeBody(),
+          },
+        ),
+        floatingActionButton: switch (_currentTab) {
+          0 => _buildAddUserFab(),
+          2 => _buildAddTrackerFab(),
+          _ => null,
         },
-      ),
-      floatingActionButton: switch (_currentTab) {
-        0 => _buildAddUserFab(),
-        2 => _buildAddTrackerFab(),
-        _ => null,
-      },
-      bottomNavigationBar: SafeArea(
-        top: false,
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(20, 0, 20, 12),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(20),
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-              child: Container(
-                height: 64,
-                decoration: BoxDecoration(
-                  color: Theme.of(
-                    context,
-                  ).colorScheme.surface.withValues(alpha: 0.88),
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(
+        bottomNavigationBar: SafeArea(
+          top: false,
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(20, 0, 20, 12),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(20),
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                child: Container(
+                  height: 64,
+                  decoration: BoxDecoration(
                     color: Theme.of(
                       context,
-                    ).colorScheme.primaryContainer.withValues(alpha: 0.3),
-                    width: 1,
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.06),
-                      blurRadius: 20,
-                      offset: const Offset(0, 8),
+                    ).colorScheme.surface.withValues(alpha: 0.88),
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.primaryContainer.withValues(alpha: 0.3),
+                      width: 1,
                     ),
-                  ],
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    _buildTabItem(0, Icons.home_rounded, 'Home'),
-                    _buildTabItem(1, Icons.bar_chart_rounded, 'Stats'),
-                    _buildTabItem(2, Icons.track_changes_rounded, 'TrackKars'),
-                    _buildTabItem(3, Icons.settings_rounded, 'Settings'),
-                  ],
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.06),
+                        blurRadius: 20,
+                        offset: const Offset(0, 8),
+                      ),
+                    ],
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      _buildTabItem(0, Icons.home_rounded, 'Home'),
+                      _buildTabItem(1, Icons.bar_chart_rounded, 'Stats'),
+                      _buildTabItem(
+                        2,
+                        Icons.track_changes_rounded,
+                        'TrackKars',
+                      ),
+                      _buildTabItem(3, Icons.settings_rounded, 'Settings'),
+                    ],
+                  ),
                 ),
               ),
             ),
           ),
         ),
       ),
-    ),
-  );
-}
+    );
+  }
 
   Widget _buildTabItem(int index, IconData icon, String label) {
     final isSelected = _currentTab == index;
     final colorScheme = Theme.of(context).colorScheme;
-    final unselectedColor = Theme.of(context).textTheme.bodySmall?.color?.withValues(alpha: 0.5) ?? Colors.grey;
+    final unselectedColor =
+        Theme.of(context).textTheme.bodySmall?.color?.withValues(alpha: 0.5) ??
+        Colors.grey;
 
     return Expanded(
       child: GestureDetector(
@@ -818,9 +824,10 @@ class _FriendListPageState extends ConsumerState<FriendListPage>
               duration: const Duration(milliseconds: 200),
               padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 16),
               decoration: BoxDecoration(
-                color: isSelected
-                    ? colorScheme.primary.withValues(alpha: 0.12)
-                    : Colors.transparent,
+                color:
+                    isSelected
+                        ? colorScheme.primary.withValues(alpha: 0.12)
+                        : Colors.transparent,
                 borderRadius: BorderRadius.circular(16),
               ),
               child: Icon(
