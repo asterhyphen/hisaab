@@ -87,7 +87,9 @@ extension _FriendListPageDangerZone on _FriendListPageState {
     if (!confirmed) return;
 
     await box.put(selectedUser, []);
-    await WidgetActionBridge.updateWidgetBalance(_ledgerRepository.overallBalance);
+    await WidgetActionBridge.updateWidgetBalance(
+      _ledgerRepository.overallBalance,
+    );
     if (!mounted) return;
     _refreshView();
     GlassAlert.showSuccess(context, '$selectedUser history reset');
@@ -109,7 +111,9 @@ extension _FriendListPageDangerZone on _FriendListPageState {
     for (final key in box.keys.cast<String>()) {
       await box.put(key, []);
     }
-    await WidgetActionBridge.updateWidgetBalance(_ledgerRepository.overallBalance);
+    await WidgetActionBridge.updateWidgetBalance(
+      _ledgerRepository.overallBalance,
+    );
     if (!mounted) return;
     _refreshView();
     GlassAlert.showSuccess(context, 'All user histories reset');
