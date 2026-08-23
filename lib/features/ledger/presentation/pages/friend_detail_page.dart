@@ -226,6 +226,7 @@ class _FriendDetailPageState extends ConsumerState<FriendDetailPage>
   @override
   void initState() {
     super.initState();
+    _currentName = widget.name;
     _slideController = AnimationController(
       duration: Duration(milliseconds: 700),
       vsync: this,
