@@ -190,7 +190,7 @@ class _GlassAlertState extends State<GlassAlert>
     final textColor = isDark ? Colors.white : Colors.black87;
 
     return Positioned(
-      bottom: padding.bottom + 16,
+      bottom: padding.bottom + 25,
       left: 16,
       right: 16,
       child: Material(
