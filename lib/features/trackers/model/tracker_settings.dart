@@ -34,6 +34,7 @@ _Paid ({paidCount}; ₹{paidAmount})_
   final String allPaidMessageTemplate;
   final bool notificationsEnabled;
   final int reminderDaysBefore;
+  final bool includeTrackkarsInTotal;
 
   const TrackerSettings({
     required this.confirmDelete,
@@ -41,6 +42,7 @@ _Paid ({paidCount}; ₹{paidAmount})_
     required this.allPaidMessageTemplate,
     required this.notificationsEnabled,
     required this.reminderDaysBefore,
+    required this.includeTrackkarsInTotal,
   });
 
   static const TrackerSettings defaults = TrackerSettings(
@@ -49,6 +51,7 @@ _Paid ({paidCount}; ₹{paidAmount})_
     allPaidMessageTemplate: defaultAllPaidMessageTemplate,
     notificationsEnabled: false,
     reminderDaysBefore: 2,
+    includeTrackkarsInTotal: false,
   );
 
   factory TrackerSettings.fromMap(Map? map) {
@@ -67,6 +70,10 @@ _Paid ({paidCount}; ₹{paidAmount})_
               ? map['notificationsEnabled'] as bool
               : defaults.notificationsEnabled,
       reminderDaysBefore: _normalizeReminderDays(map['reminderDaysBefore']),
+      includeTrackkarsInTotal:
+          map['includeTrackkarsInTotal'] is bool
+              ? map['includeTrackkarsInTotal'] as bool
+              : defaults.includeTrackkarsInTotal,
     );
   }
 
@@ -76,6 +83,7 @@ _Paid ({paidCount}; ₹{paidAmount})_
     String? allPaidMessageTemplate,
     bool? notificationsEnabled,
     int? reminderDaysBefore,
+    bool? includeTrackkarsInTotal,
   }) {
     return TrackerSettings(
       confirmDelete: confirmDelete ?? this.confirmDelete,
@@ -89,6 +97,8 @@ _Paid ({paidCount}; ₹{paidAmount})_
       reminderDaysBefore: _normalizeReminderDays(
         reminderDaysBefore ?? this.reminderDaysBefore,
       ),
+      includeTrackkarsInTotal:
+          includeTrackkarsInTotal ?? this.includeTrackkarsInTotal,
     );
   }
 
@@ -99,6 +109,7 @@ _Paid ({paidCount}; ₹{paidAmount})_
       'allPaidMessageTemplate': allPaidMessageTemplate,
       'notificationsEnabled': notificationsEnabled,
       'reminderDaysBefore': reminderDaysBefore,
+      'includeTrackkarsInTotal': includeTrackkarsInTotal,
     };
   }
 

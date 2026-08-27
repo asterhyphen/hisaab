@@ -5,7 +5,8 @@ import '../../../core/storage/hive_boxes.dart';
 import '../../trackers/model/tracker.dart';
 
 // ---------------------------------------------------------------------------
-// Saved users
+// Saved users  (reads from the ledger friends box so both systems share one
+// source of truth – user names are the keys in HiveBoxes.friends)
 // ---------------------------------------------------------------------------
 
 final savedUsersProvider = NotifierProvider<SavedUsersNotifier, List<String>>(
@@ -17,29 +18,35 @@ class SavedUsersNotifier extends Notifier<List<String>> {
 
   @override
   List<String> build() {
-    _box = Hive.box(HiveBoxes.trackers);
+    // The ledger stores each person's name as a key in the friends box.
+    _box = Hive.box(HiveBoxes.friends);
     return _readUsers();
   }
 
-  Future<void> saveAll(List<String> users) async {
-    await _box.put('savedUsers', normalizeNames(users));
+  /// Adds a new person to the ledger friends box (creates an empty entry if
+  /// they don't already exist).
+  Future<void> add(String user) async {
+    final formatted = formatName(user);
+    if (formatted.isEmpty || _box.containsKey(formatted)) return;
+    await _box.put(formatted, []);
     state = _readUsers();
   }
 
-  Future<void> add(String user) async {
-    await saveAll([...state, user]);
-  }
-
+  /// Removes a person from the ledger friends box and also strips them from
+  /// any tracker groups.
   Future<void> delete(String user) async {
-    await saveAll(state.where((value) => value != user).toList());
+    await _box.delete(user);
+    state = _readUsers();
     ref.read(userGroupsProvider.notifier).removeMember(user);
   }
 
   List<String> _readUsers() {
-    final raw = _box.get('savedUsers', defaultValue: <String>[]) as List;
-    return normalizeNames(raw);
+    // Friends are stored as box keys (strings).
+    final names = _box.keys.cast<String>().toList();
+    return normalizeNames(names);
   }
 }
+
 
 // ---------------------------------------------------------------------------
 // User groups

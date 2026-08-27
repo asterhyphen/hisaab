@@ -72,7 +72,7 @@ class _UsersPageState extends ConsumerState<UsersPage> {
                             ),
                             const SizedBox(height: 4),
                             Text(
-                              'Save names of people once and use them when creating trackkars.',
+                              'Users from the Home tab appear here. Combine them into groups for one-tap trackkar setup.',
                               style: theme.textTheme.bodyMedium?.copyWith(
                                 color: colorScheme.onSurface.withValues(
                                   alpha: 0.68,
@@ -107,40 +107,64 @@ class _UsersPageState extends ConsumerState<UsersPage> {
             _sectionCard(
               context,
               title: 'Users',
-              actionLabel: 'Add User',
-              onAction: _showAddUserSheet,
               child:
                   users.isEmpty
                       ? _emptyBody(
                         context,
-                        'No users have been saved yet. Add people here so trackkar creation is easier and faster later.',
+                        'No users yet. Add people from the Home tab using the + button — they will appear here automatically.',
                       )
-                      : Wrap(
-                        spacing: 10,
-                        runSpacing: 10,
-                        children:
-                            users.map((user) {
-                              return SizedBox(
-                                width: 115,
-                                child: Chip(
-                                  label: Text(
-                                    user,
-                                    overflow: TextOverflow.ellipsis,
-                                    maxLines: 1,
-                                  ),
-                                  onDeleted: () => _confirmDeleteUser(user),
-                                  deleteIcon: const Icon(Icons.close, size: 16),
-                                  labelPadding: const EdgeInsets.only(
-                                    left: 4,
-                                    right: 4,
-                                  ),
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 4,
-                                    vertical: 4,
+                      : Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Wrap(
+                            spacing: 10,
+                            runSpacing: 10,
+                            children:
+                                users.map((user) {
+                                  return SizedBox(
+                                    width: 115,
+                                    child: Chip(
+                                      label: Text(
+                                        user,
+                                        overflow: TextOverflow.ellipsis,
+                                        maxLines: 1,
+                                      ),
+                                      labelPadding: const EdgeInsets.only(
+                                        left: 4,
+                                        right: 4,
+                                      ),
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 4,
+                                        vertical: 4,
+                                      ),
+                                    ),
+                                  );
+                                }).toList(),
+                          ),
+                          const SizedBox(height: 12),
+                          Row(
+                            children: [
+                              Icon(
+                                Icons.info_outline,
+                                size: 14,
+                                color: Theme.of(
+                                  context,
+                                ).colorScheme.onSurface.withValues(alpha: 0.5),
+                              ),
+                              const SizedBox(width: 6),
+                              Expanded(
+                                child: Text(
+                                  'Manage users from the Home tab.',
+                                  style: Theme.of(
+                                    context,
+                                  ).textTheme.bodySmall?.copyWith(
+                                    color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.55),
                                   ),
                                 ),
-                              );
-                            }).toList(),
+                              ),
+                            ],
+                          ),
+                        ],
                       ),
             ),
             const SizedBox(height: 12),

@@ -157,7 +157,7 @@ class _TrackerPageState extends ConsumerState<TrackerPage> {
                       ),
                       TextButton(
                         onPressed: _openUsersPage,
-                        child: const Text('Manage saved users'),
+                        child: const Text('Manage groups'),
                       ),
                     ],
                   ),
@@ -314,24 +314,19 @@ class _TrackerPageState extends ConsumerState<TrackerPage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Save users before creating trackers',
+                          'Add users from the Home tab first',
                           style: theme.textTheme.bodyLarge?.copyWith(
                             fontWeight: FontWeight.w700,
                           ),
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          'Go to the Users tab to save people or create groups, then pick them here when making a new tracker.',
+                          'Go to the Home tab and tap the + button to add people. They will appear here automatically when creating a new tracker.',
                           style: theme.textTheme.bodyMedium?.copyWith(
                             color: colorScheme.onSurface.withValues(
                               alpha: 0.72,
                             ),
                           ),
-                        ),
-                        const SizedBox(height: 12),
-                        FilledButton(
-                          onPressed: _openUsersPage,
-                          child: const Text('Open Users page'),
                         ),
                       ],
                     ),

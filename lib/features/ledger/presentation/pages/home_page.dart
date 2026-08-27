@@ -1,8 +1,42 @@
 part of 'friend_list_page.dart';
 
 extension _HomePageTab on _FriendListPageState {
+  /// Computes the total unpaid per-head amount across all active trackers for
+  /// the current month using [ref.watch] so the widget rebuilds reactively.
+  double _trackkarsContributionWatched() {
+    final trackers = ref.watch(activeTrackersProvider);
+    final records = ref.watch(monthlyRecordsProvider);
+    final now = DateTime.now();
+    final monthKey = '${now.year}-${now.month}';
+
+    double total = 0;
+    for (final tracker in trackers) {
+      final record = records['${tracker.id}_$monthKey'];
+      if (record == null) continue;
+      final paid = Map<String, dynamic>.from(
+        record['paid'] ?? <String, dynamic>{},
+      );
+      final recordTotal = (record['total'] as num?)?.toInt() ?? 0;
+      final userCount = tracker.users.length;
+      if (userCount == 0) continue;
+      final perHead = (recordTotal / userCount).ceil();
+      final unpaidCount = paid.values.where((v) => v != true).length;
+      total += unpaidCount * perHead;
+    }
+    return total;
+  }
+
   Widget _buildHomeBody() {
     final isEmpty = displayedKeys.isEmpty;
+    // Watch tracker settings so the total rebuilds when the toggle changes.
+    final trackerSettings = ref.watch(trackerSettingsProvider);
+    final double ledgerTotal = getOverallTotal();
+    final double trackkarsTotal =
+        trackerSettings.includeTrackkarsInTotal
+            ? _trackkarsContributionWatched()
+            : 0;
+    final double displayTotal = ledgerTotal + trackkarsTotal;
+
     return CustomScrollView(
       physics: const BouncingScrollPhysics(
         parent: AlwaysScrollableScrollPhysics(),
@@ -82,15 +116,35 @@ extension _HomePageTab on _FriendListPageState {
                     ),
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: Text(
-                    'total_pending: ₹${getOverallTotal().toStringAsFixed(2)}',
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontFamily: context.hisaabFontFamily,
-                      fontWeight: FontWeight.w500,
-                      color: Theme.of(context).colorScheme.secondary,
-                      letterSpacing: 0.5,
-                    ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        'total_pending: ₹${displayTotal.toStringAsFixed(2)}',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontFamily: context.hisaabFontFamily,
+                          fontWeight: FontWeight.w500,
+                          color: Theme.of(context).colorScheme.secondary,
+                          letterSpacing: 0.5,
+                        ),
+                      ),
+                      if (trackerSettings.includeTrackkarsInTotal &&
+                          trackkarsTotal > 0) ...[
+                        const SizedBox(height: 2),
+                        Text(
+                          'includes ₹${trackkarsTotal.toStringAsFixed(2)} from trackkars',
+                          style: TextStyle(
+                            fontSize: 11,
+                            fontFamily: context.hisaabFontFamily,
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onSurfaceVariant,
+                            letterSpacing: 0.3,
+                          ),
+                        ),
+                      ],
+                    ],
                   ),
                 ),
               ),

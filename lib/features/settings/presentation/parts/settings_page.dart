@@ -173,6 +173,26 @@ extension _SettingsPageTab on _FriendListPageState {
                       trackerSettings.copyWith(confirmDelete: value),
                     ),
               ),
+              SwitchListTile(
+                contentPadding: EdgeInsets.zero,
+                value: trackerSettings.includeTrackkarsInTotal,
+                title: Text(
+                  'Include trackkar amounts in home total',
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.onSurface,
+                  ),
+                ),
+                subtitle: Text(
+                  'Unpaid trackkar amounts for the current month are added to the total_pending on the Home tab.',
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
+                ),
+                onChanged:
+                    (value) => _saveTrackerSettings(
+                      trackerSettings.copyWith(includeTrackkarsInTotal: value),
+                    ),
+              ),
               ListTile(
                 contentPadding: EdgeInsets.zero,
                 leading: Icon(
