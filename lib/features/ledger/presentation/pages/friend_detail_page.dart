@@ -1288,7 +1288,23 @@ class _FriendDetailPageState extends ConsumerState<FriendDetailPage>
                                       Theme.of(context).scaffoldBackgroundColor,
                                 ),
                               ),
-                            if (total < 0) ...[
+                            if (total != 0) ...[ 
+                              const SizedBox(width: 8),
+                              OutlinedButton(
+                                onPressed: () => _markPaidAll(total),
+                                style: OutlinedButton.styleFrom(
+                                  foregroundColor:
+                                      Theme.of(
+                                        context,
+                                      ).colorScheme.onSurfaceVariant,
+                                  side: BorderSide(
+                                    color: Theme.of(context).colorScheme.outline,
+                                  ),
+                                ),
+                                child: const Text('Paid all'),
+                              ),
+                            ],
+                            if (total < 0) ...[ 
                               const SizedBox(width: 8),
                               TextButton(
                                 onPressed: () async {
@@ -1299,22 +1315,6 @@ class _FriendDetailPageState extends ConsumerState<FriendDetailPage>
                             ],
                           ],
                         ),
-                        if (total != 0) ...[
-                          const SizedBox(height: 8),
-                          OutlinedButton(
-                            onPressed: () => _markPaidAll(total),
-                            child: const Text('Paid all'),
-                            style: OutlinedButton.styleFrom(
-                              foregroundColor:
-                                  Theme.of(
-                                    context,
-                                  ).colorScheme.onSurfaceVariant,
-                              side: BorderSide(
-                                color: Theme.of(context).colorScheme.outline,
-                              ),
-                            ),
-                          ),
-                        ],
                       ],
                     ),
                   ],
