@@ -458,83 +458,6 @@ class _UsersPageState extends ConsumerState<UsersPage> {
     );
   }
 
-  Future<void> _showAddUserSheet() async {
-    final controller = TextEditingController();
-
-    await showModalBottomSheet<void>(
-      context: context,
-      isScrollControlled: true,
-      builder:
-          (context) => Padding(
-            padding: EdgeInsets.fromLTRB(
-              16,
-              16,
-              16,
-              MediaQuery.of(context).viewInsets.bottom + 16,
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Add User',
-                  style: Theme.of(
-                    context,
-                  ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800),
-                ),
-                const SizedBox(height: 12),
-                TextField(
-                  controller: controller,
-                  autofocus: true,
-                  decoration: const InputDecoration(
-                    labelText: 'User name',
-                    prefixIcon: Icon(Icons.person_add_alt_1),
-                  ),
-                  onSubmitted: (_) => _saveUserFromSheet(controller),
-                ),
-                const SizedBox(height: 16),
-                SizedBox(
-                  width: double.infinity,
-                  child: FilledButton(
-                    onPressed: () => _saveUserFromSheet(controller),
-                    child: const Text('Save User'),
-                  ),
-                ),
-              ],
-            ),
-          ),
-    );
-  }
-
-  Future<void> _saveUserFromSheet(TextEditingController controller) async {
-    final name = formatName(controller.text);
-    final users = ref.read(savedUsersProvider);
-
-    if (name.isEmpty) {
-      showTrackerAlert(
-        context,
-        message: 'Name field is empty.',
-        tone: TrackerAlertTone.info,
-        icon: Icons.info_outline,
-      );
-      return;
-    }
-
-    if (users.contains(name)) {
-      showTrackerAlert(
-        context,
-        message: '$name already exists. Try using full name or nicknames.',
-        tone: TrackerAlertTone.info,
-        icon: Icons.info_outline,
-      );
-      return;
-    }
-
-    await ref.read(savedUsersProvider.notifier).add(name);
-    if (!mounted) return;
-    Navigator.pop(context);
-    showTrackerAlert(context, message: '$name has been added to saved users.');
-  }
 
   Future<void> _showGroupSheet({UserGroup? group}) async {
     final nameCtrl = TextEditingController(text: group?.name ?? '');
@@ -747,40 +670,6 @@ class _UsersPageState extends ConsumerState<UsersPage> {
       message:
           groupId == null ? '$name group created.' : '$name group updated.',
     );
-  }
-
-  Future<void> _deleteUser(String user) async {
-    await ref.read(savedUsersProvider.notifier).delete(user);
-    if (!mounted) return;
-    showTrackerAlert(context, message: '$user removed.');
-  }
-
-  Future<void> _confirmDeleteUser(String user) async {
-    final shouldDelete =
-        await showDialog<bool>(
-          context: context,
-          builder:
-              (context) => AlertDialog(
-                title: const Text('Remove user?'),
-                content: Text(
-                  '$user will be removed from saved users and from any groups which they are in.',
-                ),
-                actions: [
-                  TextButton(
-                    onPressed: () => Navigator.pop(context, false),
-                    child: const Text('Cancel'),
-                  ),
-                  FilledButton(
-                    onPressed: () => Navigator.pop(context, true),
-                    child: const Text('Remove'),
-                  ),
-                ],
-              ),
-        ) ??
-        false;
-
-    if (!shouldDelete) return;
-    _deleteUser(user);
   }
 
   Future<void> _deleteGroup(String groupId, String groupName) async {
