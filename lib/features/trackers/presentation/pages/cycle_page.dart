@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:share_plus/share_plus.dart';
 
+import '../../../../core/theme/hisaab_typography.dart';
 import '../../data/trackers_providers.dart';
 import '../../model/tracker.dart';
 import '../widgets/glass_card.dart';
@@ -142,7 +143,7 @@ class _CyclePageState extends ConsumerState<CyclePage> {
                         },
                       ),
                       const SizedBox(height: 8),
-                      const Text('Users'),
+                      Text('Users', style: TextStyle(fontFamily: context.hisaabFontFamily)),
                       Wrap(
                         spacing: 8,
                         children:
@@ -238,7 +239,7 @@ class _CyclePageState extends ConsumerState<CyclePage> {
                           );
                           Navigator.pop(context);
                         },
-                        child: const Text('Save changes'),
+                        child: Text('Save changes', style: TextStyle(fontFamily: context.hisaabFontFamily)),
                       ),
                     ],
                   ),
@@ -290,6 +291,7 @@ class _CyclePageState extends ConsumerState<CyclePage> {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final isDark = theme.brightness == Brightness.dark;
+    final fontFamily = context.hisaabFontFamily;
     final totalUsers = tracker.users.length;
     final paidCount = tracker.users.where((u) => paid[u] == true).length;
     final pendingCount = tracker.users.length - paidCount;
@@ -308,7 +310,7 @@ class _CyclePageState extends ConsumerState<CyclePage> {
           children: [
             Icon(iconDataFromId(tracker.iconId)),
             const SizedBox(width: 12),
-            Text(tracker.title),
+            Text(tracker.title, style: TextStyle(fontFamily: fontFamily)),
           ],
         ),
         actions: [
@@ -319,7 +321,7 @@ class _CyclePageState extends ConsumerState<CyclePage> {
         onPressed:
             () => SharePlus.instance.share(ShareParams(text: _buildMessage())),
         icon: const Icon(Icons.share),
-        label: const Text('Share'),
+        label: Text('Share', style: TextStyle(fontFamily: fontFamily)),
       ),
       body: Container(
         decoration: BoxDecoration(
@@ -349,14 +351,16 @@ class _CyclePageState extends ConsumerState<CyclePage> {
                             color: colorScheme.onSurface.withValues(
                               alpha: 0.68,
                             ),
+                            fontFamily: fontFamily,
                           ),
                         ),
                         const Spacer(),
                         Text(
                           '₹$total',
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 24,
                             fontWeight: FontWeight.w800,
+                            fontFamily: fontFamily,
                           ),
                         ),
                       ],
@@ -370,15 +374,17 @@ class _CyclePageState extends ConsumerState<CyclePage> {
                             color: colorScheme.onSurface.withValues(
                               alpha: 0.68,
                             ),
+                            fontFamily: fontFamily,
                           ),
                         ),
                         const Spacer(),
                         Text(
                           '₹$perHead',
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.w700,
-                            color: Color(0xFF77FFD8),
+                            color: colorScheme.tertiary,
+                            fontFamily: fontFamily,
                           ),
                         ),
                       ],
@@ -392,14 +398,16 @@ class _CyclePageState extends ConsumerState<CyclePage> {
                             color: colorScheme.onSurface.withValues(
                               alpha: 0.68,
                             ),
+                            fontFamily: fontFamily,
                           ),
                         ),
                         const Spacer(),
                         Text(
                           '${(paidProgress * 100).round()}%',
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontWeight: FontWeight.w700,
-                            color: Color(0xFF3ED9A6),
+                            color: colorScheme.tertiary,
+                            fontFamily: fontFamily,
                           ),
                         ),
                       ],
@@ -492,7 +500,7 @@ class _CyclePageState extends ConsumerState<CyclePage> {
                             ? Icons.restart_alt_rounded
                             : Icons.done_all_rounded,
                       ),
-                      label: Text(allPaid ? 'Reset all' : 'Mark all paid'),
+                      label: Text(allPaid ? 'Reset all' : 'Mark all paid', style: TextStyle(fontFamily: fontFamily)),
                     ),
                   ),
                 ],
@@ -527,9 +535,10 @@ class _CyclePageState extends ConsumerState<CyclePage> {
                             children: [
                               Text(
                                 u,
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.w700,
+                                  fontFamily: fontFamily,
                                 ),
                               ),
                               const SizedBox(height: 2),
@@ -538,8 +547,9 @@ class _CyclePageState extends ConsumerState<CyclePage> {
                                 style: TextStyle(
                                   color:
                                       isPaid
-                                          ? const Color(0xFF3ED9A6)
-                                          : const Color(0xFFFFB85C),
+                                          ? colorScheme.tertiary
+                                          : colorScheme.secondary,
+                                  fontFamily: fontFamily,
                                 ),
                               ),
                             ],
@@ -547,9 +557,10 @@ class _CyclePageState extends ConsumerState<CyclePage> {
                         ),
                         Text(
                           '₹$perHead',
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontWeight: FontWeight.w800,
                             fontSize: 16,
+                            fontFamily: fontFamily,
                           ),
                         ),
                       ],
@@ -573,6 +584,7 @@ class _CyclePageState extends ConsumerState<CyclePage> {
   }) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
+    final fontFamily = context.hisaabFontFamily;
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
@@ -592,17 +604,18 @@ class _CyclePageState extends ConsumerState<CyclePage> {
             style: TextStyle(
               fontSize: 12,
               color: theme.colorScheme.onSurface.withValues(alpha: 0.68),
+              fontFamily: fontFamily,
             ),
           ),
           const SizedBox(height: 6),
           Text(
             value,
-            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, fontFamily: fontFamily),
           ),
           const SizedBox(height: 2),
           Text(
             subValue,
-            style: TextStyle(color: tint, fontWeight: FontWeight.w600),
+            style: TextStyle(color: tint, fontWeight: FontWeight.w600, fontFamily: fontFamily),
           ),
         ],
       ),

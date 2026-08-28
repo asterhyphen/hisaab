@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../core/theme/hisaab_typography.dart';
 import '../../data/trackers_providers.dart';
 import '../../model/tracker.dart';
 import '../widgets/glass_card.dart';
@@ -20,6 +21,7 @@ class _TrackersHomePageState extends ConsumerState<TrackersHomePage> {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final isDark = theme.brightness == Brightness.dark;
+    final fontFamily = context.hisaabFontFamily;
     final trackkars = ref.watch(activeTrackersProvider);
     final records = ref.watch(monthlyRecordsProvider);
     final settings = ref.watch(trackerSettingsProvider);
@@ -76,11 +78,12 @@ class _TrackersHomePageState extends ConsumerState<TrackersHomePage> {
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
-                                      const Text(
+                                      Text(
                                         'Trackkars',
                                         style: TextStyle(
                                           fontSize: 18,
                                           fontWeight: FontWeight.w700,
+                                          fontFamily: fontFamily,
                                         ),
                                       ),
                                       const SizedBox(height: 2),
@@ -90,6 +93,7 @@ class _TrackersHomePageState extends ConsumerState<TrackersHomePage> {
                                           color: colorScheme.onSurface
                                               .withValues(alpha: 0.62),
                                           fontSize: 13,
+                                          fontFamily: fontFamily,
                                         ),
                                       ),
                                     ],
@@ -252,9 +256,10 @@ class _TrackersHomePageState extends ConsumerState<TrackersHomePage> {
                                               children: [
                                                 Text(
                                                   tracker.title,
-                                                  style: const TextStyle(
+                                                  style: TextStyle(
                                                     fontSize: 18,
                                                     fontWeight: FontWeight.w700,
+                                                    fontFamily: fontFamily,
                                                   ),
                                                 ),
                                                 const SizedBox(height: 4),
@@ -280,6 +285,7 @@ class _TrackersHomePageState extends ConsumerState<TrackersHomePage> {
                                                         active
                                                             ? FontWeight.w600
                                                             : FontWeight.w400,
+                                                    fontFamily: fontFamily,
                                                   ),
                                                 ),
                                               ],
@@ -440,7 +446,7 @@ class _TrackersHomePageState extends ConsumerState<TrackersHomePage> {
         children: [
           Text(
             value,
-            style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w800),
+            style: TextStyle(fontSize: 24, fontWeight: FontWeight.w800, fontFamily: context.hisaabFontFamily),
           ),
           Text(
             label,
@@ -448,6 +454,7 @@ class _TrackersHomePageState extends ConsumerState<TrackersHomePage> {
               color: Theme.of(
                 context,
               ).colorScheme.onSurface.withValues(alpha: 0.65),
+              fontFamily: context.hisaabFontFamily,
             ),
           ),
         ],
@@ -493,6 +500,7 @@ class _TrackersHomePageState extends ConsumerState<TrackersHomePage> {
               fontSize: 12,
               fontWeight: FontWeight.w600,
               color: theme.colorScheme.onSurface.withValues(alpha: 0.68),
+              fontFamily: context.hisaabFontFamily,
             ),
           ),
         ],
@@ -567,6 +575,7 @@ class _TrackersEmptyState extends StatelessWidget {
               'No Trackkars Yet',
               style: theme.textTheme.headlineSmall?.copyWith(
                 fontWeight: FontWeight.w800,
+                fontFamily: context.hisaabFontFamily,
               ),
               textAlign: TextAlign.center,
             ),
@@ -576,6 +585,7 @@ class _TrackersEmptyState extends StatelessWidget {
               textAlign: TextAlign.center,
               style: theme.textTheme.bodyMedium?.copyWith(
                 color: theme.colorScheme.onSurface.withValues(alpha: 0.68),
+                fontFamily: context.hisaabFontFamily,
               ),
             ),
           ],

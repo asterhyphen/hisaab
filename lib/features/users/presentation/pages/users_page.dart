@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../core/theme/hisaab_typography.dart';
 import '../../../trackers/data/trackers_providers.dart';
 import '../../../trackers/model/tracker.dart';
 import '../../../users/data/users_provider.dart';
@@ -20,6 +21,7 @@ class _UsersPageState extends ConsumerState<UsersPage> {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final isDark = theme.brightness == Brightness.dark;
+    final fontFamily = context.hisaabFontFamily;
     final users = ref.watch(savedUsersProvider);
     final groups = ref.watch(userGroupsProvider);
 
@@ -68,6 +70,7 @@ class _UsersPageState extends ConsumerState<UsersPage> {
                               'Users & Groups',
                               style: theme.textTheme.titleLarge?.copyWith(
                                 fontWeight: FontWeight.w800,
+                                fontFamily: fontFamily,
                               ),
                             ),
                             const SizedBox(height: 4),
@@ -77,6 +80,7 @@ class _UsersPageState extends ConsumerState<UsersPage> {
                                 color: colorScheme.onSurface.withValues(
                                   alpha: 0.68,
                                 ),
+                                fontFamily: fontFamily,
                               ),
                             ),
                           ],
@@ -128,6 +132,7 @@ class _UsersPageState extends ConsumerState<UsersPage> {
                                         user,
                                         overflow: TextOverflow.ellipsis,
                                         maxLines: 1,
+                                        style: TextStyle(fontFamily: fontFamily),
                                       ),
                                       labelPadding: const EdgeInsets.only(
                                         left: 4,
@@ -159,6 +164,7 @@ class _UsersPageState extends ConsumerState<UsersPage> {
                                     context,
                                   ).textTheme.bodySmall?.copyWith(
                                     color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.55),
+                                    fontFamily: fontFamily,
                                   ),
                                 ),
                               ),
@@ -344,6 +350,8 @@ class _UsersPageState extends ConsumerState<UsersPage> {
     required String label,
     required String value,
   }) {
+    final fontFamily = context.hisaabFontFamily;
+
     return Expanded(
       child: Container(
         padding: const EdgeInsets.all(14),
@@ -359,7 +367,7 @@ class _UsersPageState extends ConsumerState<UsersPage> {
           children: [
             Text(
               value,
-              style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w800),
+              style: TextStyle(fontSize: 22, fontWeight: FontWeight.w800, fontFamily: fontFamily),
             ),
             const SizedBox(height: 2),
             Text(
@@ -368,6 +376,7 @@ class _UsersPageState extends ConsumerState<UsersPage> {
                 color: Theme.of(
                   context,
                 ).colorScheme.onSurface.withValues(alpha: 0.68),
+                fontFamily: fontFamily,
               ),
             ),
           ],
@@ -385,6 +394,7 @@ class _UsersPageState extends ConsumerState<UsersPage> {
   }) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
+    final fontFamily = context.hisaabFontFamily;
 
     return Container(
       padding: const EdgeInsets.all(16),
@@ -411,6 +421,7 @@ class _UsersPageState extends ConsumerState<UsersPage> {
                   title,
                   style: theme.textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.w800,
+                    fontFamily: fontFamily,
                   ),
                 ),
               ),
@@ -418,7 +429,7 @@ class _UsersPageState extends ConsumerState<UsersPage> {
                 FilledButton.tonalIcon(
                   onPressed: onAction,
                   icon: const Icon(Icons.add, size: 18),
-                  label: Text(actionLabel),
+                  label: Text(actionLabel, style: TextStyle(fontFamily: fontFamily)),
                 ),
             ],
           ),
@@ -430,10 +441,12 @@ class _UsersPageState extends ConsumerState<UsersPage> {
   }
 
   Widget _emptyBody(BuildContext context, String text) {
+    final fontFamily = context.hisaabFontFamily;
     return Text(
       text,
       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
         color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.68),
+        fontFamily: fontFamily,
       ),
     );
   }
@@ -441,6 +454,7 @@ class _UsersPageState extends ConsumerState<UsersPage> {
   Widget _miniTag(BuildContext context, String label) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
+    final fontFamily = context.hisaabFontFamily;
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
@@ -453,7 +467,7 @@ class _UsersPageState extends ConsumerState<UsersPage> {
       ),
       child: Text(
         label,
-        style: theme.textTheme.bodySmall?.copyWith(fontWeight: FontWeight.w600),
+        style: theme.textTheme.bodySmall?.copyWith(fontWeight: FontWeight.w600, fontFamily: fontFamily),
       ),
     );
   }

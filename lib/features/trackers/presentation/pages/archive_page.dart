@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../core/theme/hisaab_typography.dart';
 import '../../data/trackers_providers.dart';
 import '../../model/tracker.dart';
 import '../widgets/glass_card.dart';
@@ -21,8 +22,10 @@ class _ArchivePageState extends ConsumerState<ArchivePage> {
     final isDark = theme.brightness == Brightness.dark;
     final trackkars = ref.watch(archivedTrackersProvider);
 
+    final fontFamily = context.hisaabFontFamily;
+
     return Scaffold(
-      appBar: AppBar(title: const Text('Archive')),
+      appBar: AppBar(title: Text('Archive', style: TextStyle(fontFamily: fontFamily))),
       body: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
@@ -44,6 +47,7 @@ class _ArchivePageState extends ConsumerState<ArchivePage> {
                         'No trackkars have been archived yet.',
                         style: theme.textTheme.titleMedium?.copyWith(
                           color: colorScheme.onSurface.withValues(alpha: 0.7),
+                          fontFamily: fontFamily,
                         ),
                       ),
                     ),
@@ -82,9 +86,10 @@ class _ArchivePageState extends ConsumerState<ArchivePage> {
                                   children: [
                                     Text(
                                       tracker.title,
-                                      style: const TextStyle(
+                                      style: TextStyle(
                                         fontSize: 17,
                                         fontWeight: FontWeight.w700,
+                                        fontFamily: fontFamily,
                                       ),
                                     ),
                                     const SizedBox(height: 4),
@@ -94,6 +99,7 @@ class _ArchivePageState extends ConsumerState<ArchivePage> {
                                         color: colorScheme.onSurface.withValues(
                                           alpha: 0.64,
                                         ),
+                                        fontFamily: fontFamily,
                                       ),
                                     ),
                                   ],

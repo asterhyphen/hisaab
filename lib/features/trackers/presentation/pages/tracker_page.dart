@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../core/theme/hisaab_typography.dart';
 import '../../../../features/trackers/data/trackers_providers.dart';
 import '../../../../features/trackers/model/tracker.dart';
 import '../../../../features/users/data/users_provider.dart';
@@ -73,6 +74,7 @@ class _TrackerPageState extends ConsumerState<TrackerPage> {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final isDark = theme.brightness == Brightness.dark;
+    final fontFamily = context.hisaabFontFamily;
     final savedUsers = ref.watch(savedUsersProvider);
     final savedGroups = ref.watch(userGroupsProvider);
     final peopleCount = users.length;
@@ -80,7 +82,7 @@ class _TrackerPageState extends ConsumerState<TrackerPage> {
     final perHead = peopleCount == 0 ? 0 : (baseAmount / peopleCount).ceil();
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Create Tracker')),
+      appBar: AppBar(title: Text('Create Tracker', style: TextStyle(fontFamily: fontFamily))),
       body: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
@@ -242,9 +244,10 @@ class _TrackerPageState extends ConsumerState<TrackerPage> {
                                   group.name,
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     fontWeight: FontWeight.w700,
                                     fontSize: 15,
+                                    fontFamily: fontFamily,
                                   ),
                                 ),
                                 const SizedBox(height: 4),
@@ -412,16 +415,17 @@ class _TrackerPageState extends ConsumerState<TrackerPage> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Text('Per Head'),
+                      Text('Per Head', style: TextStyle(fontFamily: fontFamily)),
                       Text(
                         !isConstantBill
                             ? 'Set monthly total later'
                             : peopleCount == 0 || baseAmount == 0
                             ? 'Add amount & users'
                             : '₹$perHead each',
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontWeight: FontWeight.w700,
                           fontSize: 16,
+                          fontFamily: fontFamily,
                         ),
                       ),
                     ],
@@ -435,9 +439,9 @@ class _TrackerPageState extends ConsumerState<TrackerPage> {
                   ),
                 ),
                 const SizedBox(height: 18),
-                const Text(
+                Text(
                   'Pick Icon',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, fontFamily: fontFamily),
                 ),
                 const SizedBox(height: 10),
                 Wrap(
@@ -483,7 +487,7 @@ class _TrackerPageState extends ConsumerState<TrackerPage> {
                   child: ElevatedButton.icon(
                     onPressed: _createTracker,
                     icon: const Icon(Icons.check_circle_outline),
-                    label: const Text('Create Tracker'),
+                    label: Text('Create Tracker', style: TextStyle(fontFamily: fontFamily)),
                   ),
                 ),
                 const SizedBox(height: 24),
@@ -550,11 +554,11 @@ class _TrackerPageState extends ConsumerState<TrackerPage> {
               children: [
                 Icon(icon, size: 16),
                 const SizedBox(width: 6),
-                Text(label, style: const TextStyle(fontSize: 12)),
+                Text(label, style: TextStyle(fontSize: 12, fontFamily: context.hisaabFontFamily)),
               ],
             ),
             const SizedBox(height: 6),
-            Text(value, style: const TextStyle(fontWeight: FontWeight.w700)),
+            Text(value, style: TextStyle(fontWeight: FontWeight.w700, fontFamily: context.hisaabFontFamily)),
           ],
         ),
       ),

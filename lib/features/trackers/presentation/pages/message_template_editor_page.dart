@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/theme/hisaab_typography.dart';
+
 class MessageTemplateEditResult {
   final String messageTemplate;
   final String allPaidMessageTemplate;
@@ -46,10 +48,11 @@ class _MessageTemplateEditorPageState extends State<MessageTemplateEditorPage> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
+    final fontFamily = context.hisaabFontFamily;
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Message Templates'),
+        title: Text('Message Templates', style: TextStyle(fontFamily: fontFamily)),
         actions: [
           TextButton(
             onPressed: () {
@@ -61,7 +64,7 @@ class _MessageTemplateEditorPageState extends State<MessageTemplateEditorPage> {
                 ),
               );
             },
-            child: const Text('Save'),
+            child: Text('Save', style: TextStyle(fontFamily: fontFamily)),
           ),
         ],
       ),
@@ -177,6 +180,7 @@ class _MessageTemplateEditorPageState extends State<MessageTemplateEditorPage> {
   }) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
+    final fontFamily = context.hisaabFontFamily;
 
     return Container(
       padding: const EdgeInsets.all(16),
@@ -198,13 +202,14 @@ class _MessageTemplateEditorPageState extends State<MessageTemplateEditorPage> {
         children: [
           Text(
             title,
-            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, fontFamily: fontFamily),
           ),
           const SizedBox(height: 4),
           Text(
             subtitle,
             style: theme.textTheme.bodySmall?.copyWith(
               color: theme.colorScheme.onSurface.withValues(alpha: 0.66),
+              fontFamily: fontFamily,
             ),
           ),
           const SizedBox(height: 14),
