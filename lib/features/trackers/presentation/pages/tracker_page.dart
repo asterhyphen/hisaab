@@ -83,20 +83,9 @@ class _TrackerPageState extends ConsumerState<TrackerPage> {
 
     return Scaffold(
       appBar: AppBar(title: Text('Create Tracker', style: TextStyle(fontFamily: fontFamily))),
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors:
-                isDark
-                    ? const [Color(0xFF10192B), Color(0xFF090F1B)]
-                    : const [Color(0xFFF9FCFE), Color(0xFFEAF2F7)],
-          ),
-        ),
-        child: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.all(16),
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(16),
             child: ListView(
               keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
               physics: const BouncingScrollPhysics(),
@@ -495,7 +484,6 @@ class _TrackerPageState extends ConsumerState<TrackerPage> {
             ),
           ),
         ),
-      ),
     );
   }
 

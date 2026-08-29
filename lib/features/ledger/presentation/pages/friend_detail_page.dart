@@ -398,10 +398,6 @@ class _FriendDetailPageState extends ConsumerState<FriendDetailPage>
     }
     final uri = _buildUpiUri(upi, amount, pn: 'Hisaab', tn: 'Payment');
 
-    // Persisted toggle: true = use profile avatar, false = use app icon.
-    bool showProfileIcon =
-        (appBox.get('qrShowIcon') as bool?) ?? true;
-
     final repaintKey = GlobalKey();
 
     /// Renders the repaint boundary to a PNG byte list.
@@ -418,197 +414,165 @@ class _FriendDetailPageState extends ConsumerState<FriendDetailPage>
     final save = await showDialog<bool?>(
       context: context,
       builder:
-          (dialogContext) => StatefulBuilder(
-            builder:
-                (ctx, setDialogState) => AlertDialog(
-                  title: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Text('Share UPI QR'),
-                      IconButton(
-                        icon: const Icon(Icons.close),
-                        padding: EdgeInsets.zero,
-                        constraints: const BoxConstraints(),
-                        onPressed: () => Navigator.pop(dialogContext, null),
-                      ),
-                    ],
-                  ),
-                  content: SingleChildScrollView(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const SizedBox(height: 8),
-                        // QR + center overlay
-                        Builder(
-                          builder: (context) {
-                            try {
-                              final qrCode = QrCode(
-                                20,
-                                QrErrorCorrectLevel.H, // H = 30% recovery for logo overlay
-                              );
-                              qrCode.addData(uri);
-
-                              final avatarPath =
-                                  (appBox.get('profileAvatar') as String?) ??
-                                  '';
-                              final hasCustomAvatar =
-                                  avatarPath.isNotEmpty &&
-                                  File(
-                                    avatarPath.replaceFirst('file://', ''),
-                                  ).existsSync();
-
-                              Widget centerWidget;
-                              if (showProfileIcon && hasCustomAvatar) {
-                                centerWidget = CircleAvatar(
-                                  radius: 24,
-                                  backgroundImage: FileImage(
-                                    File(
-                                      avatarPath.replaceFirst('file://', ''),
-                                    ),
-                                  ),
-                                  backgroundColor: Colors.white,
-                                );
-                              } else {
-                                // App icon fallback
-                                centerWidget = CircleAvatar(
-                                  radius: 24,
-                                  backgroundColor: Colors.white,
-                                  child: ClipOval(
-                                    child: Image.asset(
-                                      'assets/icon.png',
-                                      width: 40,
-                                      height: 40,
-                                      fit: BoxFit.cover,
-                                      errorBuilder:
-                                          (_, __, ___) => Icon(
-                                            Icons.payments_outlined,
-                                            size: 28,
-                                            color: Colors.black87,
-                                          ),
-                                    ),
-                                  ),
-                                );
-                              }
-
-                              return RepaintBoundary(
-                                key: repaintKey,
-                                child: Container(
-                                  color: Colors.black,
-                                  child: Stack(
-                                    alignment: Alignment.center,
-                                    children: [
-                                      CustomPaint(
-                                        size: const Size.square(200),
-                                        painter: QrPainter.withQr(
-                                          qr: qrCode,
-                                          gapless: true,
-                                          color: Colors.white,
-                                          emptyColor: Colors.black,
-                                        ),
-                                      ),
-                                      // White ring behind the icon for contrast
-                                      Container(
-                                        width: 54,
-                                        height: 54,
-                                        decoration: const BoxDecoration(
-                                          color: Colors.white,
-                                          shape: BoxShape.circle,
-                                        ),
-                                      ),
-                                      centerWidget,
-                                    ],
-                                  ),
-                                ),
-                              );
-                            } catch (e) {
-                              return const Padding(
-                                padding: EdgeInsets.all(16.0),
-                                child: Text(
-                                  'QR data too long to encode. Please shorten the UPI details.',
-                                  style: TextStyle(color: Colors.red),
-                                  textAlign: TextAlign.center,
-                                ),
-                              );
-                            }
-                          },
-                        ),
-                        const SizedBox(height: 12),
-                        // Toggle: profile avatar vs app icon
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            const Text(
-                              'Center icon:',
-                              style: TextStyle(fontSize: 13),
-                            ),
-                            const SizedBox(width: 10),
-                            ChoiceChip(
-                              label: const Text('My photo'),
-                              selected: showProfileIcon,
-                              onSelected: (v) async {
-                                await appBox.put('qrShowIcon', true);
-                                setDialogState(() => showProfileIcon = true);
-                              },
-                            ),
-                            const SizedBox(width: 8),
-                            ChoiceChip(
-                              label: const Text('App icon'),
-                              selected: !showProfileIcon,
-                              onSelected: (v) async {
-                                await appBox.put('qrShowIcon', false);
-                                setDialogState(() => showProfileIcon = false);
-                              },
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 8),
-                        SelectableText(uri, style: const TextStyle(fontSize: 12)),
-                      ],
-                    ),
-                  ),
-                  actions: [
-                    TextButton(
-                      onPressed: () async {
-                        await Clipboard.setData(ClipboardData(text: uri));
-                        if (dialogContext.mounted) {
-                          GlassAlert.showInfo(
-                            dialogContext,
-                            'UPI URI copied to clipboard',
-                          );
-                          Navigator.pop(dialogContext, null);
-                        }
-                      },
-                      child: const Text('Copy URI'),
-                    ),
-                    TextButton(
-                      onPressed: () async {
-                        try {
-                          final bytes = await _captureQr();
-                          if (bytes == null) return;
-                          final dir = await getTemporaryDirectory();
-                          final file = File(
-                            '${dir.path}/upi_request.png',
-                          );
-                          await file.writeAsBytes(bytes);
-                          await Share.shareXFiles(
-                            [XFile(file.path)],
-                            text:
-                                '₹${amount.toStringAsFixed(2)} pending\nScan to pay via UPI',
-                          );
-                        } catch (e) {
-                          if (dialogContext.mounted) {
-                            GlassAlert.showError(dialogContext, 'Share failed');
-                          }
-                        }
-                      },
-                      child: const Text('Share'),
-                    ),
-                    ElevatedButton(
-                      onPressed: () => Navigator.pop(dialogContext, true),
-                      child: const Text('Save QR'),
-                    ),
-                  ],
+          (dialogContext) => AlertDialog(
+            title: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text('Share UPI QR'),
+                IconButton(
+                  icon: const Icon(Icons.close),
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(),
+                  onPressed: () => Navigator.pop(dialogContext, null),
                 ),
+              ],
+            ),
+            content: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const SizedBox(height: 8),
+                  // QR + center overlay
+                  Builder(
+                    builder: (context) {
+                      try {
+                        final qrCode = QrCode(
+                          20,
+                          QrErrorCorrectLevel.H, // H = 30% recovery for logo overlay
+                        );
+                        qrCode.addData(uri);
+
+                        final avatarPath =
+                            (appBox.get('profileAvatar') as String?) ??
+                            '';
+                        final hasCustomAvatar =
+                            avatarPath.isNotEmpty &&
+                            File(
+                              avatarPath.replaceFirst('file://', ''),
+                            ).existsSync();
+
+                        Widget centerWidget;
+                        if (hasCustomAvatar) {
+                          centerWidget = CircleAvatar(
+                            radius: 24,
+                            backgroundImage: FileImage(
+                              File(
+                                avatarPath.replaceFirst('file://', ''),
+                              ),
+                            ),
+                            backgroundColor: Colors.white,
+                          );
+                        } else {
+                          // App icon fallback
+                          centerWidget = CircleAvatar(
+                            radius: 24,
+                            backgroundColor: Colors.white,
+                            child: ClipOval(
+                              child: Image.asset(
+                                'assets/icon.png',
+                                width: 40,
+                                height: 40,
+                                fit: BoxFit.cover,
+                                errorBuilder:
+                                    (_, __, ___) => Icon(
+                                      Icons.payments_outlined,
+                                      size: 28,
+                                      color: Colors.black87,
+                                    ),
+                              ),
+                            ),
+                          );
+                        }
+
+                        return RepaintBoundary(
+                          key: repaintKey,
+                          child: Container(
+                            color: Colors.black,
+                            child: Stack(
+                              alignment: Alignment.center,
+                              children: [
+                                CustomPaint(
+                                  size: const Size.square(200),
+                                  painter: QrPainter.withQr(
+                                    qr: qrCode,
+                                    gapless: true,
+                                    color: Colors.white,
+                                    emptyColor: Colors.black,
+                                  ),
+                                ),
+                                // White ring behind the icon for contrast
+                                Container(
+                                  width: 54,
+                                  height: 54,
+                                  decoration: const BoxDecoration(
+                                    color: Colors.white,
+                                    shape: BoxShape.circle,
+                                  ),
+                                ),
+                                centerWidget,
+                              ],
+                            ),
+                          ),
+                        );
+                      } catch (e) {
+                        return const Padding(
+                          padding: EdgeInsets.all(16.0),
+                          child: Text(
+                            'QR data too long to encode. Please shorten the UPI details.',
+                            style: TextStyle(color: Colors.red),
+                            textAlign: TextAlign.center,
+                          ),
+                        );
+                      }
+                    },
+                  ),
+                  const SizedBox(height: 12),
+                  SelectableText(uri, style: const TextStyle(fontSize: 12)),
+                ],
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () async {
+                  await Clipboard.setData(ClipboardData(text: uri));
+                  if (dialogContext.mounted) {
+                    GlassAlert.showInfo(
+                      dialogContext,
+                      'UPI URI copied to clipboard',
+                    );
+                    Navigator.pop(dialogContext, null);
+                  }
+                },
+                child: const Text('Copy URI'),
+              ),
+              TextButton(
+                onPressed: () async {
+                  try {
+                    final bytes = await _captureQr();
+                    if (bytes == null) return;
+                    final dir = await getTemporaryDirectory();
+                    final file = File(
+                      '${dir.path}/upi_request.png',
+                    );
+                    await file.writeAsBytes(bytes);
+                    await Share.shareXFiles(
+                      [XFile(file.path)],
+                      text:
+                          '₹${amount.toStringAsFixed(2)} pending\nScan to pay via UPI',
+                    );
+                  } catch (e) {
+                    if (dialogContext.mounted) {
+                      GlassAlert.showError(dialogContext, 'Share failed');
+                    }
+                  }
+                },
+                child: const Text('Share'),
+              ),
+              ElevatedButton(
+                onPressed: () => Navigator.pop(dialogContext, true),
+                child: const Text('Save QR'),
+              ),
+            ],
           ),
     );
 

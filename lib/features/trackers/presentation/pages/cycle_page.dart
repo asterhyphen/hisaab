@@ -323,19 +323,8 @@ class _CyclePageState extends ConsumerState<CyclePage> {
         icon: const Icon(Icons.share),
         label: Text('Share', style: TextStyle(fontFamily: fontFamily)),
       ),
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors:
-                isDark
-                    ? const [Color(0xFF111A2B), Color(0xFF090F1B)]
-                    : const [Color(0xFFF9FCFE), Color(0xFFEAF2F7)],
-          ),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
+      body: Padding(
+        padding: const EdgeInsets.all(16),
           child: ListView(
             keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
             physics: const BouncingScrollPhysics(),
@@ -572,7 +561,6 @@ class _CyclePageState extends ConsumerState<CyclePage> {
             ],
           ),
         ),
-      ),
     );
   }
 

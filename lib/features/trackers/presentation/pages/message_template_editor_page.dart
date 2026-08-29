@@ -68,19 +68,8 @@ class _MessageTemplateEditorPageState extends State<MessageTemplateEditorPage> {
           ),
         ],
       ),
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors:
-                isDark
-                    ? const [Color(0xFF10192B), Color(0xFF090F1B)]
-                    : const [Color(0xFFF9FCFE), Color(0xFFEAF2F7)],
-          ),
-        ),
-        child: ListView(
-          padding: const EdgeInsets.all(16),
+      body: ListView(
+        padding: const EdgeInsets.all(16),
           children: [
             _section(
               context,
@@ -168,7 +157,6 @@ class _MessageTemplateEditorPageState extends State<MessageTemplateEditorPage> {
             ),
           ],
         ),
-      ),
     );
   }
 
@@ -179,22 +167,15 @@ class _MessageTemplateEditorPageState extends State<MessageTemplateEditorPage> {
     required Widget child,
   }) {
     final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
     final fontFamily = context.hisaabFontFamily;
 
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color:
-            isDark
-                ? Colors.white.withValues(alpha: 0.065)
-                : Colors.white.withValues(alpha: 0.84),
+        color: theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color:
-              isDark
-                  ? Colors.white.withValues(alpha: 0.10)
-                  : const Color(0xFFD9E6EF),
+          color: theme.colorScheme.outline,
         ),
       ),
       child: Column(

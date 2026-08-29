@@ -25,21 +25,10 @@ class _UsersPageState extends ConsumerState<UsersPage> {
     final users = ref.watch(savedUsersProvider);
     final groups = ref.watch(userGroupsProvider);
 
-    return Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors:
-              isDark
-                  ? const [Color(0xFF111A2B), Color(0xFF090F1B)]
-                  : const [Color(0xFFF9FCFE), Color(0xFFEAF2F7)],
-        ),
-      ),
-      child: SafeArea(
-        top: false,
-        child: ListView(
-          padding: const EdgeInsets.all(16),
+    return SafeArea(
+      top: false,
+      child: ListView(
+        padding: const EdgeInsets.all(16),
           children: [
             TrackerGlassCard(
               child: Column(
@@ -341,7 +330,6 @@ class _UsersPageState extends ConsumerState<UsersPage> {
             const SizedBox(height: 24),
           ],
         ),
-      ),
     );
   }
 
@@ -393,22 +381,15 @@ class _UsersPageState extends ConsumerState<UsersPage> {
     required Widget child,
   }) {
     final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
     final fontFamily = context.hisaabFontFamily;
 
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color:
-            isDark
-                ? Colors.white.withValues(alpha: 0.065)
-                : Colors.white.withValues(alpha: 0.84),
+        color: theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(22),
         border: Border.all(
-          color:
-              isDark
-                  ? Colors.white.withValues(alpha: 0.10)
-                  : const Color(0xFFD9E6EF),
+          color: theme.colorScheme.outline,
         ),
       ),
       child: Column(

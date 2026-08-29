@@ -29,21 +29,10 @@ class _TrackersHomePageState extends ConsumerState<TrackersHomePage> {
     final totalMembers = _userCount(trackkars);
     final activeTrackers = _activeCount(trackkars, records, monthKey);
 
-    return Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors:
-              isDark
-                  ? const [Color(0xFF111A2B), Color(0xFF090F1B)]
-                  : const [Color(0xFFF9FCFE), Color(0xFFEAF2F7)],
-        ),
-      ),
-      child: SafeArea(
-        top: false,
-        child: Padding(
-          padding: const EdgeInsets.all(16),
+    return SafeArea(
+      top: false,
+      child: Padding(
+        padding: const EdgeInsets.all(16),
           child:
               trackkars.isEmpty
                   ? const Center(child: _TrackersEmptyState())
@@ -296,27 +285,11 @@ class _TrackersHomePageState extends ConsumerState<TrackersHomePage> {
                                               width: 36,
                                               height: 36,
                                               decoration: BoxDecoration(
-                                                color:
-                                                    isDark
-                                                        ? Colors.white
-                                                            .withValues(
-                                                              alpha: 0.06,
-                                                            )
-                                                        : const Color(
-                                                          0xFFF1F6FA,
-                                                        ),
+                                                color: colorScheme.surface,
                                                 borderRadius:
                                                     BorderRadius.circular(12),
                                                 border: Border.all(
-                                                  color:
-                                                      isDark
-                                                          ? Colors.white
-                                                              .withValues(
-                                                                alpha: 0.08,
-                                                              )
-                                                          : const Color(
-                                                            0xFFD9E6EF,
-                                                          ),
+                                                  color: colorScheme.outline,
                                                 ),
                                               ),
                                               child: Icon(
@@ -329,10 +302,7 @@ class _TrackersHomePageState extends ConsumerState<TrackersHomePage> {
                                               borderRadius:
                                                   BorderRadius.circular(16),
                                             ),
-                                            color:
-                                                isDark
-                                                    ? const Color(0xFF142033)
-                                                    : Colors.white,
+                                            color: colorScheme.surface,
                                             onSelected: (value) {
                                               if (value == 'archive') {
                                                 _updateTracker(
@@ -400,7 +370,6 @@ class _TrackersHomePageState extends ConsumerState<TrackersHomePage> {
                     ],
                   ),
         ),
-      ),
     );
   }
 
@@ -524,29 +493,16 @@ class _TrackersEmptyState extends StatelessWidget {
         padding: const EdgeInsets.all(24),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(28),
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors:
-                isDark
-                    ? [
-                      Colors.white.withValues(alpha: 0.10),
-                      Colors.white.withValues(alpha: 0.03),
-                    ]
-                    : [Colors.white, const Color(0xFFF2F7FB)],
-          ),
+          color: theme.colorScheme.surface,
           border: Border.all(
-            color:
-                isDark
-                    ? Colors.white.withValues(alpha: 0.10)
-                    : const Color(0xFFD9E6EF),
+            color: theme.colorScheme.outline,
           ),
           boxShadow: [
             BoxShadow(
               color:
                   isDark
-                      ? Colors.black.withValues(alpha: 0.28)
-                      : const Color(0xFF8FA8BA).withValues(alpha: 0.18),
+                      ? Colors.black.withValues(alpha: 0.25)
+                      : theme.colorScheme.outline.withValues(alpha: 0.18),
               blurRadius: 28,
               offset: const Offset(0, 14),
             ),
