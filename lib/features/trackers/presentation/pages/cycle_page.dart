@@ -143,7 +143,10 @@ class _CyclePageState extends ConsumerState<CyclePage> {
                         },
                       ),
                       const SizedBox(height: 8),
-                      Text('Users', style: TextStyle(fontFamily: context.hisaabFontFamily)),
+                      Text(
+                        'Users',
+                        style: TextStyle(fontFamily: context.hisaabFontFamily),
+                      ),
                       Wrap(
                         spacing: 8,
                         children:
@@ -239,7 +242,12 @@ class _CyclePageState extends ConsumerState<CyclePage> {
                           );
                           Navigator.pop(context);
                         },
-                        child: Text('Save changes', style: TextStyle(fontFamily: context.hisaabFontFamily)),
+                        child: Text(
+                          'Save changes',
+                          style: TextStyle(
+                            fontFamily: context.hisaabFontFamily,
+                          ),
+                        ),
                       ),
                     ],
                   ),
@@ -325,242 +333,236 @@ class _CyclePageState extends ConsumerState<CyclePage> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(16),
-          child: ListView(
-            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-            physics: const BouncingScrollPhysics(),
-            children: [
-              TrackerGlassCard(
-                child: Column(
-                  children: [
-                    Row(
-                      children: [
-                        Text(
-                          'Total',
-                          style: TextStyle(
-                            color: colorScheme.onSurface.withValues(
-                              alpha: 0.68,
-                            ),
-                            fontFamily: fontFamily,
-                          ),
-                        ),
-                        const Spacer(),
-                        Text(
-                          '₹$total',
-                          style: TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.w800,
-                            fontFamily: fontFamily,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
-                    Row(
-                      children: [
-                        Text(
-                          'Per Head',
-                          style: TextStyle(
-                            color: colorScheme.onSurface.withValues(
-                              alpha: 0.68,
-                            ),
-                            fontFamily: fontFamily,
-                          ),
-                        ),
-                        const Spacer(),
-                        Text(
-                          '₹$perHead',
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.w700,
-                            color: colorScheme.tertiary,
-                            fontFamily: fontFamily,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 12),
-                    Row(
-                      children: [
-                        Text(
-                          'Progress',
-                          style: TextStyle(
-                            color: colorScheme.onSurface.withValues(
-                              alpha: 0.68,
-                            ),
-                            fontFamily: fontFamily,
-                          ),
-                        ),
-                        const Spacer(),
-                        Text(
-                          '${(paidProgress * 100).round()}%',
-                          style: TextStyle(
-                            fontWeight: FontWeight.w700,
-                            color: colorScheme.tertiary,
-                            fontFamily: fontFamily,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(999),
-                      child: LinearProgressIndicator(
-                        minHeight: 10,
-                        value: paidProgress,
-                        backgroundColor:
-                            isDark ? Colors.white12 : const Color(0xFFD8E4EC),
-                        valueColor: const AlwaysStoppedAnimation<Color>(
-                          Color(0xFF3ED9A6),
+        child: ListView(
+          keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+          physics: const BouncingScrollPhysics(),
+          children: [
+            TrackerGlassCard(
+              child: Column(
+                children: [
+                  Row(
+                    children: [
+                      Text(
+                        'Total',
+                        style: TextStyle(
+                          color: colorScheme.onSurface.withValues(alpha: 0.68),
+                          fontFamily: fontFamily,
                         ),
                       ),
-                    ),
-                    if (tracker.amount == null) ...[
-                      const SizedBox(height: 10),
-                      TextField(
-                        controller: totalController,
-                        keyboardType: TextInputType.number,
-                        readOnly: !editingTotal,
-                        decoration: InputDecoration(
-                          labelText: 'Update total',
-                          prefixText: '₹ ',
-                          suffixIcon: IconButton(
-                            icon: Icon(editingTotal ? Icons.check : Icons.edit),
-                            onPressed: () {
-                              setState(() {
-                                if (editingTotal) {
-                                  total =
-                                      int.tryParse(totalController.text) ??
-                                      total;
-                                  persist();
-                                }
-                                editingTotal = !editingTotal;
-                              });
-                            },
-                          ),
+                      const Spacer(),
+                      Text(
+                        '₹$total',
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.w800,
+                          fontFamily: fontFamily,
                         ),
                       ),
                     ],
-                  ],
-                ),
-              ),
-              const SizedBox(height: 12),
-              Row(
-                children: [
-                  Expanded(
-                    child: _miniStat(
-                      title: 'Paid',
-                      value: '$paidCount',
-                      subValue: '₹$paidAmount',
-                      tint: const Color(0xFF3ED9A6),
-                    ),
                   ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: _miniStat(
-                      title: 'Pending',
-                      value: '$pendingCount',
-                      subValue: '₹$pendingAmount',
-                      tint: const Color(0xFFFFB85C),
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: _miniStat(
-                      title: 'Due',
-                      value: _dueText(daysRemaining),
-                      subValue: '${due!.day}/${due!.month}',
-                      tint:
-                          daysRemaining < 0
-                              ? const Color(0xFFFF6E6E)
-                              : const Color(0xFF8CCBFF),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 12),
-              Row(
-                children: [
-                  Expanded(
-                    child: FilledButton.icon(
-                      onPressed:
-                          totalUsers == 0 ? null : () => setAllPaid(!allPaid),
-                      icon: Icon(
-                        allPaid
-                            ? Icons.restart_alt_rounded
-                            : Icons.done_all_rounded,
+                  const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      Text(
+                        'Per Head',
+                        style: TextStyle(
+                          color: colorScheme.onSurface.withValues(alpha: 0.68),
+                          fontFamily: fontFamily,
+                        ),
                       ),
-                      label: Text(allPaid ? 'Reset all' : 'Mark all paid', style: TextStyle(fontFamily: fontFamily)),
+                      const Spacer(),
+                      Text(
+                        '₹$perHead',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w700,
+                          color: colorScheme.tertiary,
+                          fontFamily: fontFamily,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  Row(
+                    children: [
+                      Text(
+                        'Progress',
+                        style: TextStyle(
+                          color: colorScheme.onSurface.withValues(alpha: 0.68),
+                          fontFamily: fontFamily,
+                        ),
+                      ),
+                      const Spacer(),
+                      Text(
+                        '${(paidProgress * 100).round()}%',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w700,
+                          color: colorScheme.tertiary,
+                          fontFamily: fontFamily,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(999),
+                    child: LinearProgressIndicator(
+                      minHeight: 10,
+                      value: paidProgress,
+                      backgroundColor:
+                          isDark ? Colors.white12 : const Color(0xFFD8E4EC),
+                      valueColor: const AlwaysStoppedAnimation<Color>(
+                        Color(0xFF3ED9A6),
+                      ),
                     ),
                   ),
+                  if (tracker.amount == null) ...[
+                    const SizedBox(height: 10),
+                    TextField(
+                      controller: totalController,
+                      keyboardType: TextInputType.number,
+                      readOnly: !editingTotal,
+                      decoration: InputDecoration(
+                        labelText: 'Update total',
+                        prefixText: '₹ ',
+                        suffixIcon: IconButton(
+                          icon: Icon(editingTotal ? Icons.check : Icons.edit),
+                          onPressed: () {
+                            setState(() {
+                              if (editingTotal) {
+                                total =
+                                    int.tryParse(totalController.text) ?? total;
+                                persist();
+                              }
+                              editingTotal = !editingTotal;
+                            });
+                          },
+                        ),
+                      ),
+                    ),
+                  ],
                 ],
               ),
-              const SizedBox(height: 12),
-              ...tracker.users.map((u) {
-                final isPaid = paid[u] == true;
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: 8),
-                  child: TrackerGlassCard(
-                    onTap: () {
-                      setState(() => paid[u] = !paid[u]!);
-                      persist();
-                    },
-                    child: Row(
-                      children: [
-                        Icon(
-                          isPaid
-                              ? Icons.check_circle
-                              : Icons.radio_button_unchecked,
-                          color:
-                              isPaid
-                                  ? const Color(0xFF3ED9A6)
-                                  : colorScheme.onSurface.withValues(
-                                    alpha: 0.56,
-                                  ),
-                        ),
-                        const SizedBox(width: 14),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                u,
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w700,
-                                  fontFamily: fontFamily,
-                                ),
-                              ),
-                              const SizedBox(height: 2),
-                              Text(
-                                isPaid ? 'Paid' : 'Pending',
-                                style: TextStyle(
-                                  color:
-                                      isPaid
-                                          ? colorScheme.tertiary
-                                          : colorScheme.secondary,
-                                  fontFamily: fontFamily,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        Text(
-                          '₹$perHead',
-                          style: TextStyle(
-                            fontWeight: FontWeight.w800,
-                            fontSize: 16,
-                            fontFamily: fontFamily,
-                          ),
-                        ),
-                      ],
+            ),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                Expanded(
+                  child: _miniStat(
+                    title: 'Paid',
+                    value: '$paidCount',
+                    subValue: '₹$paidAmount',
+                    tint: const Color(0xFF3ED9A6),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: _miniStat(
+                    title: 'Pending',
+                    value: '$pendingCount',
+                    subValue: '₹$pendingAmount',
+                    tint: const Color(0xFFFFB85C),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: _miniStat(
+                    title: 'Due',
+                    value: _dueText(daysRemaining),
+                    subValue: '${due!.day}/${due!.month}',
+                    tint:
+                        daysRemaining < 0
+                            ? const Color(0xFFFF6E6E)
+                            : const Color(0xFF8CCBFF),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                Expanded(
+                  child: FilledButton.icon(
+                    onPressed:
+                        totalUsers == 0 ? null : () => setAllPaid(!allPaid),
+                    icon: Icon(
+                      allPaid
+                          ? Icons.restart_alt_rounded
+                          : Icons.done_all_rounded,
+                    ),
+                    label: Text(
+                      allPaid ? 'Reset all' : 'Mark all paid',
+                      style: TextStyle(fontFamily: fontFamily),
                     ),
                   ),
-                );
-              }),
-              const SizedBox(height: 88),
-            ],
-          ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            ...tracker.users.map((u) {
+              final isPaid = paid[u] == true;
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: TrackerGlassCard(
+                  onTap: () {
+                    setState(() => paid[u] = !paid[u]!);
+                    persist();
+                  },
+                  child: Row(
+                    children: [
+                      Icon(
+                        isPaid
+                            ? Icons.check_circle
+                            : Icons.radio_button_unchecked,
+                        color:
+                            isPaid
+                                ? const Color(0xFF3ED9A6)
+                                : colorScheme.onSurface.withValues(alpha: 0.56),
+                      ),
+                      const SizedBox(width: 14),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              u,
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w700,
+                                fontFamily: fontFamily,
+                              ),
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              isPaid ? 'Paid' : 'Pending',
+                              style: TextStyle(
+                                color:
+                                    isPaid
+                                        ? colorScheme.tertiary
+                                        : colorScheme.secondary,
+                                fontFamily: fontFamily,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Text(
+                        '₹$perHead',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w800,
+                          fontSize: 16,
+                          fontFamily: fontFamily,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            }),
+            const SizedBox(height: 88),
+          ],
         ),
+      ),
     );
   }
 
@@ -598,12 +600,20 @@ class _CyclePageState extends ConsumerState<CyclePage> {
           const SizedBox(height: 6),
           Text(
             value,
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, fontFamily: fontFamily),
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w800,
+              fontFamily: fontFamily,
+            ),
           ),
           const SizedBox(height: 2),
           Text(
             subValue,
-            style: TextStyle(color: tint, fontWeight: FontWeight.w600, fontFamily: fontFamily),
+            style: TextStyle(
+              color: tint,
+              fontWeight: FontWeight.w600,
+              fontFamily: fontFamily,
+            ),
           ),
         ],
       ),

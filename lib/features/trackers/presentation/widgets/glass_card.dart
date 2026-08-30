@@ -18,10 +18,7 @@ class TrackerGlassCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: theme.colorScheme.outline,
-          width: 1,
-        ),
+        border: Border.all(color: theme.colorScheme.outline, width: 1),
         boxShadow: [
           BoxShadow(
             color:

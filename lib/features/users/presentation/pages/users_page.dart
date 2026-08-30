@@ -29,307 +29,299 @@ class _UsersPageState extends ConsumerState<UsersPage> {
       top: false,
       child: ListView(
         padding: const EdgeInsets.all(16),
-          children: [
-            TrackerGlassCard(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Container(
-                        width: 48,
-                        height: 48,
-                        decoration: BoxDecoration(
-                          color: colorScheme.primary.withValues(
-                            alpha: isDark ? 0.18 : 0.12,
-                          ),
-                          borderRadius: BorderRadius.circular(18),
+        children: [
+          TrackerGlassCard(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Container(
+                      width: 48,
+                      height: 48,
+                      decoration: BoxDecoration(
+                        color: colorScheme.primary.withValues(
+                          alpha: isDark ? 0.18 : 0.12,
                         ),
-                        child: Icon(
-                          Icons.people_alt_rounded,
-                          color: colorScheme.primary,
-                        ),
+                        borderRadius: BorderRadius.circular(18),
                       ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Users & Groups',
-                              style: theme.textTheme.titleLarge?.copyWith(
-                                fontWeight: FontWeight.w800,
-                                fontFamily: fontFamily,
-                              ),
+                      child: Icon(
+                        Icons.people_alt_rounded,
+                        color: colorScheme.primary,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Users & Groups',
+                            style: theme.textTheme.titleLarge?.copyWith(
+                              fontWeight: FontWeight.w800,
+                              fontFamily: fontFamily,
                             ),
-                            const SizedBox(height: 4),
-                            Text(
-                              'Users from the Home tab appear here. Combine them into groups for one-tap trackkar setup.',
-                              style: theme.textTheme.bodyMedium?.copyWith(
-                                color: colorScheme.onSurface.withValues(
-                                  alpha: 0.68,
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            'Users from the Home tab appear here. Combine them into groups for one-tap trackkar setup.',
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              color: colorScheme.onSurface.withValues(
+                                alpha: 0.68,
+                              ),
+                              fontFamily: fontFamily,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 18),
+                Row(
+                  children: [
+                    _summaryTile(
+                      context,
+                      label: 'Users',
+                      value: '${users.length}',
+                    ),
+                    const SizedBox(width: 12),
+                    _summaryTile(
+                      context,
+                      label: 'Groups',
+                      value: '${groups.length}',
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 16),
+          _sectionCard(
+            context,
+            title: 'Users',
+            child:
+                users.isEmpty
+                    ? _emptyBody(
+                      context,
+                      'No users yet. Add people from the Home tab using the + button — they will appear here automatically.',
+                    )
+                    : Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Wrap(
+                          spacing: 10,
+                          runSpacing: 10,
+                          children:
+                              users.map((user) {
+                                return SizedBox(
+                                  width: 115,
+                                  child: Chip(
+                                    label: Text(
+                                      user,
+                                      overflow: TextOverflow.ellipsis,
+                                      maxLines: 1,
+                                      style: TextStyle(fontFamily: fontFamily),
+                                    ),
+                                    labelPadding: const EdgeInsets.only(
+                                      left: 4,
+                                      right: 4,
+                                    ),
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 4,
+                                      vertical: 4,
+                                    ),
+                                  ),
+                                );
+                              }).toList(),
+                        ),
+                        const SizedBox(height: 12),
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.info_outline,
+                              size: 14,
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.onSurface.withValues(alpha: 0.5),
+                            ),
+                            const SizedBox(width: 6),
+                            Expanded(
+                              child: Text(
+                                'Manage users from the Home tab.',
+                                style: Theme.of(
+                                  context,
+                                ).textTheme.bodySmall?.copyWith(
+                                  color: Theme.of(context).colorScheme.onSurface
+                                      .withValues(alpha: 0.55),
+                                  fontFamily: fontFamily,
                                 ),
-                                fontFamily: fontFamily,
                               ),
                             ),
                           ],
                         ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 18),
-                  Row(
-                    children: [
-                      _summaryTile(
-                        context,
-                        label: 'Users',
-                        value: '${users.length}',
-                      ),
-                      const SizedBox(width: 12),
-                      _summaryTile(
-                        context,
-                        label: 'Groups',
-                        value: '${groups.length}',
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 16),
-            _sectionCard(
-              context,
-              title: 'Users',
-              child:
-                  users.isEmpty
-                      ? _emptyBody(
-                        context,
-                        'No users yet. Add people from the Home tab using the + button — they will appear here automatically.',
-                      )
-                      : Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Wrap(
-                            spacing: 10,
-                            runSpacing: 10,
-                            children:
-                                users.map((user) {
-                                  return SizedBox(
-                                    width: 115,
-                                    child: Chip(
-                                      label: Text(
-                                        user,
-                                        overflow: TextOverflow.ellipsis,
-                                        maxLines: 1,
-                                        style: TextStyle(fontFamily: fontFamily),
-                                      ),
-                                      labelPadding: const EdgeInsets.only(
-                                        left: 4,
-                                        right: 4,
-                                      ),
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 4,
-                                        vertical: 4,
-                                      ),
-                                    ),
-                                  );
-                                }).toList(),
-                          ),
-                          const SizedBox(height: 12),
-                          Row(
-                            children: [
-                              Icon(
-                                Icons.info_outline,
-                                size: 14,
-                                color: Theme.of(
-                                  context,
-                                ).colorScheme.onSurface.withValues(alpha: 0.5),
-                              ),
-                              const SizedBox(width: 6),
-                              Expanded(
-                                child: Text(
-                                  'Manage users from the Home tab.',
-                                  style: Theme.of(
-                                    context,
-                                  ).textTheme.bodySmall?.copyWith(
-                                    color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.55),
-                                    fontFamily: fontFamily,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-            ),
-            const SizedBox(height: 12),
-            _sectionCard(
-              context,
-              title: 'Groups',
-              actionLabel: users.isEmpty ? null : 'Create Group',
-              onAction: users.isEmpty ? null : () => _showGroupSheet(),
-              child:
-                  groups.isEmpty
-                      ? _emptyBody(
-                        context,
-                        users.isEmpty
-                            ? 'Add users first, then combine them into reusable groups.'
-                            : 'No groups have been created yet. Create groups from existing users for one-tap trackkar setup.',
-                      )
-                      : Column(
-                        children:
-                            groups.map((group) {
-                              return Padding(
-                                padding: const EdgeInsets.only(bottom: 10),
-                                child: Container(
-                                  padding: const EdgeInsets.all(14),
-                                  decoration: BoxDecoration(
+                      ],
+                    ),
+          ),
+          const SizedBox(height: 12),
+          _sectionCard(
+            context,
+            title: 'Groups',
+            actionLabel: users.isEmpty ? null : 'Create Group',
+            onAction: users.isEmpty ? null : () => _showGroupSheet(),
+            child:
+                groups.isEmpty
+                    ? _emptyBody(
+                      context,
+                      users.isEmpty
+                          ? 'Add users first, then combine them into reusable groups.'
+                          : 'No groups have been created yet. Create groups from existing users for one-tap trackkar setup.',
+                    )
+                    : Column(
+                      children:
+                          groups.map((group) {
+                            return Padding(
+                              padding: const EdgeInsets.only(bottom: 10),
+                              child: Container(
+                                padding: const EdgeInsets.all(14),
+                                decoration: BoxDecoration(
+                                  color:
+                                      isDark
+                                          ? Colors.white.withValues(alpha: 0.05)
+                                          : Colors.white.withValues(
+                                            alpha: 0.76,
+                                          ),
+                                  borderRadius: BorderRadius.circular(18),
+                                  border: Border.all(
                                     color:
                                         isDark
                                             ? Colors.white.withValues(
-                                              alpha: 0.05,
+                                              alpha: 0.08,
                                             )
-                                            : Colors.white.withValues(
-                                              alpha: 0.76,
-                                            ),
-                                    borderRadius: BorderRadius.circular(18),
-                                    border: Border.all(
-                                      color:
-                                          isDark
-                                              ? Colors.white.withValues(
-                                                alpha: 0.08,
-                                              )
-                                              : const Color(0xFFD9E6EF),
-                                    ),
+                                            : const Color(0xFFD9E6EF),
                                   ),
-                                  child: Row(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Container(
-                                        width: 40,
-                                        height: 40,
+                                ),
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Container(
+                                      width: 40,
+                                      height: 40,
+                                      decoration: BoxDecoration(
+                                        color: colorScheme.primary.withValues(
+                                          alpha: isDark ? 0.18 : 0.12,
+                                        ),
+                                        borderRadius: BorderRadius.circular(14),
+                                      ),
+                                      child: Icon(
+                                        Icons.group_work_outlined,
+                                        color: colorScheme.primary,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 12),
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            group.name,
+                                            style: const TextStyle(
+                                              fontWeight: FontWeight.w700,
+                                              fontSize: 16,
+                                            ),
+                                          ),
+                                          const SizedBox(height: 4),
+                                          Text(
+                                            '${group.members.length} member${group.members.length == 1 ? '' : 's'}',
+                                            style: theme.textTheme.bodySmall
+                                                ?.copyWith(
+                                                  color: colorScheme.onSurface
+                                                      .withValues(alpha: 0.68),
+                                                ),
+                                          ),
+                                          const SizedBox(height: 8),
+                                          Wrap(
+                                            spacing: 8,
+                                            runSpacing: 8,
+                                            children:
+                                                group.members
+                                                    .map(
+                                                      (member) => _miniTag(
+                                                        context,
+                                                        member,
+                                                      ),
+                                                    )
+                                                    .toList(),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    PopupMenuButton<String>(
+                                      icon: Container(
+                                        width: 36,
+                                        height: 36,
                                         decoration: BoxDecoration(
-                                          color: colorScheme.primary.withValues(
-                                            alpha: isDark ? 0.18 : 0.12,
-                                          ),
+                                          color:
+                                              isDark
+                                                  ? Colors.white.withValues(
+                                                    alpha: 0.06,
+                                                  )
+                                                  : const Color(0xFFF1F6FA),
                                           borderRadius: BorderRadius.circular(
-                                            14,
+                                            12,
                                           ),
-                                        ),
-                                        child: Icon(
-                                          Icons.group_work_outlined,
-                                          color: colorScheme.primary,
-                                        ),
-                                      ),
-                                      const SizedBox(width: 12),
-                                      Expanded(
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              group.name,
-                                              style: const TextStyle(
-                                                fontWeight: FontWeight.w700,
-                                                fontSize: 16,
-                                              ),
-                                            ),
-                                            const SizedBox(height: 4),
-                                            Text(
-                                              '${group.members.length} member${group.members.length == 1 ? '' : 's'}',
-                                              style: theme.textTheme.bodySmall
-                                                  ?.copyWith(
-                                                    color: colorScheme.onSurface
-                                                        .withValues(
-                                                          alpha: 0.68,
-                                                        ),
-                                                  ),
-                                            ),
-                                            const SizedBox(height: 8),
-                                            Wrap(
-                                              spacing: 8,
-                                              runSpacing: 8,
-                                              children:
-                                                  group.members
-                                                      .map(
-                                                        (member) => _miniTag(
-                                                          context,
-                                                          member,
-                                                        ),
-                                                      )
-                                                      .toList(),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                      PopupMenuButton<String>(
-                                        icon: Container(
-                                          width: 36,
-                                          height: 36,
-                                          decoration: BoxDecoration(
+                                          border: Border.all(
                                             color:
                                                 isDark
                                                     ? Colors.white.withValues(
-                                                      alpha: 0.06,
+                                                      alpha: 0.08,
                                                     )
-                                                    : const Color(0xFFF1F6FA),
-                                            borderRadius: BorderRadius.circular(
-                                              12,
-                                            ),
-                                            border: Border.all(
-                                              color:
-                                                  isDark
-                                                      ? Colors.white.withValues(
-                                                        alpha: 0.08,
-                                                      )
-                                                      : const Color(0xFFD9E6EF),
-                                            ),
-                                          ),
-                                          child: Icon(
-                                            Icons.more_horiz,
-                                            color: colorScheme.onSurface
-                                                .withValues(alpha: 0.76),
+                                                    : const Color(0xFFD9E6EF),
                                           ),
                                         ),
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(
-                                            16,
-                                          ),
+                                        child: Icon(
+                                          Icons.more_horiz,
+                                          color: colorScheme.onSurface
+                                              .withValues(alpha: 0.76),
                                         ),
-                                        color:
-                                            isDark
-                                                ? const Color(0xFF142033)
-                                                : Colors.white,
-                                        onSelected: (value) {
-                                          if (value == 'delete') {
-                                            _deleteGroup(group.id, group.name);
-                                          } else if (value == 'edit') {
-                                            _showGroupSheet(group: group);
-                                          }
-                                        },
-                                        itemBuilder:
-                                            (context) => const [
-                                              PopupMenuItem<String>(
-                                                value: 'edit',
-                                                child: Text('Edit Group'),
-                                              ),
-                                              PopupMenuItem<String>(
-                                                value: 'delete',
-                                                child: Text('Delete Group'),
-                                              ),
-                                            ],
                                       ),
-                                    ],
-                                  ),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(16),
+                                      ),
+                                      color:
+                                          isDark
+                                              ? const Color(0xFF142033)
+                                              : Colors.white,
+                                      onSelected: (value) {
+                                        if (value == 'delete') {
+                                          _deleteGroup(group.id, group.name);
+                                        } else if (value == 'edit') {
+                                          _showGroupSheet(group: group);
+                                        }
+                                      },
+                                      itemBuilder:
+                                          (context) => const [
+                                            PopupMenuItem<String>(
+                                              value: 'edit',
+                                              child: Text('Edit Group'),
+                                            ),
+                                            PopupMenuItem<String>(
+                                              value: 'delete',
+                                              child: Text('Delete Group'),
+                                            ),
+                                          ],
+                                    ),
+                                  ],
                                 ),
-                              );
-                            }).toList(),
-                      ),
-            ),
-            const SizedBox(height: 24),
-          ],
-        ),
+                              ),
+                            );
+                          }).toList(),
+                    ),
+          ),
+          const SizedBox(height: 24),
+        ],
+      ),
     );
   }
 
@@ -355,7 +347,11 @@ class _UsersPageState extends ConsumerState<UsersPage> {
           children: [
             Text(
               value,
-              style: TextStyle(fontSize: 22, fontWeight: FontWeight.w800, fontFamily: fontFamily),
+              style: TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.w800,
+                fontFamily: fontFamily,
+              ),
             ),
             const SizedBox(height: 2),
             Text(
@@ -388,9 +384,7 @@ class _UsersPageState extends ConsumerState<UsersPage> {
       decoration: BoxDecoration(
         color: theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(22),
-        border: Border.all(
-          color: theme.colorScheme.outline,
-        ),
+        border: Border.all(color: theme.colorScheme.outline),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -410,7 +404,10 @@ class _UsersPageState extends ConsumerState<UsersPage> {
                 FilledButton.tonalIcon(
                   onPressed: onAction,
                   icon: const Icon(Icons.add, size: 18),
-                  label: Text(actionLabel, style: TextStyle(fontFamily: fontFamily)),
+                  label: Text(
+                    actionLabel,
+                    style: TextStyle(fontFamily: fontFamily),
+                  ),
                 ),
             ],
           ),
@@ -448,11 +445,13 @@ class _UsersPageState extends ConsumerState<UsersPage> {
       ),
       child: Text(
         label,
-        style: theme.textTheme.bodySmall?.copyWith(fontWeight: FontWeight.w600, fontFamily: fontFamily),
+        style: theme.textTheme.bodySmall?.copyWith(
+          fontWeight: FontWeight.w600,
+          fontFamily: fontFamily,
+        ),
       ),
     );
   }
-
 
   Future<void> _showGroupSheet({UserGroup? group}) async {
     final nameCtrl = TextEditingController(text: group?.name ?? '');

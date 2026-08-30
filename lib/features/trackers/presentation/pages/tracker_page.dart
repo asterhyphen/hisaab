@@ -82,408 +82,411 @@ class _TrackerPageState extends ConsumerState<TrackerPage> {
     final perHead = peopleCount == 0 ? 0 : (baseAmount / peopleCount).ceil();
 
     return Scaffold(
-      appBar: AppBar(title: Text('Create Tracker', style: TextStyle(fontFamily: fontFamily))),
+      appBar: AppBar(
+        title: Text('Create Tracker', style: TextStyle(fontFamily: fontFamily)),
+      ),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(16),
-            child: ListView(
-              keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-              physics: const BouncingScrollPhysics(),
-              children: [
-                TextField(
-                  controller: titleCtrl,
-                  decoration: const InputDecoration(
-                    labelText: 'Tracker name',
-                    prefixIcon: Icon(Icons.description_outlined),
-                  ),
+          child: ListView(
+            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+            physics: const BouncingScrollPhysics(),
+            children: [
+              TextField(
+                controller: titleCtrl,
+                decoration: const InputDecoration(
+                  labelText: 'Tracker name',
+                  prefixIcon: Icon(Icons.description_outlined),
                 ),
-                const SizedBox(height: 12),
-                SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: SegmentedButton<bool>(
-                    segments: const [
-                      ButtonSegment<bool>(
-                        value: false,
-                        label: Text('Variable Bill'),
-                      ),
-                      ButtonSegment<bool>(
-                        value: true,
-                        label: Text('Constant Bill'),
-                      ),
-                    ],
-                    selected: {isConstantBill},
-                    multiSelectionEnabled: false,
-                    showSelectedIcon: false,
-                    onSelectionChanged: (selected) {
-                      setState(() {
-                        isConstantBill = selected.first;
-                        if (!isConstantBill) amountCtrl.clear();
-                      });
-                    },
-                  ),
-                ),
-                if (isConstantBill) ...[
-                  const SizedBox(height: 12),
-                  TextField(
-                    controller: amountCtrl,
-                    keyboardType: TextInputType.number,
-                    decoration: const InputDecoration(
-                      labelText: 'Amount',
-                      prefixIcon: Icon(Icons.currency_rupee),
+              ),
+              const SizedBox(height: 12),
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: SegmentedButton<bool>(
+                  segments: const [
+                    ButtonSegment<bool>(
+                      value: false,
+                      label: Text('Variable Bill'),
                     ),
-                    onChanged: (_) => setState(() {}),
+                    ButtonSegment<bool>(
+                      value: true,
+                      label: Text('Constant Bill'),
+                    ),
+                  ],
+                  selected: {isConstantBill},
+                  multiSelectionEnabled: false,
+                  showSelectedIcon: false,
+                  onSelectionChanged: (selected) {
+                    setState(() {
+                      isConstantBill = selected.first;
+                      if (!isConstantBill) amountCtrl.clear();
+                    });
+                  },
+                ),
+              ),
+              if (isConstantBill) ...[
+                const SizedBox(height: 12),
+                TextField(
+                  controller: amountCtrl,
+                  keyboardType: TextInputType.number,
+                  decoration: const InputDecoration(
+                    labelText: 'Amount',
+                    prefixIcon: Icon(Icons.currency_rupee),
                   ),
-                ],
-                const SizedBox(height: 14),
-                if (savedGroups.isNotEmpty || savedUsers.isNotEmpty) ...[
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          'Select from saved groups or users',
-                          style: theme.textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.w700,
-                          ),
+                  onChanged: (_) => setState(() {}),
+                ),
+              ],
+              const SizedBox(height: 14),
+              if (savedGroups.isNotEmpty || savedUsers.isNotEmpty) ...[
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        'Select from saved groups or users',
+                        style: theme.textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.w700,
                         ),
                       ),
-                      TextButton(
-                        onPressed: _openUsersPage,
-                        child: const Text('Manage groups'),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 10),
-                ],
-                if (savedGroups.isNotEmpty) ...[
-                  Text(
-                    'Quick Add Groups',
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w700,
                     ),
+                    TextButton(
+                      onPressed: _openUsersPage,
+                      child: const Text('Manage groups'),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 10),
+              ],
+              if (savedGroups.isNotEmpty) ...[
+                Text(
+                  'Quick Add Groups',
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w700,
                   ),
-                  const SizedBox(height: 10),
-                  SizedBox(
-                    height: 96,
-                    child: ListView.separated(
-                      scrollDirection: Axis.horizontal,
-                      itemCount: savedGroups.length,
-                      separatorBuilder: (_, __) => const SizedBox(width: 10),
-                      itemBuilder: (context, index) {
-                        final group = savedGroups[index];
-                        final allAdded = group.members.every(users.contains);
-                        return InkWell(
-                          onTap: () => _addUsers(group.members),
-                          borderRadius: BorderRadius.circular(18),
-                          child: Container(
-                            width: 180,
-                            padding: const EdgeInsets.all(14),
-                            decoration: BoxDecoration(
+                ),
+                const SizedBox(height: 10),
+                SizedBox(
+                  height: 96,
+                  child: ListView.separated(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: savedGroups.length,
+                    separatorBuilder: (_, __) => const SizedBox(width: 10),
+                    itemBuilder: (context, index) {
+                      final group = savedGroups[index];
+                      final allAdded = group.members.every(users.contains);
+                      return InkWell(
+                        onTap: () => _addUsers(group.members),
+                        borderRadius: BorderRadius.circular(18),
+                        child: Container(
+                          width: 180,
+                          padding: const EdgeInsets.all(14),
+                          decoration: BoxDecoration(
+                            color:
+                                allAdded
+                                    ? colorScheme.primary.withValues(
+                                      alpha: isDark ? 0.16 : 0.12,
+                                    )
+                                    : (isDark
+                                        ? Colors.white.withValues(alpha: 0.06)
+                                        : Colors.white.withValues(alpha: 0.82)),
+                            borderRadius: BorderRadius.circular(18),
+                            border: Border.all(
                               color:
                                   allAdded
                                       ? colorScheme.primary.withValues(
-                                        alpha: isDark ? 0.16 : 0.12,
+                                        alpha: 0.4,
                                       )
                                       : (isDark
-                                          ? Colors.white.withValues(alpha: 0.06)
-                                          : Colors.white.withValues(
-                                            alpha: 0.82,
-                                          )),
-                              borderRadius: BorderRadius.circular(18),
-                              border: Border.all(
-                                color:
+                                          ? Colors.white.withValues(alpha: 0.08)
+                                          : const Color(0xFFD9E6EF)),
+                            ),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  Icon(
+                                    Icons.groups_rounded,
+                                    color:
+                                        allAdded
+                                            ? colorScheme.primary
+                                            : colorScheme.onSurface,
+                                  ),
+                                  const Spacer(),
+                                  Icon(
                                     allAdded
-                                        ? colorScheme.primary.withValues(
-                                          alpha: 0.4,
-                                        )
-                                        : (isDark
-                                            ? Colors.white.withValues(
-                                              alpha: 0.08,
-                                            )
-                                            : const Color(0xFFD9E6EF)),
+                                        ? Icons.check_circle
+                                        : Icons.add_circle_outline,
+                                    size: 18,
+                                    color:
+                                        allAdded
+                                            ? colorScheme.primary
+                                            : colorScheme.onSurface.withValues(
+                                              alpha: 0.64,
+                                            ),
+                                  ),
+                                ],
                               ),
-                            ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                                  children: [
-                                    Icon(
-                                      Icons.groups_rounded,
-                                      color:
-                                          allAdded
-                                              ? colorScheme.primary
-                                              : colorScheme.onSurface,
-                                    ),
-                                    const Spacer(),
-                                    Icon(
-                                      allAdded
-                                          ? Icons.check_circle
-                                          : Icons.add_circle_outline,
-                                      size: 18,
-                                      color:
-                                          allAdded
-                                              ? colorScheme.primary
-                                              : colorScheme.onSurface
-                                                  .withValues(alpha: 0.64),
-                                    ),
-                                  ],
+                              const SizedBox(height: 10),
+                              Text(
+                                group.name,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 15,
+                                  fontFamily: fontFamily,
                                 ),
-                                const SizedBox(height: 10),
-                                Text(
-                                  group.name,
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.w700,
-                                    fontSize: 15,
-                                    fontFamily: fontFamily,
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                '${group.members.length} member${group.members.length == 1 ? '' : 's'}',
+                                style: theme.textTheme.bodySmall?.copyWith(
+                                  color: colorScheme.onSurface.withValues(
+                                    alpha: 0.68,
                                   ),
                                 ),
-                                const SizedBox(height: 4),
-                                Text(
-                                  '${group.members.length} member${group.members.length == 1 ? '' : 's'}',
-                                  style: theme.textTheme.bodySmall?.copyWith(
-                                    color: colorScheme.onSurface.withValues(
-                                      alpha: 0.68,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                  const SizedBox(height: 14),
-                ],
-                if (savedUsers.isNotEmpty) ...[
-                  Text(
-                    'Pick Saved Users',
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  Wrap(
-                    spacing: 8,
-                    runSpacing: 8,
-                    children:
-                        savedUsers.map((savedUser) {
-                          final added = users.contains(savedUser);
-                          return FilterChip(
-                            label: Text(savedUser),
-                            selected: added,
-                            onSelected: (selected) {
-                              if (selected) {
-                                _addUsers([savedUser]);
-                              } else {
-                                setState(() => users.remove(savedUser));
-                              }
-                            },
-                          );
-                        }).toList(),
-                  ),
-                  const SizedBox(height: 14),
-                ],
-                if (savedGroups.isEmpty && savedUsers.isEmpty) ...[
-                  Container(
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color:
-                          isDark
-                              ? Colors.white.withValues(alpha: 0.06)
-                              : Colors.white.withValues(alpha: 0.82),
-                      borderRadius: BorderRadius.circular(18),
-                      border: Border.all(
-                        color:
-                            isDark
-                                ? Colors.white.withValues(alpha: 0.08)
-                                : const Color(0xFFD9E6EF),
-                      ),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Add users from the Home tab first',
-                          style: theme.textTheme.bodyLarge?.copyWith(
-                            fontWeight: FontWeight.w700,
+                              ),
+                            ],
                           ),
                         ),
-                        const SizedBox(height: 8),
-                        Text(
-                          'Go to the Home tab and tap the + button to add people. They will appear here automatically when creating a new tracker.',
-                          style: theme.textTheme.bodyMedium?.copyWith(
-                            color: colorScheme.onSurface.withValues(
-                              alpha: 0.72,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
+                      );
+                    },
                   ),
-                  const SizedBox(height: 14),
-                ],
-                Row(
-                  children: [
-                    Expanded(
-                      child: _dateTile(
-                        context: context,
-                        icon: Icons.calendar_month,
-                        label: 'Start Date',
-                        value:
-                            '${startDate.day}/${startDate.month}/${startDate.year}',
-                        onTap: () => pickDate(true),
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: _dateTile(
-                        context: context,
-                        icon: Icons.event,
-                        label: 'Recurring Due Date',
-                        value:
-                            '${dueDate.day}/${dueDate.month}/${dueDate.year}',
-                        onTap: () => pickDate(false),
-                      ),
-                    ),
-                  ],
                 ),
                 const SizedBox(height: 14),
-                Row(
-                  children: [
-                    Expanded(
-                      child: TextField(
-                        controller: userCtrl,
-                        decoration: const InputDecoration(
-                          labelText: 'Add user manually',
-                          prefixIcon: Icon(Icons.person_add_alt_1),
-                        ),
-                        onSubmitted: (_) => _addUser(),
-                      ),
-                    ),
-                    const SizedBox(width: 6),
-                    IconButton.filled(
-                      icon: const Icon(Icons.add),
-                      onPressed: _addUser,
-                    ),
-                  ],
+              ],
+              if (savedUsers.isNotEmpty) ...[
+                Text(
+                  'Pick Saved Users',
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
                 const SizedBox(height: 10),
                 Wrap(
                   spacing: 8,
                   runSpacing: 8,
                   children:
-                      users
-                          .map(
-                            (u) => Chip(
-                              label: Text(u),
-                              deleteIcon: const Icon(Icons.close, size: 16),
-                              onDeleted: () => setState(() => users.remove(u)),
-                            ),
-                          )
-                          .toList(),
+                      savedUsers.map((savedUser) {
+                        final added = users.contains(savedUser);
+                        return FilterChip(
+                          label: Text(savedUser),
+                          selected: added,
+                          onSelected: (selected) {
+                            if (selected) {
+                              _addUsers([savedUser]);
+                            } else {
+                              setState(() => users.remove(savedUser));
+                            }
+                          },
+                        );
+                      }).toList(),
                 ),
                 const SizedBox(height: 14),
+              ],
+              if (savedGroups.isEmpty && savedUsers.isEmpty) ...[
                 Container(
-                  padding: const EdgeInsets.all(14),
+                  padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
                     color:
                         isDark
-                            ? Colors.white.withValues(alpha: 0.07)
+                            ? Colors.white.withValues(alpha: 0.06)
                             : Colors.white.withValues(alpha: 0.82),
-                    borderRadius: BorderRadius.circular(16),
+                    borderRadius: BorderRadius.circular(18),
                     border: Border.all(
                       color:
                           isDark
-                              ? Colors.white.withValues(alpha: 0.10)
+                              ? Colors.white.withValues(alpha: 0.08)
                               : const Color(0xFFD9E6EF),
                     ),
                   ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Per Head', style: TextStyle(fontFamily: fontFamily)),
                       Text(
-                        !isConstantBill
-                            ? 'Set monthly total later'
-                            : peopleCount == 0 || baseAmount == 0
-                            ? 'Add amount & users'
-                            : '₹$perHead each',
-                        style: TextStyle(
+                        'Add users from the Home tab first',
+                        style: theme.textTheme.bodyLarge?.copyWith(
                           fontWeight: FontWeight.w700,
-                          fontSize: 16,
-                          fontFamily: fontFamily,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'Go to the Home tab and tap the + button to add people. They will appear here automatically when creating a new tracker.',
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: colorScheme.onSurface.withValues(alpha: 0.72),
                         ),
                       ),
                     ],
                   ),
                 ),
-                const SizedBox(height: 10),
-                Text(
-                  'The selected due date repeats automatically every month.',
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: colorScheme.onSurface.withValues(alpha: 0.66),
-                  ),
-                ),
-                const SizedBox(height: 18),
-                Text(
-                  'Pick Icon',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, fontFamily: fontFamily),
-                ),
-                const SizedBox(height: 10),
-                Wrap(
-                  spacing: 12,
-                  runSpacing: 12,
-                  children:
-                      trackerIcons.entries.map((e) {
-                        final selected = iconId == e.key;
-                        return GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              iconId = e.key;
-                              iconManuallySelected = true;
-                            });
-                          },
-                          child: AnimatedContainer(
-                            duration: const Duration(milliseconds: 200),
-                            width: 52,
-                            height: 52,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(15),
-                              color:
-                                  selected
-                                      ? const Color(0xFF00B894)
-                                      : (isDark
-                                          ? Colors.white.withValues(alpha: 0.08)
-                                          : const Color(0xFFF0F5F9)),
-                            ),
-                            child: Icon(
-                              e.value,
-                              color:
-                                  selected
-                                      ? colorScheme.onPrimary
-                                      : colorScheme.onSurface,
-                            ),
-                          ),
-                        );
-                      }).toList(),
-                ),
-                const SizedBox(height: 24),
-                SizedBox(
-                  height: 50,
-                  child: ElevatedButton.icon(
-                    onPressed: _createTracker,
-                    icon: const Icon(Icons.check_circle_outline),
-                    label: Text('Create Tracker', style: TextStyle(fontFamily: fontFamily)),
-                  ),
-                ),
-                const SizedBox(height: 24),
+                const SizedBox(height: 14),
               ],
-            ),
+              Row(
+                children: [
+                  Expanded(
+                    child: _dateTile(
+                      context: context,
+                      icon: Icons.calendar_month,
+                      label: 'Start Date',
+                      value:
+                          '${startDate.day}/${startDate.month}/${startDate.year}',
+                      onTap: () => pickDate(true),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: _dateTile(
+                      context: context,
+                      icon: Icons.event,
+                      label: 'Recurring Due Date',
+                      value: '${dueDate.day}/${dueDate.month}/${dueDate.year}',
+                      onTap: () => pickDate(false),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 14),
+              Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: userCtrl,
+                      decoration: const InputDecoration(
+                        labelText: 'Add user manually',
+                        prefixIcon: Icon(Icons.person_add_alt_1),
+                      ),
+                      onSubmitted: (_) => _addUser(),
+                    ),
+                  ),
+                  const SizedBox(width: 6),
+                  IconButton.filled(
+                    icon: const Icon(Icons.add),
+                    onPressed: _addUser,
+                  ),
+                ],
+              ),
+              const SizedBox(height: 10),
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children:
+                    users
+                        .map(
+                          (u) => Chip(
+                            label: Text(u),
+                            deleteIcon: const Icon(Icons.close, size: 16),
+                            onDeleted: () => setState(() => users.remove(u)),
+                          ),
+                        )
+                        .toList(),
+              ),
+              const SizedBox(height: 14),
+              Container(
+                padding: const EdgeInsets.all(14),
+                decoration: BoxDecoration(
+                  color:
+                      isDark
+                          ? Colors.white.withValues(alpha: 0.07)
+                          : Colors.white.withValues(alpha: 0.82),
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(
+                    color:
+                        isDark
+                            ? Colors.white.withValues(alpha: 0.10)
+                            : const Color(0xFFD9E6EF),
+                  ),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text('Per Head', style: TextStyle(fontFamily: fontFamily)),
+                    Text(
+                      !isConstantBill
+                          ? 'Set monthly total later'
+                          : peopleCount == 0 || baseAmount == 0
+                          ? 'Add amount & users'
+                          : '₹$perHead each',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w700,
+                        fontSize: 16,
+                        fontFamily: fontFamily,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 10),
+              Text(
+                'The selected due date repeats automatically every month.',
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: colorScheme.onSurface.withValues(alpha: 0.66),
+                ),
+              ),
+              const SizedBox(height: 18),
+              Text(
+                'Pick Icon',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                  fontFamily: fontFamily,
+                ),
+              ),
+              const SizedBox(height: 10),
+              Wrap(
+                spacing: 12,
+                runSpacing: 12,
+                children:
+                    trackerIcons.entries.map((e) {
+                      final selected = iconId == e.key;
+                      return GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            iconId = e.key;
+                            iconManuallySelected = true;
+                          });
+                        },
+                        child: AnimatedContainer(
+                          duration: const Duration(milliseconds: 200),
+                          width: 52,
+                          height: 52,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(15),
+                            color:
+                                selected
+                                    ? const Color(0xFF00B894)
+                                    : (isDark
+                                        ? Colors.white.withValues(alpha: 0.08)
+                                        : const Color(0xFFF0F5F9)),
+                          ),
+                          child: Icon(
+                            e.value,
+                            color:
+                                selected
+                                    ? colorScheme.onPrimary
+                                    : colorScheme.onSurface,
+                          ),
+                        ),
+                      );
+                    }).toList(),
+              ),
+              const SizedBox(height: 24),
+              SizedBox(
+                height: 50,
+                child: ElevatedButton.icon(
+                  onPressed: _createTracker,
+                  icon: const Icon(Icons.check_circle_outline),
+                  label: Text(
+                    'Create Tracker',
+                    style: TextStyle(fontFamily: fontFamily),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 24),
+            ],
           ),
         ),
+      ),
     );
   }
 
@@ -542,11 +545,23 @@ class _TrackerPageState extends ConsumerState<TrackerPage> {
               children: [
                 Icon(icon, size: 16),
                 const SizedBox(width: 6),
-                Text(label, style: TextStyle(fontSize: 12, fontFamily: context.hisaabFontFamily)),
+                Text(
+                  label,
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontFamily: context.hisaabFontFamily,
+                  ),
+                ),
               ],
             ),
             const SizedBox(height: 6),
-            Text(value, style: TextStyle(fontWeight: FontWeight.w700, fontFamily: context.hisaabFontFamily)),
+            Text(
+              value,
+              style: TextStyle(
+                fontWeight: FontWeight.w700,
+                fontFamily: context.hisaabFontFamily,
+              ),
+            ),
           ],
         ),
       ),

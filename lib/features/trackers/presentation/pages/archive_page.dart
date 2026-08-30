@@ -25,7 +25,9 @@ class _ArchivePageState extends ConsumerState<ArchivePage> {
     final fontFamily = context.hisaabFontFamily;
 
     return Scaffold(
-      appBar: AppBar(title: Text('Archive', style: TextStyle(fontFamily: fontFamily))),
+      appBar: AppBar(
+        title: Text('Archive', style: TextStyle(fontFamily: fontFamily)),
+      ),
       body: SafeArea(
         child:
             trackkars.isEmpty

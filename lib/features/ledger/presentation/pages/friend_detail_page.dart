@@ -438,13 +438,13 @@ class _FriendDetailPageState extends ConsumerState<FriendDetailPage>
                       try {
                         final qrCode = QrCode(
                           20,
-                          QrErrorCorrectLevel.H, // H = 30% recovery for logo overlay
+                          QrErrorCorrectLevel
+                              .H, // H = 30% recovery for logo overlay
                         );
                         qrCode.addData(uri);
 
                         final avatarPath =
-                            (appBox.get('profileAvatar') as String?) ??
-                            '';
+                            (appBox.get('profileAvatar') as String?) ?? '';
                         final hasCustomAvatar =
                             avatarPath.isNotEmpty &&
                             File(
@@ -456,9 +456,7 @@ class _FriendDetailPageState extends ConsumerState<FriendDetailPage>
                           centerWidget = CircleAvatar(
                             radius: 24,
                             backgroundImage: FileImage(
-                              File(
-                                avatarPath.replaceFirst('file://', ''),
-                              ),
+                              File(avatarPath.replaceFirst('file://', '')),
                             ),
                             backgroundColor: Colors.white,
                           );
@@ -551,9 +549,7 @@ class _FriendDetailPageState extends ConsumerState<FriendDetailPage>
                     final bytes = await _captureQr();
                     if (bytes == null) return;
                     final dir = await getTemporaryDirectory();
-                    final file = File(
-                      '${dir.path}/upi_request.png',
-                    );
+                    final file = File('${dir.path}/upi_request.png');
                     await file.writeAsBytes(bytes);
                     await Share.shareXFiles(
                       [XFile(file.path)],
@@ -581,8 +577,7 @@ class _FriendDetailPageState extends ConsumerState<FriendDetailPage>
         final bytes = await _captureQr();
         if (bytes != null) {
           final dir = await _getDownloadsDirectory();
-          final fname =
-              'upi_qr_${DateTime.now().millisecondsSinceEpoch}.png';
+          final fname = 'upi_qr_${DateTime.now().millisecondsSinceEpoch}.png';
           final file = File('${dir.path}/$fname');
           await file.writeAsBytes(bytes);
           await Clipboard.setData(ClipboardData(text: uri));
@@ -1339,7 +1334,7 @@ class _FriendDetailPageState extends ConsumerState<FriendDetailPage>
                                       Theme.of(context).scaffoldBackgroundColor,
                                 ),
                               ),
-                            if (total != 0) ...[ 
+                            if (total != 0) ...[
                               const SizedBox(width: 8),
                               OutlinedButton(
                                 onPressed: () => _markPaidAll(total),
@@ -1349,13 +1344,14 @@ class _FriendDetailPageState extends ConsumerState<FriendDetailPage>
                                         context,
                                       ).colorScheme.onSurfaceVariant,
                                   side: BorderSide(
-                                    color: Theme.of(context).colorScheme.outline,
+                                    color:
+                                        Theme.of(context).colorScheme.outline,
                                   ),
                                 ),
                                 child: const Text('Paid all'),
                               ),
                             ],
-                            if (total < 0) ...[ 
+                            if (total < 0) ...[
                               const SizedBox(width: 8),
                               TextButton(
                                 onPressed: () async {

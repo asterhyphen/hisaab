@@ -137,9 +137,8 @@ extension _HomePageTab on _FriendListPageState {
                           style: TextStyle(
                             fontSize: 11,
                             fontFamily: context.hisaabFontFamily,
-                            color: Theme.of(
-                              context,
-                            ).colorScheme.onSurfaceVariant,
+                            color:
+                                Theme.of(context).colorScheme.onSurfaceVariant,
                             letterSpacing: 0.3,
                           ),
                         ),

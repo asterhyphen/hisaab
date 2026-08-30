@@ -52,7 +52,10 @@ class _MessageTemplateEditorPageState extends State<MessageTemplateEditorPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Message Templates', style: TextStyle(fontFamily: fontFamily)),
+        title: Text(
+          'Message Templates',
+          style: TextStyle(fontFamily: fontFamily),
+        ),
         actions: [
           TextButton(
             onPressed: () {
@@ -70,93 +73,93 @@ class _MessageTemplateEditorPageState extends State<MessageTemplateEditorPage> {
       ),
       body: ListView(
         padding: const EdgeInsets.all(16),
-          children: [
-            _section(
-              context,
-              title: 'Pending Template',
-              subtitle: 'Used when at least one person hasn\'t paid yet.',
-              child: TextField(
-                controller: _templateCtrl,
-                maxLines: null,
-                keyboardType: TextInputType.multiline,
-                style: const TextStyle(fontFamily: 'monospace', fontSize: 13),
-                decoration: const InputDecoration(
-                  hintText: 'Enter message template...',
-                ),
+        children: [
+          _section(
+            context,
+            title: 'Pending Template',
+            subtitle: 'Used when at least one person hasn\'t paid yet.',
+            child: TextField(
+              controller: _templateCtrl,
+              maxLines: null,
+              keyboardType: TextInputType.multiline,
+              style: const TextStyle(fontFamily: 'monospace', fontSize: 13),
+              decoration: const InputDecoration(
+                hintText: 'Enter message template...',
               ),
             ),
-            const SizedBox(height: 16),
-            _section(
-              context,
-              title: 'All Paid Template',
-              subtitle: 'Used when everyone has paid.',
-              child: TextField(
-                controller: _allPaidCtrl,
-                maxLines: null,
-                keyboardType: TextInputType.multiline,
-                style: const TextStyle(fontFamily: 'monospace', fontSize: 13),
-                decoration: const InputDecoration(
-                  hintText: 'Enter all-paid template...',
-                ),
+          ),
+          const SizedBox(height: 16),
+          _section(
+            context,
+            title: 'All Paid Template',
+            subtitle: 'Used when everyone has paid.',
+            child: TextField(
+              controller: _allPaidCtrl,
+              maxLines: null,
+              keyboardType: TextInputType.multiline,
+              style: const TextStyle(fontFamily: 'monospace', fontSize: 13),
+              decoration: const InputDecoration(
+                hintText: 'Enter all-paid template...',
               ),
             ),
-            const SizedBox(height: 20),
-            _section(
-              context,
-              title: 'Available Variables',
-              subtitle: 'Copy and paste these into your templates.',
-              child: Wrap(
-                spacing: 8,
-                runSpacing: 8,
-                children:
-                    const [
-                          '{title}',
-                          '{status}',
-                          '{dueDate}',
-                          '{daysRemaining}',
-                          '{total}',
-                          '{perHead}',
-                          '{paidCount}',
-                          '{paidAmount}',
-                          '{paidUsers}',
-                          '{pendingCount}',
-                          '{pendingAmount}',
-                          '{pendingUsers}',
-                        ]
-                        .map(
-                          (v) => Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 10,
-                              vertical: 6,
-                            ),
-                            decoration: BoxDecoration(
+          ),
+          const SizedBox(height: 20),
+          _section(
+            context,
+            title: 'Available Variables',
+            subtitle: 'Copy and paste these into your templates.',
+            child: Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children:
+                  const [
+                        '{title}',
+                        '{status}',
+                        '{dueDate}',
+                        '{daysRemaining}',
+                        '{total}',
+                        '{perHead}',
+                        '{paidCount}',
+                        '{paidAmount}',
+                        '{paidUsers}',
+                        '{pendingCount}',
+                        '{pendingAmount}',
+                        '{pendingUsers}',
+                      ]
+                      .map(
+                        (v) => Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 6,
+                          ),
+                          decoration: BoxDecoration(
+                            color:
+                                isDark
+                                    ? Colors.white.withValues(alpha: 0.07)
+                                    : const Color(0xFFF0F5F9),
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(
                               color:
                                   isDark
-                                      ? Colors.white.withValues(alpha: 0.07)
-                                      : const Color(0xFFF0F5F9),
-                              borderRadius: BorderRadius.circular(8),
-                              border: Border.all(
-                                color:
-                                    isDark
-                                        ? Colors.white.withValues(alpha: 0.10)
-                                        : const Color(0xFFD9E6EF),
-                              ),
-                            ),
-                            child: Text(
-                              v,
-                              style: const TextStyle(
-                                fontFamily: 'monospace',
-                                fontSize: 12,
-                                fontWeight: FontWeight.w600,
-                              ),
+                                      ? Colors.white.withValues(alpha: 0.10)
+                                      : const Color(0xFFD9E6EF),
                             ),
                           ),
-                        )
-                        .toList(),
-              ),
+                          child: Text(
+                            v,
+                            style: const TextStyle(
+                              fontFamily: 'monospace',
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      )
+                      .toList(),
             ),
-          ],
-        ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -174,16 +177,18 @@ class _MessageTemplateEditorPageState extends State<MessageTemplateEditorPage> {
       decoration: BoxDecoration(
         color: theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: theme.colorScheme.outline,
-        ),
+        border: Border.all(color: theme.colorScheme.outline),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             title,
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, fontFamily: fontFamily),
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w700,
+              fontFamily: fontFamily,
+            ),
           ),
           const SizedBox(height: 4),
           Text(
