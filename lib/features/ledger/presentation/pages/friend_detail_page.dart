@@ -157,18 +157,17 @@ class _FriendDetailPageState extends ConsumerState<FriendDetailPage>
     noteCtrl.dispose();
   }
 
-  Future<void> _deleteTransaction(int index) async {
-    final txns = box.get(_currentName) as List;
-    if (index < 0 || index >= txns.length) return;
+  bool? _lastDismissAffectBalance;
 
-    final tx = txns[index];
+  Future<bool> _confirmDismissTransaction(Map tx) async {
+    _lastDismissAffectBalance = null;
 
     final shouldAffectBalance = await showDialog<bool?>(
       context: context,
       builder:
           (_) => AlertDialog(
             title: const Text('Delete transaction?'),
-            content: Text(
+            content: const Text(
               'Should this deletion affect the balance? If YES, the balance will be recalculated without this transaction. If NO, only the record is removed.',
             ),
             actions: [
@@ -188,42 +187,56 @@ class _FriendDetailPageState extends ConsumerState<FriendDetailPage>
           ),
     );
 
-    if (shouldAffectBalance != null) {
-      try {
-        txns.removeAt(index);
+    if (shouldAffectBalance == null) {
+      return false;
+    }
 
-        if (shouldAffectBalance) {
-          await box.put(_currentName, txns);
-        } else {
+    _lastDismissAffectBalance = shouldAffectBalance;
+    return true;
+  }
+
+  Future<void> _onTransactionDismissed(Map tx) async {
+    final affectBalance = _lastDismissAffectBalance ?? true;
+    _lastDismissAffectBalance = null;
+
+    try {
+      final txns = List.from(box.get(_currentName) as List? ?? []);
+      int targetIndex = -1;
+      for (int i = txns.length - 1; i >= 0; i--) {
+        final item = txns[i];
+        if (item['date'] == tx['date'] &&
+            item['amount'] == tx['amount'] &&
+            item['type'] == tx['type'] &&
+            item['note'] == tx['note']) {
+          targetIndex = i;
+          break;
+        }
+      }
+
+      if (targetIndex != -1) {
+        txns.removeAt(targetIndex);
+
+        if (!affectBalance) {
           txns.add({
             'type': tx['type'] == 'add' ? 'subtract' : 'add',
             'amount': tx['amount'],
-            'note': '[Reversed] ${tx['note']}',
+            'note': '[Reversed] ${tx['note'] ?? ''}',
             'date': DateFormat('dd-MM-yyyy hh:mm a').format(DateTime.now()),
           });
-          await box.put(_currentName, txns);
         }
 
+        await box.put(_currentName, txns);
         await _updateWidgetBalance();
         setState(() {});
-        GlassAlert.showSuccess(context, 'Transaction deleted');
-      } catch (e) {
+        if (mounted) {
+          GlassAlert.showSuccess(context, 'Transaction deleted');
+        }
+      }
+    } catch (e) {
+      if (mounted) {
         GlassAlert.showError(context, 'Error deleting: ${e.toString()}');
       }
     }
-  }
-
-  Future<bool> _confirmDeleteTransactionDismiss(int index) async {
-    if (_deleteTransactionDialogOpen) return false;
-
-    _deleteTransactionDialogOpen = true;
-    try {
-      await _deleteTransaction(index);
-    } finally {
-      _deleteTransactionDialogOpen = false;
-    }
-
-    return false;
   }
 
   @override
@@ -1402,35 +1415,32 @@ class _FriendDetailPageState extends ConsumerState<FriendDetailPage>
                   final isAdd = tx['type'] == 'add';
                   final dateStr = _normalizeDate(tx['date']);
 
-                  return AnimatedSlide(
-                    offset: Offset.zero,
-                    duration: const Duration(milliseconds: 200),
-                    child: Dismissible(
-                      key: ValueKey(
-                        'tx_${tx['type']}_${tx['amount']}_${tx['date']}_$sourceIndex',
+                  return Dismissible(
+                    key: ValueKey(
+                      'tx_${tx['type']}_${tx['amount']}_${tx['date']}_${tx['note']}_$sourceIndex',
+                    ),
+                    direction: DismissDirection.endToStart,
+                    dismissThresholds: const {
+                      DismissDirection.endToStart: 0.75,
+                    },
+                    background: Container(
+                      margin: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 4,
                       ),
-                      direction: DismissDirection.endToStart,
-                      dismissThresholds: const {
-                        DismissDirection.endToStart: 0.75,
-                      },
-                      background: Container(
-                        margin: const EdgeInsets.symmetric(
-                          horizontal: 8,
-                          vertical: 4,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Theme.of(context).colorScheme.error,
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        alignment: Alignment.centerRight,
-                        padding: const EdgeInsets.only(right: 24),
-                        child: const Icon(
-                          Icons.delete_rounded,
-                          color: Colors.white,
-                        ),
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).colorScheme.error,
+                        borderRadius: BorderRadius.circular(8),
                       ),
-                      confirmDismiss:
-                          (_) => _confirmDeleteTransactionDismiss(sourceIndex),
+                      alignment: Alignment.centerRight,
+                      padding: const EdgeInsets.only(right: 24),
+                      child: const Icon(
+                        Icons.delete_rounded,
+                        color: Colors.white,
+                      ),
+                    ),
+                    confirmDismiss: (_) => _confirmDismissTransaction(tx),
+                    onDismissed: (_) => _onTransactionDismissed(tx),
                       child: Container(
                         margin: const EdgeInsets.symmetric(
                           horizontal: 8,
@@ -1522,9 +1532,8 @@ class _FriendDetailPageState extends ConsumerState<FriendDetailPage>
                           ),
                         ),
                       ),
-                    ),
-                  );
-                }, childCount: transactions.length),
+                    );
+                  }, childCount: transactions.length),
               ),
             ),
         ],
