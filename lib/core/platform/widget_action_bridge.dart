@@ -26,12 +26,24 @@ class WidgetActionBridge {
   }
 
   static Future<String?> getInitialAction() async {
-    final value = await _channel.invokeMethod<String>('getInitialAction');
-    if (value == null || value.isEmpty) return null;
-    return value;
+    try {
+      final value = await _channel.invokeMethod<String>('getInitialAction');
+      if (value == null || value.isEmpty) return null;
+      return value;
+    } on MissingPluginException {
+      return null;
+    } catch (_) {
+      return null;
+    }
   }
 
   static Future<void> updateWidgetBalance(double balance) async {
-    await _channel.invokeMethod('updateWidgetBalance', {'balance': balance});
+    try {
+      await _channel.invokeMethod('updateWidgetBalance', {'balance': balance});
+    } on MissingPluginException {
+      // Widget platform channel not implemented on current platform
+    } catch (_) {
+      // Ignore other platform channel errors
+    }
   }
 }

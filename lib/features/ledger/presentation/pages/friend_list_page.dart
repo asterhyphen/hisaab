@@ -87,8 +87,10 @@ class _FriendListPageState extends ConsumerState<FriendListPage>
   }
 
   Future<void> _updateWidgetBalance() async {
-    final total = getOverallTotal();
-    await WidgetActionBridge.updateWidgetBalance(total);
+    try {
+      final total = getOverallTotal();
+      await WidgetActionBridge.updateWidgetBalance(total);
+    } catch (_) {}
   }
 
   Future<void> _setupWidgetActionFlow() async {

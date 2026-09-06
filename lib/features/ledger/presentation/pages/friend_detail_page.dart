@@ -42,8 +42,10 @@ class _FriendDetailPageState extends ConsumerState<FriendDetailPage>
   late String _currentName;
 
   Future<void> _updateWidgetBalance() async {
-    final total = _ledgerRepository.overallBalance;
-    await WidgetActionBridge.updateWidgetBalance(total);
+    try {
+      final total = _ledgerRepository.overallBalance;
+      await WidgetActionBridge.updateWidgetBalance(total);
+    } catch (_) {}
   }
 
   Future<void> _markPaidAll(double total) async {
