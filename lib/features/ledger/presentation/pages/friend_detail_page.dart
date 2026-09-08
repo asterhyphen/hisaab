@@ -1441,67 +1441,81 @@ class _FriendDetailPageState extends ConsumerState<FriendDetailPage>
                     ),
                     confirmDismiss: (_) => _confirmDismissTransaction(tx),
                     onDismissed: (_) => _onTransactionDismissed(tx),
-                      child: Container(
-                        margin: const EdgeInsets.symmetric(
-                          horizontal: 8,
-                          vertical: 4,
+                    child: Container(
+                      margin: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 4,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).colorScheme.surface,
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
+                          color: Theme.of(context).colorScheme.outline,
+                          width: 1,
                         ),
-                        decoration: BoxDecoration(
-                          color: Theme.of(context).colorScheme.surface,
-                          borderRadius: BorderRadius.circular(8),
-                          border: Border.all(
-                            color: Theme.of(context).colorScheme.outline,
-                            width: 1,
+                      ),
+                      child: InkWell(
+                        borderRadius: BorderRadius.circular(8),
+                        onTap: () => _editTransaction(sourceIndex),
+                        child: ListTile(
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 8,
                           ),
-                        ),
-                        child: InkWell(
-                          borderRadius: BorderRadius.circular(8),
-                          onTap: () => _editTransaction(sourceIndex),
-                          child: ListTile(
-                            contentPadding: const EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 8,
+                          leading: Container(
+                            width: 40,
+                            height: 40,
+                            decoration: BoxDecoration(
+                              color:
+                                  isAdd
+                                      ? Theme.of(
+                                        context,
+                                      ).colorScheme.tertiary.withOpacity(0.2)
+                                      : Theme.of(
+                                        context,
+                                      ).colorScheme.error.withOpacity(0.2),
+                              borderRadius: BorderRadius.circular(6),
                             ),
-                            leading: Container(
-                              width: 40,
-                              height: 40,
-                              decoration: BoxDecoration(
-                                color:
-                                    isAdd
-                                        ? Theme.of(
-                                          context,
-                                        ).colorScheme.tertiary.withOpacity(0.2)
-                                        : Theme.of(
-                                          context,
-                                        ).colorScheme.error.withOpacity(0.2),
-                                borderRadius: BorderRadius.circular(6),
-                              ),
-                              child: Icon(
-                                isAdd ? Icons.add : Icons.remove,
-                                color:
-                                    isAdd
-                                        ? Theme.of(context).colorScheme.tertiary
-                                        : Theme.of(context).colorScheme.error,
-                                size: 20,
-                              ),
+                            child: Icon(
+                              isAdd ? Icons.add : Icons.remove,
+                              color:
+                                  isAdd
+                                      ? Theme.of(context).colorScheme.tertiary
+                                      : Theme.of(context).colorScheme.error,
+                              size: 20,
                             ),
-                            title: Text(
-                              '${isAdd ? "+" : "-"} ₹${tx['amount']}',
-                              style: TextStyle(
-                                fontFamily: context.hisaabFontFamily,
-                                fontSize: 15,
-                                fontWeight: FontWeight.w600,
-                                color: Theme.of(context).colorScheme.onSurface,
-                              ),
+                          ),
+                          title: Text(
+                            '${isAdd ? "+" : "-"} ₹${tx['amount']}',
+                            style: TextStyle(
+                              fontFamily: context.hisaabFontFamily,
+                              fontSize: 15,
+                              fontWeight: FontWeight.w600,
+                              color: Theme.of(context).colorScheme.onSurface,
                             ),
-                            subtitle: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
+                          ),
+                          subtitle: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const SizedBox(height: 4),
+                              Text(
+                                dateStr,
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color:
+                                      Theme.of(
+                                        context,
+                                      ).colorScheme.onSurfaceVariant,
+                                  fontFamily: context.hisaabFontFamily,
+                                ),
+                              ),
+                              if (tx['note'] != null &&
+                                  tx['note'].toString().trim().isNotEmpty) ...[
                                 const SizedBox(height: 4),
                                 Text(
-                                  dateStr,
+                                  tx['note'].toString(),
                                   style: TextStyle(
-                                    fontSize: 12,
+                                    fontSize: 13,
                                     color:
                                         Theme.of(
                                           context,
@@ -1509,31 +1523,14 @@ class _FriendDetailPageState extends ConsumerState<FriendDetailPage>
                                     fontFamily: context.hisaabFontFamily,
                                   ),
                                 ),
-                                if (tx['note'] != null &&
-                                    tx['note']
-                                        .toString()
-                                        .trim()
-                                        .isNotEmpty) ...[
-                                  const SizedBox(height: 4),
-                                  Text(
-                                    tx['note'].toString(),
-                                    style: TextStyle(
-                                      fontSize: 13,
-                                      color:
-                                          Theme.of(
-                                            context,
-                                          ).colorScheme.onSurfaceVariant,
-                                      fontFamily: context.hisaabFontFamily,
-                                    ),
-                                  ),
-                                ],
                               ],
-                            ),
+                            ],
                           ),
                         ),
                       ),
-                    );
-                  }, childCount: transactions.length),
+                    ),
+                  );
+                }, childCount: transactions.length),
               ),
             ),
         ],
